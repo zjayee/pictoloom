@@ -1,22 +1,36 @@
-import './createPost.js';
+import "./createPost.js";
 
-import { Devvit, useState, useWebView } from '@devvit/public-api';
+import { Devvit, useState, useWebView } from "@devvit/public-api";
 
-import type { DevvitMessage, WebViewMessage } from './message.js';
+import type { DevvitMessage, WebViewMessage } from "./message.js";
+import { dailyPostTrigger } from "./jobs/dailyPost.js";
 
 Devvit.configure({
   redditAPI: true,
   redis: true,
 });
 
+/* Custom Post Type */
+// TODO: integrate with router
+// Devvit.addCustomPostType({
+//   name: "Pixelary",
+//   description: "Draw, Guess, Laugh!",
+//   height: "tall",
+//   render: Router,
+// });
+
+/* Triggers */
+Devvit.addTrigger(dailyPostTrigger);
+
+/* QUICKSTART CODE */
 // Add a custom post type to Devvit
 Devvit.addCustomPostType({
-  name: 'Web View Example',
-  height: 'tall',
+  name: "Web View Example",
+  height: "tall",
   render: (context) => {
     // Load username with `useAsync` hook
     const [username] = useState(async () => {
-      return (await context.reddit.getCurrentUsername()) ?? 'anon';
+      return (await context.reddit.getCurrentUsername()) ?? "anon";
     });
 
     // Load latest counter from redis with `useAsync` hook
@@ -27,21 +41,21 @@ Devvit.addCustomPostType({
 
     const webView = useWebView<WebViewMessage, DevvitMessage>({
       // URL of your web view content
-      url: 'page.html',
+      url: "page.html",
 
       // Handle messages sent from the web view
       async onMessage(message, webView) {
         switch (message.type) {
-          case 'webViewReady':
+          case "webViewReady":
             webView.postMessage({
-              type: 'initialData',
+              type: "initialData",
               data: {
                 username: username,
                 currentCounter: counter,
               },
             });
             break;
-          case 'setCounter':
+          case "setCounter":
             await context.redis.set(
               `counter_${context.postId}`,
               message.data.newCounter.toString()
@@ -49,7 +63,7 @@ Devvit.addCustomPostType({
             setCounter(message.data.newCounter);
 
             webView.postMessage({
-              type: 'updateCounter',
+              type: "updateCounter",
               data: {
                 currentCounter: message.data.newCounter,
               },
@@ -60,7 +74,7 @@ Devvit.addCustomPostType({
         }
       },
       onUnmount() {
-        context.ui.showToast('Web view closed!');
+        context.ui.showToast("Web view closed!");
       },
     });
 
@@ -76,15 +90,15 @@ Devvit.addCustomPostType({
             <hstack>
               <text size="medium">Username:</text>
               <text size="medium" weight="bold">
-                {' '}
-                {username ?? ''}
+                {" "}
+                {username ?? ""}
               </text>
             </hstack>
             <hstack>
               <text size="medium">Current counter:</text>
               <text size="medium" weight="bold">
-                {' '}
-                {counter ?? ''}
+                {" "}
+                {counter ?? ""}
               </text>
             </hstack>
           </vstack>
