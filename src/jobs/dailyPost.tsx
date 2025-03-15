@@ -1,4 +1,5 @@
 import { Devvit, AppInstallDefinition } from "@devvit/public-api";
+import { Service } from "../service/service.js";
 
 export const dailyPostJob = Devvit.addSchedulerJob({
   name: "dailyPost",
@@ -6,6 +7,7 @@ export const dailyPostJob = Devvit.addSchedulerJob({
     if (event.data) {
       try {
         const subreddit = await context.reddit.getCurrentSubreddit();
+        const service = new Service(context);
         const post = await context.reddit.submitPost({
           subredditName: subreddit.name,
           title: "Daily Pictoloom Game",
@@ -16,8 +18,7 @@ export const dailyPostJob = Devvit.addSchedulerJob({
           ),
         });
         console.log("Posted to Reddit:", post.id);
-        // TODO: Setup the game
-        await context.redis.set("dailyPostId", post.id);
+        await service.newGame(post.id);
       } catch (error) {
         console.error("", error);
       }
