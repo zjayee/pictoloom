@@ -27,6 +27,7 @@ export class Service {
   // Redis key formats
   readonly keys = {
     game: (gameId: string) => `game:${gameId}`,
+    phraseBank: (name: string) => `phraseBank:${name}`,
   };
 
   // Set up a new game
@@ -46,6 +47,21 @@ export class Service {
       status: game.status,
       rounds: JSON.stringify(game.rounds),
     });
+  }
+
+  async upsertPhraseBank(name: string, phrases: string[]) {
+    // Save phrases to Redis
+    const key = this.keys.phraseBank(name);
+    const existingJson = await this.redis.get(key);
+    const existingWords = existingJson ? JSON.parse(existingJson) : [];
+
+    const unique = new Set([...existingWords, ...phrases]);
+    await this.redis.set(key, JSON.stringify(Array.from(unique)));
+  }
+
+  async clearPhraseBank(name: string) {
+    // Clear phrases from Redis
+    await this.redis.del(this.keys.phraseBank(name));
   }
 
   private choosePhrases(count: number) {
