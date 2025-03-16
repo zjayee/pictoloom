@@ -10,6 +10,7 @@ export const deleteTestPosts: MenuItem = {
       username: "pictoloom",
     })) {
       await context.reddit.remove(post.id, false);
+      console.log("Removed post:", post.id);
     }
   },
 };
