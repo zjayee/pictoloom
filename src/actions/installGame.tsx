@@ -3,7 +3,7 @@ import { Devvit } from "@devvit/public-api";
 
 import { Service } from "../service/service.js";
 
-export const dailyPostTrigger: AppUpgradeDefinition = {
+export const appUpgradeSetup: AppUpgradeDefinition = {
   event: "AppUpgrade",
   onEvent: async (_, context) => {
     // Set up phrase bank

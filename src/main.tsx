@@ -3,6 +3,8 @@ import "./createPost.js";
 import { Devvit, useState, useWebView } from "@devvit/public-api";
 
 import type { DevvitMessage, WebViewMessage } from "./message.js";
+
+import { appUpgradeSetup } from "./actions/installGame.js";
 import { dailyPostTrigger } from "./jobs/dailyPost.js";
 import { deleteTestPosts } from "./actions/deleteTestPosts.js";
 
@@ -24,6 +26,7 @@ Devvit.configure({
 Devvit.addMenuItem(deleteTestPosts);
 
 /* Triggers */
+Devvit.addTrigger(appUpgradeSetup);
 Devvit.addTrigger(dailyPostTrigger);
 
 /* QUICKSTART CODE */
