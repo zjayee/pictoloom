@@ -4,6 +4,7 @@ import { Devvit, useState, useWebView } from "@devvit/public-api";
 
 import type { DevvitMessage, WebViewMessage } from "./message.js";
 import { dailyPostTrigger } from "./jobs/dailyPost.js";
+import { deleteTestPosts } from "./actions/deleteTestPosts.js";
 
 Devvit.configure({
   redditAPI: true,
@@ -18,6 +19,9 @@ Devvit.configure({
 //   height: "tall",
 //   render: Router,
 // });
+
+/* Subreddit Menu Item */
+Devvit.addMenuItem(deleteTestPosts);
 
 /* Triggers */
 Devvit.addTrigger(dailyPostTrigger);
