@@ -101,6 +101,10 @@ export class Service {
     const phraseBankWords = phraseBankJson ? JSON.parse(phraseBankJson) : [];
     const idxs = new Set<number>();
 
+    if (phraseBankWords.length < count) {
+      return phraseBankWords;
+    }
+
     while (idxs.size < count && phraseBankWords.length > count) {
       const randomIdx = Math.floor(Math.random() * phraseBankWords.length);
       idxs.add(randomIdx);
