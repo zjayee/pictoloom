@@ -37,7 +37,7 @@ export class GameService {
       id: postId,
       phrases: phrases,
       status: "draw",
-      rounds: [],
+      completeRounds: [],
     };
 
     // Save game to Redis
@@ -45,7 +45,7 @@ export class GameService {
       id: game.id,
       phrases: JSON.stringify(game.phrases),
       status: game.status,
-      rounds: JSON.stringify(game.rounds),
+      completeRounds: JSON.stringify(game.completeRounds),
     });
 
     // Start a new round
@@ -71,12 +71,20 @@ export class GameService {
       endTime: end_time.toISOString(),
     };
 
-    // Save round to Redis
+    // Save previous round to Redis
     const gameKey = this.keys.game(postId);
     const roundsJson = await this.redis.hGet(gameKey, "rounds");
-    const rounds = roundsJson ? JSON.parse(roundsJson) : [];
-    rounds.push(round);
-    await this.redis.hSet(gameKey, { rounds: JSON.stringify(rounds) });
+
+    const currentRoundJson = await this.redis.hGet(gameKey, "currentRound");
+    const currentRound = currentRoundJson ? JSON.parse(currentRoundJson) : null;
+    if (currentRound) {
+      const rounds = roundsJson ? JSON.parse(roundsJson) : [];
+      rounds.push(currentRound);
+      await this.redis.hSet(gameKey, { rounds: JSON.stringify(rounds) });
+    }
+
+    // Save new round to Redis
+    await this.redis.hSet(gameKey, { currentRound: JSON.stringify(round) });
   }
 
   private async choosePhrases(count: number) {

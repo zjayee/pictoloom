@@ -2,7 +2,8 @@ export type Game = {
   id: string;
   phrases: string[];
   status: "draw" | "guess" | "end";
-  rounds: Round[];
+  completeRounds: Round[];
+  currentRound?: Round;
 };
 
 export type Round = {
@@ -10,6 +11,13 @@ export type Round = {
   roundNumber: number;
   startTime: string;
   endTime: string;
+};
+
+export type Drawing = {
+  postId: string;
+  roundNumber: number;
+  userId: string;
+  drawing: string;
 };
 
 export type RoundType = "draw" | "guess";
@@ -20,5 +28,5 @@ export type PostId = `t3_${string}`;
 export type SubredditId = `t5_${string}`;
 
 export type RedisKeys = {
-  [key: string]: (param: string) => string;
+  [key: string]: (...params: string[]) => string;
 };

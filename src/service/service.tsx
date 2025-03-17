@@ -38,5 +38,7 @@ export class Service {
   readonly keys = {
     game: (gameId: string) => `game:${gameId}`,
     phraseBank: (name: string) => `phraseBank:${name}`,
+    drawing: (postId: string, roundNumber: string) =>
+      `drawing:${postId}:${roundNumber}`,
   };
 }
