@@ -32,7 +32,7 @@ export class Service {
 
   // Set up a new game
   async newGame(postId: string) {
-    const phrases = this.choosePhrases(3);
+    const phrases = await this.choosePhrases(3);
     const game: Game = {
       id: postId,
       phrases: phrases,
@@ -94,13 +94,19 @@ export class Service {
     await this.redis.del(this.keys.phraseBank(name));
   }
 
-  private choosePhrases(count: number) {
+  private async choosePhrases(count: number) {
     /* Chooses count number of phrases from phrase bank */
-    // TODO: Implement
-    let phrases = [];
-    for (let i = 0; i < count; i++) {
-      phrases.push("majjie");
+    const phraseBankKey = this.keys.phraseBank("default");
+    const phraseBankJson = await this.redis.get(phraseBankKey);
+    const phraseBankWords = phraseBankJson ? JSON.parse(phraseBankJson) : [];
+    const idxs = new Set<number>();
+
+    while (idxs.size < count && phraseBankWords.length > count) {
+      const randomIdx = Math.floor(Math.random() * phraseBankWords.length);
+      idxs.add(randomIdx);
     }
+
+    const phrases = Array.from(idxs).map((idx) => phraseBankWords[idx]);
     return phrases;
   }
 }
