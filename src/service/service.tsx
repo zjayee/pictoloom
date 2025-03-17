@@ -6,6 +6,7 @@ import type {
   ZRangeOptions,
 } from "@devvit/public-api";
 
+import { DrawService } from "./drawService.js";
 import { GameService } from "./gameService.js";
 import { PhraseBankService } from "./phrasebankService.js";
 
@@ -18,6 +19,7 @@ export class Service {
   readonly scheduler?: Scheduler;
   readonly game: GameService;
   readonly phraseBank: PhraseBankService;
+  readonly draw: DrawService;
 
   constructor(context: {
     redis: RedisClient;
@@ -29,6 +31,7 @@ export class Service {
     this.scheduler = context.scheduler;
     this.game = new GameService(context, this.keys);
     this.phraseBank = new PhraseBankService(context, this.keys);
+    this.draw = new DrawService(context, this.keys);
   }
 
   // Redis key formats

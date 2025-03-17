@@ -8,6 +8,7 @@ import type { RedisKeys } from "../types.js";
 
 import { Devvit } from "@devvit/public-api";
 
+// Contains phrase bank logic. Handles phrase bank creation and phrase bank retrieval.
 export class PhraseBankService {
   readonly redis: RedisClient;
   readonly reddit?: RedditAPIClient;

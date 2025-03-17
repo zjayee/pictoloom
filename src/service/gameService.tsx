@@ -9,6 +9,7 @@ import type { RedisKeys } from "../types.js";
 
 import { Devvit } from "@devvit/public-api";
 
+// Contains game setup logic. Handles game creation and round creation.
 export class GameService {
   readonly redis: RedisClient;
   readonly reddit?: RedditAPIClient;
