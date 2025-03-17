@@ -37,7 +37,7 @@ export class GameService {
       id: postId,
       phrases: phrases,
       status: "draw",
-      completeRounds: [],
+      currentRound: 0,
     };
 
     // Save game to Redis
@@ -45,7 +45,7 @@ export class GameService {
       id: game.id,
       phrases: JSON.stringify(game.phrases),
       status: game.status,
-      completeRounds: JSON.stringify(game.completeRounds),
+      currentRound: String(game.currentRound),
     });
 
     // Start a new round
@@ -71,20 +71,22 @@ export class GameService {
       endTime: end_time.toISOString(),
     };
 
-    // Save previous round to Redis
+    // Increment round number
     const gameKey = this.keys.game(postId);
-    const roundsJson = await this.redis.hGet(gameKey, "rounds");
+    await this.redis.hIncrBy(gameKey, "currentRound", 1);
 
-    const currentRoundJson = await this.redis.hGet(gameKey, "currentRound");
-    const currentRound = currentRoundJson ? JSON.parse(currentRoundJson) : null;
-    if (currentRound) {
-      const rounds = roundsJson ? JSON.parse(roundsJson) : [];
-      rounds.push(currentRound);
-      await this.redis.hSet(gameKey, { rounds: JSON.stringify(rounds) });
+    // Update game status if necessary
+    if (roundType === "guess") {
+      await this.redis.hSet(gameKey, { status: "guess" });
     }
 
-    // Save new round to Redis
-    await this.redis.hSet(gameKey, { currentRound: JSON.stringify(round) });
+    // Save round to Redis
+    await this.redis.hSet(this.keys.round(postId, String(round.roundNumber)), {
+      roundType: round.roundType,
+      roundNumber: String(round.roundNumber),
+      startTime: round.startTime,
+      endTime: round.endTime,
+    });
   }
 
   private async choosePhrases(count: number) {

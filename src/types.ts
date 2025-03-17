@@ -2,8 +2,7 @@ export type Game = {
   id: string;
   phrases: string[];
   status: "draw" | "guess" | "end";
-  completeRounds: Round[];
-  currentRound?: Round;
+  currentRound: number;
 };
 
 export type Round = {

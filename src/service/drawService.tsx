@@ -44,13 +44,6 @@ export class DrawService {
       throw new Error("Current round is not a draw round");
     }
 
-    const drawingObj: Drawing = {
-      postId,
-      roundNumber: currentRound.roundNumber,
-      userId,
-      drawing,
-    };
-
     // Save drawing to Redis
     await this.redis.hSet(this.keys.drawing(postId, currentRound.roundNumber), {
       userId: drawing,
