@@ -10,7 +10,7 @@ export const appUpgradeSetup: AppUpgradeDefinition = {
     const service = new Service(context);
 
     // TODO: populate with real phrases
-    await service.upsertPhraseBank("default", [
+    await service.phraseBank.upsertPhraseBank("default", [
       "majjie",
       "majjico",
       "viva italia",

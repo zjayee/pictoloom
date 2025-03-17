@@ -16,8 +16,8 @@ export class Service {
   readonly redis: RedisClient;
   readonly reddit?: RedditAPIClient;
   readonly scheduler?: Scheduler;
-  readonly gameService: GameService;
-  readonly phraseBankService: PhraseBankService;
+  readonly game: GameService;
+  readonly phraseBank: PhraseBankService;
 
   constructor(context: {
     redis: RedisClient;
@@ -27,8 +27,8 @@ export class Service {
     this.redis = context.redis;
     this.reddit = context.reddit;
     this.scheduler = context.scheduler;
-    this.gameService = new GameService(context, this.keys);
-    this.phraseBankService = new PhraseBankService(context, this.keys);
+    this.game = new GameService(context, this.keys);
+    this.phraseBank = new PhraseBankService(context, this.keys);
   }
 
   // Redis key formats
