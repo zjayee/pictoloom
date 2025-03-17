@@ -85,34 +85,24 @@ Devvit.addCustomPostType({
       },
     });
 
-    // Render the custom post type
     return (
-      <vstack grow padding="small">
-        <vstack grow alignment="middle center">
-          <text size="xlarge" weight="bold">
-            Example App
+      <zstack width="100%" height="100%">
+        <image
+          url="bg-purple.png"
+          width="100%"
+          height="100%"
+          imageWidth={800}
+          imageHeight={600}
+          description="Background Image"
+          resizeMode="fill"
+        />
+
+        <vstack width="100%" height="100%" alignment="center middle">
+          <text size="large" weight="bold" color="white">
+            Content goes here
           </text>
-          <spacer />
-          <vstack alignment="start middle">
-            <hstack>
-              <text size="medium">Username:</text>
-              <text size="medium" weight="bold">
-                {" "}
-                {username ?? ""}
-              </text>
-            </hstack>
-            <hstack>
-              <text size="medium">Current counter:</text>
-              <text size="medium" weight="bold">
-                {" "}
-                {counter ?? ""}
-              </text>
-            </hstack>
-          </vstack>
-          <spacer />
-          <button onPress={() => webView.mount()}>Launch App</button>
         </vstack>
-      </vstack>
+      </zstack>
     );
   },
 });
