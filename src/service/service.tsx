@@ -5,7 +5,7 @@ import type {
   Scheduler,
   ZRangeOptions,
 } from "@devvit/public-api";
-import type { Game } from "../types.js";
+import type { Game, Round, RoundType } from "../types.js";
 import { Devvit } from "@devvit/public-api";
 
 // Handles the logic behind the application
@@ -47,6 +47,36 @@ export class Service {
       status: game.status,
       rounds: JSON.stringify(game.rounds),
     });
+
+    // Start a new round
+    await this.newRound(postId, "draw");
+  }
+
+  async newRound(
+    postId: string,
+    roundType: RoundType,
+    roundLength: number = 3
+  ) {
+    /* Creates a new round object that's roundLength hours long */
+    const start_time = new Date();
+    start_time.setMinutes(0, 0, 0);
+    const end_time = new Date(
+      start_time.getTime() + roundLength * 60 * 60 * 1000
+    );
+
+    const round: Round = {
+      roundType: roundType,
+      roundNumber: 1,
+      startTime: start_time.toISOString(),
+      endTime: end_time.toISOString(),
+    };
+
+    // Save round to Redis
+    const gameKey = this.keys.game(postId);
+    const roundsJson = await this.redis.hGet(gameKey, "rounds");
+    const rounds = roundsJson ? JSON.parse(roundsJson) : [];
+    rounds.push(round);
+    await this.redis.hSet(gameKey, { rounds: JSON.stringify(rounds) });
   }
 
   async upsertPhraseBank(name: string, phrases: string[]) {

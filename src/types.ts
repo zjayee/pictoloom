@@ -5,7 +5,14 @@ export type Game = {
   rounds: Round[];
 };
 
-export type Round = {};
+export type Round = {
+  roundType: RoundType;
+  roundNumber: number;
+  startTime: string;
+  endTime: string;
+};
+
+export type RoundType = "draw" | "guess";
 
 export type CommentId = `t1_${string}`;
 export type UserId = `t2_${string}`;
