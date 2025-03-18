@@ -1,8 +1,6 @@
 import "./createPost.js";
 
-import { Devvit, useState, useWebView } from "@devvit/public-api";
-
-import type { DevvitMessage, WebViewMessage } from "./message.js";
+import { Devvit } from "@devvit/public-api";
 
 import { appUpgradeSetup } from "./actions/installGame.js";
 import { dailyPostTrigger } from "./jobs/dailyPost.js";
