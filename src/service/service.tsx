@@ -7,6 +7,7 @@ import type {
 } from "@devvit/public-api";
 
 import { DrawService } from "./drawService.js";
+import { Db } from "../storage/db.js";
 import { GameService } from "./gameService.js";
 import { PhraseBankService } from "./phrasebankService.js";
 
@@ -17,6 +18,7 @@ export class Service {
   readonly redis: RedisClient;
   readonly reddit?: RedditAPIClient;
   readonly scheduler?: Scheduler;
+  readonly db: Db;
   readonly game: GameService;
   readonly phraseBank: PhraseBankService;
   readonly draw: DrawService;
@@ -27,18 +29,12 @@ export class Service {
     scheduler?: Scheduler;
   }) {
     this.redis = context.redis;
+    this.db = new Db(context.redis);
+
     this.reddit = context.reddit;
     this.scheduler = context.scheduler;
-    this.game = new GameService(context, this.keys);
-    this.phraseBank = new PhraseBankService(context, this.keys);
-    this.draw = new DrawService(context, this.keys);
+    this.game = new GameService(context, this.db);
+    this.phraseBank = new PhraseBankService(context, this.db);
+    this.draw = new DrawService(context, this.db);
   }
-
-  // Redis key formats
-  readonly keys = {
-    game: (gameId: string) => `game:${gameId}`,
-    phraseBank: (name: string) => `phraseBank:${name}`,
-    drawing: (postId: string, roundNumber: string) =>
-      `drawing:${postId}:${roundNumber}`,
-  };
 }

@@ -1,7 +1,7 @@
 export type Game = {
   id: string;
   phrases: string[];
-  status: "draw" | "guess" | "end";
+  status: GameStatus;
   currentRound: number;
 };
 
@@ -13,13 +13,14 @@ export type Round = {
 };
 
 export type Drawing = {
-  postId: string;
+  gameId: string;
   roundNumber: number;
   userId: string;
   drawing: string;
 };
 
 export type RoundType = "draw" | "guess";
+export type GameStatus = "draw" | "guess" | "end";
 
 export type CommentId = `t1_${string}`;
 export type UserId = `t2_${string}`;
