@@ -32,21 +32,27 @@ export class DrawService {
     if (!userId) {
       throw new Error("User not found");
     }
-    const currentRoundJson = await this.redis.hGet(
+    const currentRoundNum = await this.redis.hGet(
       this.keys.game(postId),
       "currentRound"
     );
-    if (!currentRoundJson) {
+    if (!currentRoundNum) {
       throw new Error("No current round found");
     }
-    const currentRound = JSON.parse(currentRoundJson);
-    if (currentRound.type !== "draw") {
+
+    const currentRoundType = await this.redis.hGet(
+      this.keys.round(postId, currentRoundNum),
+      "roundType"
+    );
+    if (currentRoundType !== "draw") {
       throw new Error("Current round is not a draw round");
     }
 
     // Save drawing to Redis
-    await this.redis.hSet(this.keys.drawing(postId, currentRound.roundNumber), {
+    await this.redis.hSet(this.keys.drawing(postId, currentRoundNum), {
       userId: drawing,
     });
   }
+
+  async selectReferences(postId: string, number_of_references: number) {}
 }

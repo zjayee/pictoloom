@@ -14,7 +14,7 @@ export type Round = {
 
 export type Drawing = {
   postId: string;
-  roundNumber: number;
+  currentRound: number;
   userId: string;
   drawing: string;
 };
