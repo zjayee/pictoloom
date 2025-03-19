@@ -4,17 +4,17 @@ import type {
   Scheduler,
 } from "@devvit/public-api";
 
-import type { Game, Round, RoundType } from "../types.js";
-import type { RedisKeys } from "../types.js";
+import type { Game, Round, RoundType, RedisKeys } from "../types.js";
+
+import { Db } from "../storage/db.js";
 
 import { Devvit } from "@devvit/public-api";
 
 // Contains game setup logic. Handles game creation and round creation.
 export class GameService {
-  readonly redis: RedisClient;
   readonly reddit?: RedditAPIClient;
   readonly scheduler?: Scheduler;
-  readonly keys: RedisKeys;
+  readonly db: Db;
 
   constructor(
     context: {
@@ -22,12 +22,11 @@ export class GameService {
       reddit?: RedditAPIClient;
       scheduler?: Scheduler;
     },
-    keys: RedisKeys
+    db: Db
   ) {
-    this.redis = context.redis;
     this.reddit = context.reddit;
     this.scheduler = context.scheduler;
-    this.keys = keys;
+    this.db = db;
   }
 
   // Set up a new game
@@ -41,12 +40,7 @@ export class GameService {
     };
 
     // Save game to Redis
-    await this.redis.hSet(this.keys.game(postId), {
-      id: game.id,
-      phrases: JSON.stringify(game.phrases),
-      status: game.status,
-      currentRound: String(game.currentRound),
-    });
+    await this.db.saveGame(game);
 
     // Start a new round
     await this.newRound(postId, "draw");
@@ -72,28 +66,20 @@ export class GameService {
     };
 
     // Increment round number
-    const gameKey = this.keys.game(postId);
-    await this.redis.hIncrBy(gameKey, "currentRound", 1);
+    await this.db.incrementRound(postId);
 
     // Update game status if necessary
     if (roundType === "guess") {
-      await this.redis.hSet(gameKey, { status: "guess" });
+      await this.db.setGameStatus(postId, "guess");
     }
 
     // Save round to Redis
-    await this.redis.hSet(this.keys.round(postId, String(round.roundNumber)), {
-      roundType: round.roundType,
-      roundNumber: String(round.roundNumber),
-      startTime: round.startTime,
-      endTime: round.endTime,
-    });
+    await this.db.saveRound(postId, round);
   }
 
   private async choosePhrases(count: number) {
     /* Chooses count number of phrases from phrase bank */
-    const phraseBankKey = this.keys.phraseBank("default");
-    const phraseBankJson = await this.redis.get(phraseBankKey);
-    const phraseBankWords = phraseBankJson ? JSON.parse(phraseBankJson) : [];
+    const phraseBankWords = await this.db.getPhraseBank("default");
     const idxs = new Set<number>();
 
     if (phraseBankWords.length < count) {

@@ -13,8 +13,8 @@ export type Round = {
 };
 
 export type Drawing = {
-  postId: string;
-  currentRound: number;
+  gameId: string;
+  roundNumber: number;
   userId: string;
   drawing: string;
 };

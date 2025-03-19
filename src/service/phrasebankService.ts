@@ -6,14 +6,15 @@ import type {
 
 import type { RedisKeys } from "../types.js";
 
+import { Db } from "../storage/db.js";
+
 import { Devvit } from "@devvit/public-api";
 
 // Contains phrase bank logic. Handles phrase bank creation and phrase bank retrieval.
 export class PhraseBankService {
-  readonly redis: RedisClient;
   readonly reddit?: RedditAPIClient;
   readonly scheduler?: Scheduler;
-  readonly keys: RedisKeys;
+  readonly db: Db;
 
   constructor(
     context: {
@@ -21,26 +22,18 @@ export class PhraseBankService {
       reddit?: RedditAPIClient;
       scheduler?: Scheduler;
     },
-    keys: RedisKeys
+    db: Db
   ) {
-    this.redis = context.redis;
     this.reddit = context.reddit;
     this.scheduler = context.scheduler;
-    this.keys = keys;
+    this.db = db;
   }
 
   async upsertPhraseBank(name: string, phrases: string[]) {
-    // Save phrases to Redis
-    const key = this.keys.phraseBank(name);
-    const existingJson = await this.redis.get(key);
-    const existingWords = existingJson ? JSON.parse(existingJson) : [];
-
-    const unique = new Set([...existingWords, ...phrases]);
-    await this.redis.set(key, JSON.stringify(Array.from(unique)));
+    this.db.upsertPhraseBank(name, phrases);
   }
 
   async clearPhraseBank(name: string) {
-    // Clear phrases from Redis
-    await this.redis.del(this.keys.phraseBank(name));
+    this.db.clearPhraseBank(name);
   }
 }
