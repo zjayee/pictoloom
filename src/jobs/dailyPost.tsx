@@ -18,7 +18,7 @@ export const dailyPostJob = Devvit.addSchedulerJob({
           ),
         });
         console.log("Posted to Reddit:", post.id);
-        await service.newGame(post.id);
+        await service.game.newGame(post.id);
       } catch (error) {
         console.error("", error);
       }
