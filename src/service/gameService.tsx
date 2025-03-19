@@ -4,7 +4,7 @@ import type {
   Scheduler,
 } from "@devvit/public-api";
 
-import type { Game, Round, RoundType, RedisKeys } from "../types.js";
+import type { Game, Round, RoundType } from "../types.js";
 
 import { Db } from "../storage/db.js";
 
