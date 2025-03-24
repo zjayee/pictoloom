@@ -118,4 +118,12 @@ export class Db {
     const userIds = Object.keys(drawings);
     return userIds;
   }
+
+  async getDrawing(postId: string, roundNumber: number, userId: string) {
+    const drawing = await this.redis.hGet(
+      this.keys.drawing(postId, String(roundNumber)),
+      userId
+    );
+    return drawing;
+  }
 }

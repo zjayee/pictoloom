@@ -28,4 +28,38 @@ class Cache {
       await this.redis.zAdd(key, { score: 0, member: userId });
     }
   }
+
+  async getReferenceDrawings(
+    postId: string,
+    roundNumber: number,
+    count: number
+  ) {
+    /* Returns the count reference drawings for the round */
+    const referenceDrawingUserIds = await this.redis.zRange(
+      this.keys.referenceDrawing(postId, String(roundNumber)),
+      0,
+      count - 1
+    );
+
+    // Increment reference count for each drawing and get the drawing
+    const drawings = [];
+    for (const drawing of referenceDrawingUserIds) {
+      await this.redis.zIncrBy(
+        this.keys.referenceDrawing(postId, String(roundNumber)),
+        drawing.member,
+        1
+      );
+
+      const drawingObj = await this.db.getDrawing(
+        postId,
+        roundNumber,
+        drawing.member
+      );
+      if (drawingObj) {
+        drawings.push(drawingObj);
+      }
+    }
+
+    return drawings;
+  }
 }
