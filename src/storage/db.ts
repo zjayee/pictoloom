@@ -108,4 +108,14 @@ export class Db {
       }
     );
   }
+
+  async getUserIdsForRound(postId: string, roundNumber: number) {
+    const drawings = await this.redis.hGetAll(
+      this.keys.drawing(postId, String(roundNumber))
+    );
+
+    // extract keys from hash
+    const userIds = Object.keys(drawings);
+    return userIds;
+  }
 }
