@@ -5,7 +5,7 @@ import { Devvit } from "@devvit/public-api";
 import { appUpgradeSetup } from "./actions/installGame.js";
 import { dailyPostTrigger } from "./jobs/dailyPost.js";
 import { deleteTestPosts } from "./actions/deleteTestPosts.js";
-import ChainDrawingMenu from "./components/ChainDrawingMenu.js";
+import ChainDrawing from "./posts/ChainDrawing.js";
 
 Devvit.configure({
   redditAPI: true,
@@ -33,7 +33,7 @@ Devvit.addTrigger(dailyPostTrigger);
 Devvit.addCustomPostType({
   name: "Web View Example",
   height: "tall",
-  render: ChainDrawingMenu,
+  render: ChainDrawing,
 });
 
 export default Devvit;
