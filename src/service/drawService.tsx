@@ -47,5 +47,7 @@ export class DrawService {
     await this.db.saveDrawing(drawingObj);
   }
 
-  async selectReferences(postId: string, number_of_references: number) {}
+  async selectReferences(postId: string, number_of_references: number) {
+    // TODO: pick drawings that have not been referenced as many times
+  }
 }
