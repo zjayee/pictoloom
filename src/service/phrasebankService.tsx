@@ -4,8 +4,6 @@ import type {
   Scheduler,
 } from "@devvit/public-api";
 
-import type { RedisKeys } from "../types.js";
-
 import { Db } from "../storage/db.js";
 
 import { Devvit } from "@devvit/public-api";

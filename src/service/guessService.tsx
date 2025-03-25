@@ -6,10 +6,10 @@ import type {
 
 import { Cache } from "../storage/cache.js";
 import { Db } from "../storage/db.js";
-import { Drawing } from "../types.js";
+import { Guess } from "../types.js";
 
-// Contains logic for drawing rounds.
-export class DrawService {
+// Contains logic for guessing rounds.
+export class GuessService {
   readonly reddit?: RedditAPIClient;
   readonly scheduler?: Scheduler;
 
@@ -31,7 +31,7 @@ export class DrawService {
     this.cache = cache;
   }
 
-  async submitDrawing(postId: string, drawing: string, phrase: string) {
+  async submitGuess(postId: string, phrase: string, guess: string) {
     const userId = await this.reddit?.getCurrentUsername();
     if (!userId) {
       throw new Error("User not found");
@@ -43,14 +43,22 @@ export class DrawService {
 
     this.db.incrRoundParticipantNum(postId, currentRoundNum);
 
-    const drawingObj: Drawing = {
+    // TODO: Generate score
+
+    const guessObj: Guess = {
       gameId: postId,
       userId: userId,
       roundNumber: currentRoundNum,
-      drawing: drawing,
       phrase: phrase,
+      guess: guess,
+      score: this.generateScore(phrase, guess),
     };
 
-    await this.db.saveDrawing(drawingObj, phrase);
+    await this.db.saveGuess(guessObj, phrase);
+  }
+
+  private generateScore(phrase: string, guess: string): number {
+    // TODO: Implement scoring logic
+    return 0;
   }
 }

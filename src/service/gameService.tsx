@@ -4,9 +4,10 @@ import type {
   Scheduler,
 } from "@devvit/public-api";
 
-import type { Game, Round, RoundType, RedisKeys } from "../types.js";
+import type { Game, Round, RoundType } from "../types.js";
 
 import { Db } from "../storage/db.js";
+import { Cache } from "../storage/cache.js";
 
 import { Devvit } from "@devvit/public-api";
 
@@ -15,6 +16,7 @@ export class GameService {
   readonly reddit?: RedditAPIClient;
   readonly scheduler?: Scheduler;
   readonly db: Db;
+  readonly cache: Cache;
 
   constructor(
     context: {
@@ -22,11 +24,13 @@ export class GameService {
       reddit?: RedditAPIClient;
       scheduler?: Scheduler;
     },
-    db: Db
+    db: Db,
+    cache: Cache
   ) {
     this.reddit = context.reddit;
     this.scheduler = context.scheduler;
     this.db = db;
+    this.cache = cache;
   }
 
   // Set up a new game
@@ -63,18 +67,34 @@ export class GameService {
       roundNumber: 1,
       startTime: start_time.toISOString(),
       endTime: end_time.toISOString(),
+      participantNum: 0,
     };
 
     // Increment round number
     await this.db.incrementRound(postId);
 
-    // Update game status if necessary
+    // Setup round
     if (roundType === "guess") {
       await this.db.setGameStatus(postId, "guess");
+    } else {
+      // Set up drawing references
+      if (round.roundNumber > 1) {
+        await this.cache.setupDrawingReferences(postId, round.roundNumber - 1);
+      }
     }
 
     // Save round to Redis
     await this.db.saveRound(postId, round);
+  }
+
+  async getCurrentRound(postId: string): Promise<Round | null> {
+    /* Returns the current round for the game */
+    const currentRoundNum = await this.db.getGameCurrentRound(postId);
+    if (currentRoundNum === 0) {
+      return null;
+    }
+
+    return await this.db.getRound(postId, currentRoundNum);
   }
 
   private async choosePhrases(count: number) {
@@ -93,5 +113,46 @@ export class GameService {
 
     const phrases = Array.from(idxs).map((idx) => phraseBankWords[idx]);
     return phrases;
+  }
+
+  async selectPhraseForRound(postId: string) {
+    const currentRoundNum = await this.db.getGameCurrentRound(postId);
+    const userId = await this.reddit?.getCurrentUsername();
+    if (!userId) {
+      throw new Error("User not found");
+    }
+    const phrase = await this.cache.assignPhraseForRound(
+      postId,
+      currentRoundNum,
+      userId
+    );
+    return phrase;
+  }
+
+  async selectReferences(
+    postId: string,
+    phrase: string,
+    number_of_references: number
+  ) {
+    const currentRoundNum = await this.db.getGameCurrentRound(postId);
+    return await this.cache.getReferenceDrawings(
+      postId,
+      currentRoundNum,
+      phrase,
+      number_of_references
+    );
+  }
+
+  async canParticipate(postId: string) {
+    const currentRound = await this.db.getGameCurrentRound(postId);
+    const userId = await this.reddit?.getCurrentUsername();
+    if (!userId) {
+      return false;
+    }
+    if (currentRound === 0) {
+      return false;
+    }
+
+    return await this.cache.canUserPlayRound(postId, currentRound, userId);
   }
 }

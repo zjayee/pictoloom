@@ -10,13 +10,24 @@ export type Round = {
   roundNumber: number;
   startTime: string;
   endTime: string;
+  participantNum: number;
 };
 
 export type Drawing = {
   gameId: string;
+  phrase: string;
   roundNumber: number;
   userId: string;
   drawing: string;
+};
+
+export type Guess = {
+  gameId: string;
+  phrase: string;
+  roundNumber: number;
+  userId: string;
+  guess: string;
+  score: number;
 };
 
 export type RoundType = "draw" | "guess";

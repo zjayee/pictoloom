@@ -1,6 +1,13 @@
 import type { RedisClient } from "@devvit/public-api";
 
-import type { Game, GameStatus, Round, RoundType, Drawing } from "../types.js";
+import type {
+  Game,
+  GameStatus,
+  Round,
+  RoundType,
+  Drawing,
+  Guess,
+} from "../types.js";
 
 // File contains logic for saving and retrieving data from Redis.
 export class Db {
@@ -15,8 +22,9 @@ export class Db {
     phraseBank: (name: string) => `phraseBank:${name}`,
     round: (postId: string, roundNumber: string) =>
       `round:${postId}:${roundNumber}`,
-    drawing: (postId: string, roundNumber: string) =>
+    drawing: (postId: string, roundNumber: string, phrase: string) =>
       `drawing:${postId}:${roundNumber}`,
+    guess: (postId: string, phrase: string) => `guess:${postId}:${phrase}`,
   };
 
   async saveGame(game: Game) {
@@ -49,6 +57,11 @@ export class Db {
     };
   }
 
+  async getPhrasesForGame(gameId: string): Promise<string[]> {
+    const game = await this.redis.hGet(this.keys.game(gameId), "phrases");
+    return game ? JSON.parse(game) : [];
+  }
+
   async getGameCurrentRound(gameId: string): Promise<number> {
     const currentRound = await this.redis.hGet(
       this.keys.game(gameId),
@@ -63,6 +76,7 @@ export class Db {
       roundNumber: String(round.roundNumber),
       startTime: round.startTime,
       endTime: round.endTime,
+      participantNum: String(round.participantNum),
     });
   }
 
@@ -78,7 +92,16 @@ export class Db {
       roundNumber: Number(round.roundNumber),
       startTime: round.startTime,
       endTime: round.endTime,
+      participantNum: Number(round.participantNum),
     };
+  }
+
+  async incrRoundParticipantNum(postId: string, roundNumber: number) {
+    await this.redis.hIncrBy(
+      this.keys.round(postId, String(roundNumber)),
+      "participantNum",
+      1
+    );
   }
 
   async getPhraseBank(name: string): Promise<string[]> {
@@ -100,12 +123,49 @@ export class Db {
     await this.redis.del(this.keys.phraseBank(name));
   }
 
-  async saveDrawing(drawing: Drawing) {
+  async saveDrawing(drawing: Drawing, phrase: string) {
     await this.redis.hSet(
-      this.keys.drawing(drawing.gameId, String(drawing.roundNumber)),
+      this.keys.drawing(drawing.gameId, String(drawing.roundNumber), phrase),
       {
         [drawing.userId]: drawing.drawing,
       }
     );
+  }
+
+  async getUserIdsForRound(
+    postId: string,
+    roundNumber: number,
+    phrase: string
+  ) {
+    const drawings = await this.redis.hGetAll(
+      this.keys.drawing(postId, String(roundNumber), phrase)
+    );
+
+    // extract keys from hash
+    const userIds = Object.keys(drawings);
+    return userIds;
+  }
+
+  async getDrawing(
+    postId: string,
+    roundNumber: number,
+    phrase: string,
+    userId: string
+  ) {
+    const drawing = await this.redis.hGet(
+      this.keys.drawing(postId, String(roundNumber), phrase),
+      userId
+    );
+    return drawing;
+  }
+
+  async saveGuess(guess: Guess, phrase: string) {
+    const info = {
+      guess: guess.guess,
+      score: String(guess.score),
+    };
+    await this.redis.hSet(this.keys.guess(guess.gameId, phrase), {
+      [guess.userId]: JSON.stringify(info),
+    });
   }
 }
