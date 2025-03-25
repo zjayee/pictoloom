@@ -7,6 +7,7 @@ import type {
 } from "@devvit/public-api";
 
 import { DrawService } from "./drawService.js";
+import { Cache } from "../storage/cache.js";
 import { Db } from "../storage/db.js";
 import { GameService } from "./gameService.js";
 import { PhraseBankService } from "./phrasebankService.js";
@@ -18,6 +19,7 @@ export class Service {
   readonly redis: RedisClient;
   readonly reddit?: RedditAPIClient;
   readonly scheduler?: Scheduler;
+  readonly cache: Cache;
   readonly db: Db;
   readonly game: GameService;
   readonly phraseBank: PhraseBankService;
@@ -30,11 +32,12 @@ export class Service {
   }) {
     this.redis = context.redis;
     this.db = new Db(context.redis);
+    this.cache = new Cache(context.redis);
 
     this.reddit = context.reddit;
     this.scheduler = context.scheduler;
-    this.game = new GameService(context, this.db);
+    this.game = new GameService(context, this.db, this.cache);
     this.phraseBank = new PhraseBankService(context, this.db);
-    this.draw = new DrawService(context, this.db);
+    this.draw = new DrawService(context, this.db, this.cache);
   }
 }

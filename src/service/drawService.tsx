@@ -4,6 +4,7 @@ import type {
   Scheduler,
 } from "@devvit/public-api";
 
+import { Cache } from "../storage/cache.js";
 import { Db } from "../storage/db.js";
 import { Drawing } from "../types.js";
 
@@ -12,6 +13,7 @@ export class DrawService {
   readonly reddit?: RedditAPIClient;
   readonly scheduler?: Scheduler;
 
+  readonly cache: Cache;
   readonly db: Db;
 
   constructor(
@@ -20,11 +22,13 @@ export class DrawService {
       reddit?: RedditAPIClient;
       scheduler?: Scheduler;
     },
-    db: Db
+    db: Db,
+    cache: Cache
   ) {
     this.reddit = context.reddit;
     this.scheduler = context.scheduler;
     this.db = db;
+    this.cache = cache;
   }
 
   async submitDrawing(postId: string, drawing: string) {
@@ -48,6 +52,11 @@ export class DrawService {
   }
 
   async selectReferences(postId: string, number_of_references: number) {
-    // TODO: pick drawings that have not been referenced as many times
+    const currentRoundNum = await this.db.getGameCurrentRound(postId);
+    return await this.cache.getReferenceDrawings(
+      postId,
+      currentRoundNum,
+      number_of_references
+    );
   }
 }

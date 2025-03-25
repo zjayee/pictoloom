@@ -1,7 +1,7 @@
 import type { RedisClient, ZMember } from "@devvit/public-api";
 import { Db } from "./db.js";
 
-class Cache {
+export class Cache {
   readonly redis: RedisClient;
   readonly db: Db;
 
