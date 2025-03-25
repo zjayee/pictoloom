@@ -18,8 +18,10 @@ export class Cache {
       `phaseRound:${postId}:${roundNumber}`,
     phraseUserAssignment: (postId: string, userId: string) =>
       `phraseUser:${postId}:${userId}`,
-    roundParticipants: (postId: string, roundNumber: string) =>
-      `roundParticipants:${postId}:${roundNumber}`,
+    roundParticipantStatus: (
+      postId: string,
+      roundNumber: string // Status can be "played" or "no_phrases" or "assigned"
+    ) => `roundParticipantStatus:${postId}:${roundNumber}`,
   };
 
   async addUserPhraseAssignment(
@@ -59,6 +61,20 @@ export class Cache {
     userId: string
   ): Promise<string> {
     /* Assigns a phrase for the round */
+
+    // Check if user has already been assigned a phrase
+    const assignedPhrases = await this.redis.hGetAll(
+      this.keys.phraseUserAssignment(postId, userId)
+    );
+    if (assignedPhrases) {
+      for (const phrase in assignedPhrases) {
+        if (assignedPhrases[phrase] === String(roundNumber)) {
+          return phrase;
+        }
+      }
+    }
+
+    // Assign new phrase to user
     let i = 0;
     let phrase;
     let assigned = false;
@@ -84,6 +100,14 @@ export class Cache {
       1
     );
 
+    // Assign phrase to user
+    await this.redis.hSet(
+      this.keys.roundParticipantStatus(postId, String(roundNumber)),
+      {
+        [userId]: "assigned",
+      }
+    );
+
     return phrase[0].member;
   }
 
@@ -97,7 +121,16 @@ export class Cache {
     roundNumber: number,
     userId: string
   ): Promise<boolean> {
-    // TODO: Check if user played round
+    // Check if user played round
+    const status = await this.redis.hGet(
+      this.keys.roundParticipantStatus(postId, String(roundNumber)),
+      userId
+    );
+    if (status === "played" || status === "no_phrases") {
+      return false;
+    } else if (status === "assigned") {
+      return true;
+    }
 
     // Check if user has submitted drawing for all phrases
     const numPhrases = await this.redis.get(this.keys.numPhrases(postId));
@@ -105,6 +138,12 @@ export class Cache {
       this.keys.phraseUserAssignment(postId, userId)
     );
     if (drawnPhrases >= Number(numPhrases)) {
+      await this.redis.hSet(
+        this.keys.roundParticipantStatus(postId, String(roundNumber)),
+        {
+          [userId]: "no_phrases",
+        }
+      );
       return false;
     }
     return true;
