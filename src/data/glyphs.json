@@ -1,56 +1,56 @@
 {
     "0": {
-      "path": "fonts/png/0.png",
+      "path": "fonts/0.png",
       "width": 220,
       "height": 308
     },
     "1": {
-      "path": "fonts/png/1.png",
+      "path": "fonts/1.png",
       "width": 136,
       "height": 308
     },
     "2": {
-      "path": "fonts/png/2.png",
+      "path": "fonts/2.png",
       "width": 200,
       "height": 308
     },
     "3": {
-      "path": "fonts/png/3.png",
+      "path": "fonts/3.png",
       "width": 184,
       "height": 308
     },
     "4": {
-      "path": "fonts/png/4.png",
+      "path": "fonts/4.png",
       "width": 244,
       "height": 308
     },
     "5": {
-      "path": "fonts/png/5.png",
+      "path": "fonts/5.png",
       "width": 204,
       "height": 308
     },
     "6": {
-      "path": "fonts/png/6.png",
+      "path": "fonts/6.png",
       "width": 184,
       "height": 308
     },
     "7": {
-      "path": "fonts/png/7.png",
+      "path": "fonts/7.png",
       "width": 184,
       "height": 308
     },
     "8": {
-      "path": "fonts/png/8.png",
+      "path": "fonts/8.png",
       "width": 184,
       "height": 308
     },
     "9": {
-      "path": "fonts/png/9.png",
+      "path": "fonts/9.png",
       "width": 184,
       "height": 308
     },
     ":": {
-      "path": "fonts/png/colon.png",
+      "path": "fonts/colon.png",
       "width": 56,
       "height": 308
     }

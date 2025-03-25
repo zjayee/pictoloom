@@ -11,7 +11,6 @@ const MARGIN_3_5 = "3.5px";
 const MARGIN_4 = "4px";
 const MARGIN_6 = "6px";
 const MARGIN_8_5 = "8.5px";
-const MARGIN_7 = "7px";
 const MARGIN_29 = "29px";
 const MARGIN_30 = "30px";
 const HEIGHT_53 = "53px";
@@ -46,11 +45,20 @@ function getNumUsersAlreadyDrawn() {
 }
 
 export function ChainDrawingPost() {
-  const { mount } = useWebView({
-    url: "page.html",
+  const { mount, postMessage } = useWebView({
+    url: "chain-drawing-preview/ChainDrawingPreview.html",
 
-    onMessage: (message) => {
+    onMessage: (message: { type: string }) => {
       console.log("Received from web view:", message);
+
+      if (message && message.type === "webViewReady") {
+        postMessage({
+          type: "initialData",
+          data: {
+            duration: getPlaceholderTimeInSeconds(),
+          },
+        });
+      }
     },
 
     onUnmount: () => {

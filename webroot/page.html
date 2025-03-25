@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Web View Example</title>
+    <title>Dynamic Web View</title>
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
@@ -10,48 +10,9 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="container">
-      <div class="countdown-timer" id="countdown">00:00</div>
+    <div id="app"></div>
 
-      <div class="caption">
-        Greedy-Ad-6376 drew this based off a mystery word!
-      </div>
-
-      <div class="gradient-block">
-        <div class="image-container">
-          <!-- Replace this placeholder with actual image blob -->
-          <img
-            id="drawing"
-            src=""
-            alt="Drawing Placeholder"
-            width="294"
-            height="252"
-          />
-        </div>
-        <button id="action-button">Button</button>
-      </div>
-    </div>
-
-    <script type="application/javascript">
-      const props = window.devvit?.webviewProps ?? {};
-      const duration = props.duration ?? 10; // Duration in seconds
-
-      const countdownEl = document.getElementById("countdown");
-
-      function formatTime(seconds) {
-        const m = String(Math.floor(seconds / 60)).padStart(2, "0");
-        const s = String(seconds % 60).padStart(2, "0");
-        return `${m}:${s}`;
-      }
-
-      let remaining = duration;
-      countdownEl.textContent = formatTime(remaining);
-
-      const interval = setInterval(() => {
-        remaining--;
-        countdownEl.textContent = formatTime(remaining);
-        if (remaining <= 0) clearInterval(interval);
-      }, 1000);
-    </script>
+    <!-- This is your router entry -->
+    <script type="module" src="script.js"></script>
   </body>
 </html>

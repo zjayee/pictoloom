@@ -1,0 +1,13 @@
+@font-face {
+  font-family: "Offbit Bold";
+  src: url("public/fonts/OffBit-Bold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Offbit DotBold";
+  src: url("public/fonts/OffBit-DotBold.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
