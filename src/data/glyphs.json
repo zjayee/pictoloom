@@ -1,0 +1,57 @@
+{
+    "0": {
+      "path": "font/0.png",
+      "width": 220,
+      "height": 308
+    },
+    "1": {
+      "path": "font/1.png",
+      "width": 136,
+      "height": 308
+    },
+    "2": {
+      "path": "font/2.png",
+      "width": 200,
+      "height": 308
+    },
+    "3": {
+      "path": "font/3.png",
+      "width": 184,
+      "height": 308
+    },
+    "4": {
+      "path": "font/4.png",
+      "width": 244,
+      "height": 308
+    },
+    "5": {
+      "path": "font/5.png",
+      "width": 204,
+      "height": 308
+    },
+    "6": {
+      "path": "font/6.png",
+      "width": 184,
+      "height": 308
+    },
+    "7": {
+      "path": "font/7.png",
+      "width": 184,
+      "height": 308
+    },
+    "8": {
+      "path": "font/8.png",
+      "width": 184,
+      "height": 308
+    },
+    "9": {
+      "path": "font/9.png",
+      "width": 184,
+      "height": 308
+    },
+    ":": {
+      "path": "font/colon.png",
+      "width": 56,
+      "height": 308
+    }
+  }
