@@ -10,6 +10,7 @@ export type Round = {
   roundNumber: number;
   startTime: string;
   endTime: string;
+  participantNum: number;
 };
 
 export type Drawing = {

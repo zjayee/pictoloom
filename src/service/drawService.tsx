@@ -41,6 +41,8 @@ export class DrawService {
       throw new Error("Invalid round number");
     }
 
+    this.db.incrRoundParticipantNum(postId, currentRoundNum);
+
     const drawingObj: Drawing = {
       gameId: postId,
       userId: userId,

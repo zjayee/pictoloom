@@ -67,6 +67,7 @@ export class GameService {
       roundNumber: 1,
       startTime: start_time.toISOString(),
       endTime: end_time.toISOString(),
+      participantNum: 0,
     };
 
     // Increment round number

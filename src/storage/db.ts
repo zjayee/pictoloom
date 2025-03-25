@@ -63,6 +63,7 @@ export class Db {
       roundNumber: String(round.roundNumber),
       startTime: round.startTime,
       endTime: round.endTime,
+      participantNum: String(round.participantNum),
     });
   }
 
@@ -78,7 +79,16 @@ export class Db {
       roundNumber: Number(round.roundNumber),
       startTime: round.startTime,
       endTime: round.endTime,
+      participantNum: Number(round.participantNum),
     };
+  }
+
+  async incrRoundParticipantNum(postId: string, roundNumber: number) {
+    await this.redis.hIncrBy(
+      this.keys.round(postId, String(roundNumber)),
+      "participantNum",
+      1
+    );
   }
 
   async getPhraseBank(name: string): Promise<string[]> {
