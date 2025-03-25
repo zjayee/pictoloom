@@ -114,4 +114,13 @@ export class GameService {
     const phrases = Array.from(idxs).map((idx) => phraseBankWords[idx]);
     return phrases;
   }
+
+  async selectReferences(postId: string, number_of_references: number) {
+    const currentRoundNum = await this.db.getGameCurrentRound(postId);
+    return await this.cache.getReferenceDrawings(
+      postId,
+      currentRoundNum,
+      number_of_references
+    );
+  }
 }

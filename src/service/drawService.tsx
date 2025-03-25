@@ -52,13 +52,4 @@ export class DrawService {
 
     await this.db.saveDrawing(drawingObj);
   }
-
-  async selectReferences(postId: string, number_of_references: number) {
-    const currentRoundNum = await this.db.getGameCurrentRound(postId);
-    return await this.cache.getReferenceDrawings(
-      postId,
-      currentRoundNum,
-      number_of_references
-    );
-  }
 }
