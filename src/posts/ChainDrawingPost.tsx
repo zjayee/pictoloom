@@ -3,13 +3,13 @@ import { CountdownClock } from "../components/CountdownClock.js";
 
 const IMAGE_WIDTH = 718;
 const IMAGE_HEIGHT = 514;
-const SPACER_15 = "15px";
-const SPACER_17 = "17px";
-const SPACER_3_5 = "3.5px";
-const SPACER_8_5 = "8.5px";
-const SPACER_10 = "10px";
-const SPACER_29 = "29px";
-const SPACER_30 = "30px";
+const MARGIN_15 = "15px";
+const MARGIN_17 = "17px";
+const MARGIN_3_5 = "3.5px";
+const MARGIN_8_5 = "8.5px";
+const MARGIN_10 = "10px";
+const MARGIN_29 = "29px";
+const MARGIN_30 = "30px";
 const BUTTON_WIDTH = 275;
 const BUTTON_HEIGHT = 64.5;
 const DRAWN_IMAGE_WIDTH = 250;
@@ -18,9 +18,14 @@ const ROUND_IMAGE_SIZE = 140;
 const RIGHT_COLUMN_WIDTH = "284px";
 const LEFT_COLUMN_WIDTH = "417px";
 
-// TODO: replace with real countdown time
 function getPlaceholderTimeInSeconds() {
+  // TODO
   return 3 * 60 * 60;
+}
+
+function getNumUsersAlreadyDrawn() {
+  // TODO
+  return 398;
 }
 
 export function ChainDrawingPost() {
@@ -34,7 +39,7 @@ export function ChainDrawingPost() {
       />
 
       <hstack width="100%" height="100%" alignment="center middle">
-        <spacer width={SPACER_15} />
+        <spacer width={MARGIN_15} />
         <image
           url="assets-back.png"
           imageWidth={IMAGE_WIDTH}
@@ -44,7 +49,7 @@ export function ChainDrawingPost() {
       </hstack>
 
       <hstack height="100%" alignment="center middle">
-        <spacer width={SPACER_15} />
+        <spacer width={MARGIN_15} />
         <image
           url="assets-front.png"
           imageWidth={IMAGE_WIDTH}
@@ -55,13 +60,14 @@ export function ChainDrawingPost() {
 
       <hstack width="100%" height="100%" alignment="center middle">
         <vstack width={LEFT_COLUMN_WIDTH} height="100%" alignment="end top">
+          <spacer height={MARGIN_30} />
           <CountdownClock startTimeInSeconds={getPlaceholderTimeInSeconds()} />
         </vstack>
 
         <hstack width={RIGHT_COLUMN_WIDTH} height="100%">
           <zstack width="100%" height="100%">
             <vstack width="100%" height="100%" alignment="end top">
-              <spacer height={SPACER_10} />
+              <spacer height={MARGIN_10} />
               <image
                 url="round-3.gif"
                 imageWidth={ROUND_IMAGE_SIZE}
@@ -78,10 +84,10 @@ export function ChainDrawingPost() {
                   imageHeight={BUTTON_HEIGHT}
                   description="Start Drawing"
                 />
-                <spacer width={SPACER_17} />
+                <spacer width={MARGIN_17} />
               </hstack>
 
-              <spacer height={SPACER_3_5} />
+              <spacer height={MARGIN_3_5} />
 
               <hstack>
                 <image
@@ -90,10 +96,10 @@ export function ChainDrawingPost() {
                   imageHeight={BUTTON_HEIGHT}
                   description="How to play"
                 />
-                <spacer width={SPACER_17} />
+                <spacer width={MARGIN_17} />
               </hstack>
 
-              <spacer height={SPACER_8_5} />
+              <spacer height={MARGIN_8_5} />
 
               <hstack alignment="bottom start">
                 <image
@@ -102,10 +108,10 @@ export function ChainDrawingPost() {
                   imageHeight={DRAWN_IMAGE_HEIGHT}
                   description="Have drawn this round"
                 />
-                <spacer width={SPACER_30} />
+                <spacer width={MARGIN_30} />
               </hstack>
 
-              <spacer height={SPACER_29} />
+              <spacer height={MARGIN_29} />
             </vstack>
           </zstack>
 

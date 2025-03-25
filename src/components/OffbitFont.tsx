@@ -45,12 +45,5 @@ export function OffbitFont(props: PixelTextProps): JSX.Element {
     return image;
   });
 
-  const maxGlyph = Object.values(Glyphs)[0];
-  const containerHeight = (maxGlyph?.height ?? 7) * scale;
-
-  return (
-    <hstack height={containerHeight} alignment="center middle">
-      {images}
-    </hstack>
-  );
+  return <hstack alignment="center middle">{images}</hstack>;
 }

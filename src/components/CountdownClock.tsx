@@ -19,5 +19,13 @@ export function CountdownClock({ startTimeInSeconds }: CountdownClockProps) {
     return `${hrs}:${mins}:${secs}`;
   };
 
-  return <OffbitFont scale={0.25}>{formatTime(remainingTime)}</OffbitFont>;
+  const clock_width = 95;
+  const margin_left = 12;
+
+  return (
+    <hstack alignment="start middle" width={clock_width}>
+      <spacer width={margin_left} />
+      <OffbitFont scale={0.25}>{formatTime(remainingTime)}</OffbitFont>
+    </hstack>
+  );
 }
