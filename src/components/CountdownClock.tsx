@@ -19,5 +19,5 @@ export function CountdownClock({ startTimeInSeconds }: CountdownClockProps) {
     return `${hrs}:${mins}:${secs}`;
   };
 
-  return <OffbitFont>{formatTime(remainingTime)}</OffbitFont>;
+  return <OffbitFont scale={0.25}>{formatTime(remainingTime)}</OffbitFont>;
 }

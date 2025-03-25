@@ -1,8 +1,5 @@
 import { Devvit } from "@devvit/public-api";
 import Glyphs from "../data/glyphs.json" assert { type: "json" };
-import Settings from "../settings.json" assert { type: "json" };
-import { readFileSync } from "node:fs";
-import path from "node:path";
 
 type SupportedGlyphs = keyof typeof Glyphs;
 
@@ -13,63 +10,47 @@ interface PixelTextProps {
 }
 
 export function OffbitFont(props: PixelTextProps): JSX.Element {
-  const { children, scale = 2, color = Settings.theme.primary } = props;
+  const { children, scale = 1 } = props;
   const line = children[0].split("");
   const gap = 1;
-  const height = Glyphs["A"].height; // fallback default
-  let width = 0;
-  let xOffset = 0;
+  const spaceWidth = 6;
 
-  const characters: string[] = [];
+  let totalWidth = 0;
 
-  for (const character of line) {
+  const images = line.map((character, index) => {
     if (character === " ") {
-      xOffset += 6 + gap;
-      continue;
+      totalWidth += spaceWidth + gap;
+      return (
+        <spacer
+          key={index.toString()}
+          width={`${(spaceWidth + gap) * scale}px`}
+        />
+      );
     }
 
     const glyphMeta = Glyphs[character as SupportedGlyphs];
-    if (!glyphMeta) continue;
+    if (!glyphMeta) return null;
 
-    const glyphPath = path.resolve("src", glyphMeta.path);
-    const svgContent = readFileSync(glyphPath, "utf-8");
-
-    // Optional: extract just the <path> from the SVG
-    const cleanedPath = svgContent
-      .replace(/<svg[^>]*>/, "")
-      .replace(/<\/svg>/, "")
-      .trim();
-
-    characters.push(
-      `<g transform="translate(${xOffset} 0)">${cleanedPath}</g>`
+    const image = (
+      <image
+        key={index.toString()}
+        url={glyphMeta.path}
+        imageWidth={`${glyphMeta.width * scale}px`}
+        imageHeight={`${glyphMeta.height * scale}px`}
+        description={`Glyph: ${character}`}
+      />
     );
-    xOffset += glyphMeta.width + gap;
-    width = xOffset;
-  }
 
-  width -= gap; // remove trailing gap
+    totalWidth += glyphMeta.width + gap;
+    return image;
+  });
 
-  const scaledHeight = height * scale;
-  const scaledWidth = width * scale;
+  const maxGlyph = Object.values(Glyphs)[0];
+  const containerHeight = (maxGlyph?.height ?? 7) * scale;
 
   return (
-    <image
-      imageHeight={scaledHeight}
-      imageWidth={scaledWidth}
-      height={scaledHeight}
-      width={scaledWidth}
-      description={children[0]}
-      resizeMode="fill"
-      url={`data:image/svg+xml,
-        <svg
-          width="${width}"
-          height="${height}"
-          viewBox="0 0 ${width} ${height}"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          ${characters.join("")}
-        </svg>
-      `}
-    />
+    <hstack height={containerHeight} alignment="center middle">
+      {images}
+    </hstack>
   );
 }
