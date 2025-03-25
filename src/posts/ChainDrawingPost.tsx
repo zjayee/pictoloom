@@ -1,4 +1,4 @@
-import { Devvit } from "@devvit/public-api";
+import { Devvit, useWebView } from "@devvit/public-api";
 import { CountdownClock } from "../components/CountdownClock.js";
 import { OffbitFont } from "../components/OffbitFont.js";
 
@@ -11,7 +11,7 @@ const MARGIN_3_5 = "3.5px";
 const MARGIN_4 = "4px";
 const MARGIN_6 = "6px";
 const MARGIN_8_5 = "8.5px";
-const MARGIN_10 = "10px";
+const MARGIN_7 = "7px";
 const MARGIN_29 = "29px";
 const MARGIN_30 = "30px";
 const HEIGHT_53 = "53px";
@@ -46,6 +46,18 @@ function getNumUsersAlreadyDrawn() {
 }
 
 export function ChainDrawingPost() {
+  const { mount } = useWebView({
+    url: "page.html",
+
+    onMessage: (message) => {
+      console.log("Received from web view:", message);
+    },
+
+    onUnmount: () => {
+      console.log("Web view closed");
+    },
+  });
+
   return (
     <zstack width="100%" height="100%" alignment="center middle">
       <image
@@ -87,7 +99,7 @@ export function ChainDrawingPost() {
         <hstack width={RIGHT_COLUMN_WIDTH} height="100%">
           <zstack width="100%" height="100%">
             <vstack width="100%" height="100%" alignment="end top">
-              <spacer height={MARGIN_10} />
+              {/* <spacer height={MARGIN_7} /> */}
               <image
                 url="round-3.gif"
                 imageWidth={ROUND_IMAGE_SIZE}
@@ -98,12 +110,14 @@ export function ChainDrawingPost() {
 
             <vstack width="100%" height="100%" alignment="end bottom">
               <hstack>
-                <image
-                  url="start-button.png"
-                  imageWidth={BUTTON_WIDTH}
-                  imageHeight={BUTTON_HEIGHT}
-                  description="Start Drawing"
-                />
+                <hstack onPress={mount}>
+                  <image
+                    url="start-button.png"
+                    imageWidth={`${BUTTON_WIDTH}px`}
+                    imageHeight={`${BUTTON_HEIGHT}px`}
+                    description="Start Drawing"
+                  />
+                </hstack>
                 <spacer width={MARGIN_17} />
               </hstack>
 

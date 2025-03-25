@@ -1,24 +1,57 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <title>Web View Example</title>
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <meta charset="UTF-8" />
-    <title>Web View Example</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <h1>This is your page.html</h1>
-    <h3>Your username is <span id="username">Guest</span></h3>
-    <h3>Current counter is at: <span id="counter">0</span></h3>
-    <div class="button-container">
-      <button id="btn-increase">Increase Counter ⬆️</button>
-      <button id="btn-decrease">Decrease Counter ⬇️</button>
+    <div class="container">
+      <div class="countdown-timer" id="countdown">00:00</div>
+
+      <div class="caption">
+        Greedy-Ad-6376 drew this based off a mystery word!
+      </div>
+
+      <div class="gradient-block">
+        <div class="image-container">
+          <!-- Replace this placeholder with actual image blob -->
+          <img
+            id="drawing"
+            src=""
+            alt="Drawing Placeholder"
+            width="294"
+            height="252"
+          />
+        </div>
+        <button id="action-button">Button</button>
+      </div>
     </div>
-    <h3>Last message from Devvit blocks:</h3>
-    <pre id="messageOutput"></pre>
-    <script type="application/javascript" src="script.js"></script>
+
+    <script type="application/javascript">
+      const props = window.devvit?.webviewProps ?? {};
+      const duration = props.duration ?? 10; // Duration in seconds
+
+      const countdownEl = document.getElementById("countdown");
+
+      function formatTime(seconds) {
+        const m = String(Math.floor(seconds / 60)).padStart(2, "0");
+        const s = String(seconds % 60).padStart(2, "0");
+        return `${m}:${s}`;
+      }
+
+      let remaining = duration;
+      countdownEl.textContent = formatTime(remaining);
+
+      const interval = setInterval(() => {
+        remaining--;
+        countdownEl.textContent = formatTime(remaining);
+        if (remaining <= 0) clearInterval(interval);
+      }, 1000);
+    </script>
   </body>
 </html>
