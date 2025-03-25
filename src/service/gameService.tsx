@@ -115,6 +115,20 @@ export class GameService {
     return phrases;
   }
 
+  async selectPhraseForRound(postId: string) {
+    const currentRoundNum = await this.db.getGameCurrentRound(postId);
+    const userId = await this.reddit?.getCurrentUsername();
+    if (!userId) {
+      throw new Error("User not found");
+    }
+    const phrase = await this.cache.assignPhraseForRound(
+      postId,
+      currentRoundNum,
+      userId
+    );
+    return phrase;
+  }
+
   async selectReferences(
     postId: string,
     phrase: string,
@@ -124,6 +138,7 @@ export class GameService {
     return await this.cache.getReferenceDrawings(
       postId,
       currentRoundNum,
+      phrase,
       number_of_references
     );
   }

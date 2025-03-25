@@ -31,7 +31,7 @@ export class DrawService {
     this.cache = cache;
   }
 
-  async submitDrawing(postId: string, drawing: string) {
+  async submitDrawing(postId: string, drawing: string, phrase: string) {
     const userId = await this.reddit?.getCurrentUsername();
     if (!userId) {
       throw new Error("User not found");
@@ -48,8 +48,9 @@ export class DrawService {
       userId: userId,
       roundNumber: currentRoundNum,
       drawing: drawing,
+      phrase: phrase,
     };
 
-    await this.db.saveDrawing(drawingObj);
+    await this.db.saveDrawing(drawingObj, phrase);
   }
 }

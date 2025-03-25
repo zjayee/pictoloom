@@ -12,7 +12,7 @@ export class Cache {
 
   readonly keys = {
     numPhrases: (postId: string) => `numPhrases:${postId}`,
-    referenceDrawing: (postId: string, roundNumber: string) =>
+    referenceDrawing: (postId: string, roundNumber: string, phrase: string) =>
       `referenceDrawing:${postId}:${roundNumber}`,
     phaseRoundAssignment: (postId: string, roundNumber: string) =>
       `phaseRound:${postId}:${roundNumber}`,
@@ -150,27 +150,36 @@ export class Cache {
   }
 
   async setupDrawingReferences(postId: string, roundNumber: number) {
+    const phrases = await this.db.getPhrasesForGame(postId);
     // Get drawings for round and set up zset for reference counts
-    const drawingUserIds = await this.db.getUserIdsForRound(
-      postId,
-      roundNumber
-    );
 
-    // Set up zset for reference counts
-    const key = this.keys.referenceDrawing(postId, String(roundNumber));
-    for (const userId of drawingUserIds) {
-      await this.redis.zAdd(key, { score: 0, member: userId });
+    for (const phrase of phrases) {
+      const drawingUserIds = await this.db.getUserIdsForRound(
+        postId,
+        roundNumber,
+        phrase
+      );
+
+      const key = this.keys.referenceDrawing(
+        postId,
+        String(roundNumber),
+        phrase
+      );
+      for (const userId of drawingUserIds) {
+        await this.redis.zAdd(key, { score: 0, member: userId });
+      }
     }
   }
 
   async getReferenceDrawings(
     postId: string,
     roundNumber: number,
+    phrase: string,
     count: number
   ) {
     /* Returns the count reference drawings for the round */
     const referenceDrawingUserIds = await this.redis.zRange(
-      this.keys.referenceDrawing(postId, String(roundNumber)),
+      this.keys.referenceDrawing(postId, String(roundNumber), phrase),
       0,
       count - 1
     );
@@ -179,7 +188,7 @@ export class Cache {
     const drawings = [];
     for (const drawing of referenceDrawingUserIds) {
       await this.redis.zIncrBy(
-        this.keys.referenceDrawing(postId, String(roundNumber)),
+        this.keys.referenceDrawing(postId, String(roundNumber), phrase),
         drawing.member,
         1
       );
@@ -187,6 +196,7 @@ export class Cache {
       const drawingObj = await this.db.getDrawing(
         postId,
         roundNumber,
+        phrase,
         drawing.member
       );
       if (drawingObj) {

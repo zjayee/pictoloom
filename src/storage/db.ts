@@ -15,7 +15,7 @@ export class Db {
     phraseBank: (name: string) => `phraseBank:${name}`,
     round: (postId: string, roundNumber: string) =>
       `round:${postId}:${roundNumber}`,
-    drawing: (postId: string, roundNumber: string) =>
+    drawing: (postId: string, roundNumber: string, phrase: string) =>
       `drawing:${postId}:${roundNumber}`,
   };
 
@@ -115,18 +115,22 @@ export class Db {
     await this.redis.del(this.keys.phraseBank(name));
   }
 
-  async saveDrawing(drawing: Drawing) {
+  async saveDrawing(drawing: Drawing, phrase: string) {
     await this.redis.hSet(
-      this.keys.drawing(drawing.gameId, String(drawing.roundNumber)),
+      this.keys.drawing(drawing.gameId, String(drawing.roundNumber), phrase),
       {
         [drawing.userId]: drawing.drawing,
       }
     );
   }
 
-  async getUserIdsForRound(postId: string, roundNumber: number) {
+  async getUserIdsForRound(
+    postId: string,
+    roundNumber: number,
+    phrase: string
+  ) {
     const drawings = await this.redis.hGetAll(
-      this.keys.drawing(postId, String(roundNumber))
+      this.keys.drawing(postId, String(roundNumber), phrase)
     );
 
     // extract keys from hash
@@ -134,9 +138,14 @@ export class Db {
     return userIds;
   }
 
-  async getDrawing(postId: string, roundNumber: number, userId: string) {
+  async getDrawing(
+    postId: string,
+    roundNumber: number,
+    phrase: string,
+    userId: string
+  ) {
     const drawing = await this.redis.hGet(
-      this.keys.drawing(postId, String(roundNumber)),
+      this.keys.drawing(postId, String(roundNumber), phrase),
       userId
     );
     return drawing;
