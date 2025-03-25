@@ -1,6 +1,13 @@
 import type { RedisClient } from "@devvit/public-api";
 
-import type { Game, GameStatus, Round, RoundType, Drawing } from "../types.js";
+import type {
+  Game,
+  GameStatus,
+  Round,
+  RoundType,
+  Drawing,
+  Guess,
+} from "../types.js";
 
 // File contains logic for saving and retrieving data from Redis.
 export class Db {
@@ -17,6 +24,7 @@ export class Db {
       `round:${postId}:${roundNumber}`,
     drawing: (postId: string, roundNumber: string, phrase: string) =>
       `drawing:${postId}:${roundNumber}`,
+    guess: (postId: string, phrase: string) => `guess:${postId}:${phrase}`,
   };
 
   async saveGame(game: Game) {
@@ -149,5 +157,15 @@ export class Db {
       userId
     );
     return drawing;
+  }
+
+  async saveGuess(guess: Guess, phrase: string) {
+    const info = {
+      guess: guess.guess,
+      score: String(guess.score),
+    };
+    await this.redis.hSet(this.keys.guess(guess.gameId, phrase), {
+      [guess.userId]: JSON.stringify(info),
+    });
   }
 }

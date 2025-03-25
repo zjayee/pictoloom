@@ -142,4 +142,17 @@ export class GameService {
       number_of_references
     );
   }
+
+  async canParticipate(postId: string) {
+    const currentRound = await this.db.getGameCurrentRound(postId);
+    const userId = await this.reddit?.getCurrentUsername();
+    if (!userId) {
+      return false;
+    }
+    if (currentRound === 0) {
+      return false;
+    }
+
+    return await this.cache.canUserPlayRound(postId, currentRound, userId);
+  }
 }

@@ -11,6 +11,7 @@ import { Cache } from "../storage/cache.js";
 import { Db } from "../storage/db.js";
 import { GameService } from "./gameService.js";
 import { PhraseBankService } from "./phrasebankService.js";
+import { GuessService } from "./guessService.js";
 
 import { Devvit } from "@devvit/public-api";
 
@@ -24,6 +25,7 @@ export class Service {
   readonly game: GameService;
   readonly phraseBank: PhraseBankService;
   readonly draw: DrawService;
+  readonly guess: GuessService;
 
   constructor(context: {
     redis: RedisClient;
@@ -39,5 +41,6 @@ export class Service {
     this.game = new GameService(context, this.db, this.cache);
     this.phraseBank = new PhraseBankService(context, this.db);
     this.draw = new DrawService(context, this.db, this.cache);
+    this.guess = new GuessService(context, this.db, this.cache);
   }
 }

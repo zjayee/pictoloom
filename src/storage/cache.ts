@@ -116,7 +116,7 @@ export class Cache {
     await this.redis.set(this.keys.numPhrases(postId), String(numPhrases));
   }
 
-  async canUserSubmitDrawingForRound(
+  async canUserPlayRound(
     postId: string,
     roundNumber: number,
     userId: string
