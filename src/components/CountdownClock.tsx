@@ -20,7 +20,7 @@ export function CountdownClock({ startTimeInSeconds }: CountdownClockProps) {
   };
 
   const clock_width = 95;
-  const margin_left = 12;
+  const margin_left = 10;
 
   return (
     <hstack alignment="start middle" width={clock_width}>
