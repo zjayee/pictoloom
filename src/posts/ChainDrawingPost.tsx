@@ -1,4 +1,5 @@
 import { Devvit } from "@devvit/public-api";
+import { CountdownClock } from "../components/CountdownClock.js";
 
 const IMAGE_WIDTH = 718;
 const IMAGE_HEIGHT = 514;
@@ -17,7 +18,12 @@ const ROUND_IMAGE_SIZE = 140;
 const RIGHT_COLUMN_WIDTH = "284px";
 const LEFT_COLUMN_WIDTH = "417px";
 
-export function ChainDrawing() {
+// TODO: replace with real countdown time
+function getPlaceholderTimeInSeconds() {
+  return 3 * 60 * 60;
+}
+
+export function ChainDrawingPost() {
   return (
     <zstack width="100%" height="100%" alignment="center middle">
       <image
@@ -48,7 +54,9 @@ export function ChainDrawing() {
       </hstack>
 
       <hstack width="100%" height="100%" alignment="center middle">
-        <vstack width={LEFT_COLUMN_WIDTH} height="100%" alignment="end top" />
+        <vstack width={LEFT_COLUMN_WIDTH} height="100%" alignment="end top">
+          <CountdownClock startTimeInSeconds={getPlaceholderTimeInSeconds()} />
+        </vstack>
 
         <hstack width={RIGHT_COLUMN_WIDTH} height="100%">
           <zstack width="100%" height="100%">
@@ -108,4 +116,4 @@ export function ChainDrawing() {
   );
 }
 
-export default ChainDrawing;
+export default ChainDrawingPost;
