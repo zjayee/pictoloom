@@ -11,9 +11,104 @@ export class Cache {
   }
 
   readonly keys = {
+    numPhrases: (postId: string) => `numPhrases:${postId}`,
     referenceDrawing: (postId: string, roundNumber: string) =>
       `referenceDrawing:${postId}:${roundNumber}`,
+    phaseRoundAssignment: (postId: string, roundNumber: string) =>
+      `phaseRound:${postId}:${roundNumber}`,
+    phraseUserAssignment: (postId: string, userId: string) =>
+      `phraseUser:${postId}:${userId}`,
+    roundParticipants: (postId: string, roundNumber: string) =>
+      `roundParticipants:${postId}:${roundNumber}`,
   };
+
+  async addUserPhraseAssignment(
+    postId: string,
+    roundNumber: number,
+    userId: string,
+    phrase: string
+  ): Promise<boolean> {
+    /* Sets up the user phrase assignment check */
+    const assigned = await this.redis.hGet(
+      this.keys.phraseUserAssignment(postId, userId),
+      phrase
+    );
+    if (assigned) {
+      return false;
+    }
+    await this.redis.hSet(this.keys.phraseUserAssignment(postId, userId), {
+      [phrase]: String(roundNumber),
+    });
+    return true;
+  }
+
+  async setupPhraseAssignment(postId: string, roundNumber: number) {
+    // Get phrases for game
+    const phrases = await this.db.getPhrasesForGame(postId);
+
+    // Set up phrase assignment counts
+    const key = this.keys.phaseRoundAssignment(postId, String(roundNumber));
+    for (const phrase of phrases) {
+      await this.redis.zAdd(key, { score: 0, member: phrase });
+    }
+  }
+
+  async assignPhraseForRound(
+    postId: string,
+    roundNumber: number,
+    userId: string
+  ): Promise<string> {
+    /* Assigns a phrase for the round */
+    let i = 0;
+    let phrase;
+    let assigned = false;
+    do {
+      phrase = await this.redis.zRange(
+        this.keys.phaseRoundAssignment(postId, String(roundNumber)),
+        i,
+        i + 1
+      );
+
+      assigned = await this.addUserPhraseAssignment(
+        postId,
+        roundNumber,
+        userId,
+        phrase[0].member
+      );
+    } while (!assigned);
+
+    // Increment reference count for phrase
+    await this.redis.zIncrBy(
+      this.keys.phaseRoundAssignment(postId, String(roundNumber)),
+      phrase[0].member,
+      1
+    );
+
+    return phrase[0].member;
+  }
+
+  async setNumberPhrasesForGame(postId: string, numPhrases: number) {
+    /* Sets the number of phrases for the game */
+    await this.redis.set(this.keys.numPhrases(postId), String(numPhrases));
+  }
+
+  async canUserSubmitDrawingForRound(
+    postId: string,
+    roundNumber: number,
+    userId: string
+  ): Promise<boolean> {
+    // TODO: Check if user played round
+
+    // Check if user has submitted drawing for all phrases
+    const numPhrases = await this.redis.get(this.keys.numPhrases(postId));
+    const drawnPhrases = await this.redis.hLen(
+      this.keys.phraseUserAssignment(postId, userId)
+    );
+    if (drawnPhrases >= Number(numPhrases)) {
+      return false;
+    }
+    return true;
+  }
 
   async setupDrawingReferences(postId: string, roundNumber: number) {
     // Get drawings for round and set up zset for reference counts

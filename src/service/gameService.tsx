@@ -115,7 +115,11 @@ export class GameService {
     return phrases;
   }
 
-  async selectReferences(postId: string, number_of_references: number) {
+  async selectReferences(
+    postId: string,
+    phrase: string,
+    number_of_references: number
+  ) {
     const currentRoundNum = await this.db.getGameCurrentRound(postId);
     return await this.cache.getReferenceDrawings(
       postId,

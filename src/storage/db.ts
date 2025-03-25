@@ -49,6 +49,11 @@ export class Db {
     };
   }
 
+  async getPhrasesForGame(gameId: string): Promise<string[]> {
+    const game = await this.redis.hGet(this.keys.game(gameId), "phrases");
+    return game ? JSON.parse(game) : [];
+  }
+
   async getGameCurrentRound(gameId: string): Promise<number> {
     const currentRound = await this.redis.hGet(
       this.keys.game(gameId),
