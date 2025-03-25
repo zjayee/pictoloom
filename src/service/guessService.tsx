@@ -7,6 +7,7 @@ import type {
 import { Cache } from "../storage/cache.js";
 import { Db } from "../storage/db.js";
 import { Guess } from "../types.js";
+import { TfIdf, WordTokenizer } from "natural";
 
 // Contains logic for guessing rounds.
 export class GuessService {
@@ -43,8 +44,6 @@ export class GuessService {
 
     this.db.incrRoundParticipantNum(postId, currentRoundNum);
 
-    // TODO: Generate score
-
     const guessObj: Guess = {
       gameId: postId,
       userId: userId,
@@ -58,7 +57,22 @@ export class GuessService {
   }
 
   private generateScore(phrase: string, guess: string): number {
-    // TODO: Implement scoring logic
-    return 0;
+    const tokenizer = new WordTokenizer();
+    const tfidf = new TfIdf();
+
+    const tokens1 = tokenizer.tokenize(phrase.toLowerCase());
+    const tokens2 = tokenizer.tokenize(guess.toLowerCase());
+
+    // Add phrases to TF-IDF model
+    tfidf.addDocument(tokens1.join(" "));
+    tfidf.addDocument(tokens2.join(" "));
+
+    // Compute cosine similarity
+    let score = 0;
+    tfidf.tfidfs(tokens1.join(" "), (i, measure) => {
+      if (i === 1) score = measure; // Compare phrase1 to phrase2
+    });
+
+    return score;
   }
 }
