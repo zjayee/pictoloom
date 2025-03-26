@@ -151,12 +151,22 @@ export class Db {
     roundNumber: number,
     phrase: string,
     userId: string
-  ) {
+  ): Promise<Drawing | null> {
     const drawing = await this.redis.hGet(
       this.keys.drawing(postId, String(roundNumber), phrase),
       userId
     );
-    return drawing;
+    if (!drawing) {
+      return null;
+    }
+    const drawingObj: Drawing = {
+      gameId: postId,
+      userId: userId,
+      roundNumber: roundNumber,
+      drawing: drawing,
+      phrase: phrase,
+    };
+    return drawingObj;
   }
 
   async saveGuess(guess: Guess, phrase: string) {

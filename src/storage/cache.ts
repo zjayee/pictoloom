@@ -204,7 +204,7 @@ export class Cache {
     roundNumber: number,
     phrase: string,
     count: number
-  ) {
+  ): Promise<{ userId: string; drawing: string }[]> {
     /* Returns the count reference drawings for the round */
     const referenceDrawingUserIds = await this.redis.zRange(
       this.keys.referenceDrawing(postId, String(roundNumber), phrase),
@@ -228,7 +228,7 @@ export class Cache {
         drawing.member
       );
       if (drawingObj) {
-        drawings.push(drawingObj);
+        drawings.push({ userId: drawing.member, drawing: drawingObj.drawing });
       }
     }
 
