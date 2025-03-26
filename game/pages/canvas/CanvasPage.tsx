@@ -145,6 +145,7 @@ export const CanvasPage: React.FC = () => {
           text="DONE"
           iconSrc="../public/icons/star.svg"
           onClick={submitDrawing}
+          width="13em"
         />
       </div>
     </div>

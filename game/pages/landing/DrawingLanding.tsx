@@ -65,8 +65,12 @@ export const DrawingLanding: React.FC = () => {
       {/* Foreground UI */}
       <div className="relative z-30 flex h-full w-full">
         {/* Left Column */}
-        <div className="relative mt-[1.875em] flex w-[60%] max-w-[417px] items-start justify-end">
-          {duration && <CountdownClock startTimeInSeconds={duration} />}
+        <div className="relative mt-[1.875em] ml-[0.9em] flex w-[60%] max-w-[417px] items-start justify-end">
+          {duration ? (
+            <CountdownClock startTimeInSeconds={duration} />
+          ) : (
+            <CountdownClock startTimeInSeconds={30 * 60} />
+          )}
           <img
             src="/assets/clock.svg"
             alt="Countdown clock"
