@@ -34,6 +34,7 @@
   font-size: 4rem;
   font-weight: bold;
   font-family: 'Offbit DotBold', sans-serif;
+  margin-bottom: -0.2em;
 }
 
 .chain-preview__caption {
@@ -84,8 +85,4 @@
   left: 0;
   bottom: 0;
   z-index: 0;
-}
-
-#custom-button-container {
-  z-index: 1;
 }

@@ -60,25 +60,25 @@ export function ChainDrawingPost() {
     onMessage: (message: { type: string; data?: { blobUrl?: string } }) => {
       console.log('📩 Received message from webview:', message);
 
-      if (message.type === 'getReferenceDrawings') {
+      if (message.type === 'GET_REFERENCE_DRAWINGS') {
         postMessage({
-          type: 'referenceDrawingsData',
+          type: 'REFERENCE_DRAWINGS_DATA',
           data: {
             drawings: getReferenceDrawings(),
           },
         });
       }
 
-      if (message.type === 'getCountdownDuration') {
+      if (message.type === 'GET_COUNTDOWN_DURATION') {
         postMessage({
-          type: 'countdownData',
+          type: 'COUNTDOWN_DATA',
           data: {
             duration: getPlaceholderTimeInSeconds(),
           },
         });
       }
 
-      if (message.type === 'drawingSubmitted') {
+      if (message.type === 'DRAWING_SUBMITTED') {
         console.log('🖼️ Received drawing:', message.data?.blobUrl);
         unmount();
         // TODO

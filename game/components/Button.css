@@ -8,6 +8,7 @@
     0 2.7px 2.92px -1.35px rgba(0, 0, 0, 0.25),
     0 0.9px 3.6px 0.9px rgba(0, 0, 0, 0.12);
   cursor: pointer;
+  z-index: 1;
 }
 
 .custom-button__inner {
@@ -22,13 +23,14 @@
 .custom-button__content {
   display: flex;
   align-items: center;
-  gap: 0.45em;
+  gap: 0.5em;
 }
 
 .custom-button__text {
   font-family: 'Offbit Bold', sans-serif;
   font-size: 1.25rem;
   color: #000;
+  margin-bottom: -0.2em;
 }
 
 .custom-button__icon {

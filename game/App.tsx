@@ -4,13 +4,14 @@ import { useEffect } from 'react';
 import { sendToDevvit } from './utils';
 import { useDevvitListener } from './hooks/useDevvitListener';
 import { ChainDrawingPreview } from './pages/chain-drawing-preview/ChainDrawingPreview';
+import { CanvasPage } from './pages/canvas/CanvasPage';
 
 const getPage = (page: Page) => {
   switch (page) {
     case 'chain-drawing-preview':
       return <ChainDrawingPreview />;
     case 'canvas':
-      return <ChainDrawingPreview />;
+      return <CanvasPage />;
     default:
       throw new Error(`Unknown page: ${page satisfies never}`);
   }
