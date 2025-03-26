@@ -1,22 +1,22 @@
-import { Devvit, useWebView } from "@devvit/public-api";
-import { CountdownClock } from "../components/CountdownClock.js";
-import { OffbitFont } from "../components/OffbitFont.js";
-import { placeholderBlob } from "./utils.js";
+import { Devvit, useWebView } from '@devvit/public-api';
+import { CountdownClock } from '../components/CountdownClock.js';
+import { OffbitFont } from '../components/OffbitFont.js';
+import { placeholderBlob } from './utils.js';
 
 const IMAGE_WIDTH = 718;
 const IMAGE_HEIGHT = 514;
 
-const MARGIN_15 = "15px";
-const MARGIN_17 = "17px";
-const MARGIN_3_5 = "3.5px";
-const MARGIN_4 = "4px";
-const MARGIN_6 = "6px";
-const MARGIN_8_5 = "8.5px";
-const MARGIN_29 = "29px";
-const MARGIN_30 = "30px";
-const HEIGHT_53 = "53px";
-const HEIGHT_100 = "100px";
-const WIDTH_100 = "100px";
+const MARGIN_15 = '15px';
+const MARGIN_17 = '17px';
+const MARGIN_3_5 = '3.5px';
+const MARGIN_4 = '4px';
+const MARGIN_6 = '6px';
+const MARGIN_8_5 = '8.5px';
+const MARGIN_29 = '29px';
+const MARGIN_30 = '30px';
+const HEIGHT_53 = '53px';
+const HEIGHT_100 = '100px';
+const WIDTH_100 = '100px';
 
 const BUTTON_WIDTH = 275;
 const BUTTON_HEIGHT = 64.5;
@@ -32,8 +32,8 @@ const MEGAPHONE_HEIGHT = 30;
 const USERS_WIDTH = 72;
 const USERS_HEIGHT = 32;
 
-const RIGHT_COLUMN_WIDTH = "284px";
-const LEFT_COLUMN_WIDTH = "417px";
+const RIGHT_COLUMN_WIDTH = '284px';
+const LEFT_COLUMN_WIDTH = '417px';
 
 function getPlaceholderTimeInSeconds() {
   // TODO
@@ -42,14 +42,14 @@ function getPlaceholderTimeInSeconds() {
 
 function getNumUsersAlreadyDrawn() {
   // TODO
-  return "398";
+  return '398';
 }
 
 function getReferenceDrawings() {
   // TODO
   return [
     {
-      user: "Greedy-Ad-6376",
+      user: 'Greedy-Ad-6376',
       blobUrl: placeholderBlob,
     },
   ];
@@ -57,38 +57,36 @@ function getReferenceDrawings() {
 
 export function ChainDrawingPost() {
   const { mount, postMessage, unmount } = useWebView({
-    url: "chain-drawing-preview/ChainDrawingPreview.html",
-
     onMessage: (message: { type: string; data?: { blobUrl?: string } }) => {
-      console.log("📩 Received message from webview:", message);
+      console.log('📩 Received message from webview:', message);
 
-      if (message.type === "getReferenceDrawings") {
+      if (message.type === 'getReferenceDrawings') {
         postMessage({
-          type: "referenceDrawingsData",
+          type: 'referenceDrawingsData',
           data: {
             drawings: getReferenceDrawings(),
           },
         });
       }
 
-      if (message.type === "getCountdownDuration") {
+      if (message.type === 'getCountdownDuration') {
         postMessage({
-          type: "countdownData",
+          type: 'countdownData',
           data: {
             duration: getPlaceholderTimeInSeconds(),
           },
         });
       }
 
-      if (message.type === "drawingSubmitted") {
-        console.log("🖼️ Received drawing:", message.data?.blobUrl);
+      if (message.type === 'drawingSubmitted') {
+        console.log('🖼️ Received drawing:', message.data?.blobUrl);
         unmount();
         // TODO
       }
     },
 
     onUnmount: () => {
-      console.log("🧼 WebView closed");
+      console.log('🧼 WebView closed');
     },
   });
 
@@ -144,7 +142,11 @@ export function ChainDrawingPost() {
 
             <vstack width="100%" height="100%" alignment="end bottom">
               <hstack>
-                <hstack onPress={mount}>
+                <hstack
+                  onPress={() => {
+                    mount();
+                  }}
+                >
                   <image
                     url="start-button.png"
                     imageWidth={`${BUTTON_WIDTH}px`}
