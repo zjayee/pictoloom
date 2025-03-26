@@ -31,7 +31,7 @@ export class DrawService {
     this.cache = cache;
   }
 
-  async submitDrawing(postId: string, drawing: string, phrase: string) {
+  async submitDrawing(postId: string, drawing: string) {
     const userId = await this.reddit?.getCurrentUsername();
     if (!userId) {
       throw new Error("User not found");
@@ -39,6 +39,15 @@ export class DrawService {
     const currentRoundNum = await this.db.getGameCurrentRound(postId);
     if (currentRoundNum === 0) {
       throw new Error("Invalid round number");
+    }
+
+    const phrase = await this.cache.getUserAssignedPhrase(
+      postId,
+      currentRoundNum,
+      userId
+    );
+    if (!phrase) {
+      throw new Error("Phrase not found");
     }
 
     this.db.incrRoundParticipantNum(postId, currentRoundNum);
