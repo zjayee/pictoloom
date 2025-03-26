@@ -23,7 +23,7 @@ class ChainDrawingPreviewApp {
 
     const button = await createCustomButton({
       text: "DRAW IT!",
-      iconSrc: "../icons/brush.png",
+      iconSrc: "../public/icons/pencil.svg",
     });
 
     if (button) {
@@ -69,7 +69,7 @@ class ChainDrawingPreviewApp {
     const minutes = Math.floor((this.remaining % 3600) / 60);
     const seconds = this.remaining % 60;
 
-    const h = String(hours);
+    const h = String(hours).padStart(2, "0");
     const m = String(minutes).padStart(2, "0");
     const s = String(seconds).padStart(2, "0");
 

@@ -38,6 +38,7 @@
   justify-content: center;
   width: 308px;
   height: 264px;
+  z-index: 1;
 }
 
 .chain-preview__image-container {
@@ -56,4 +57,15 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
+}
+
+.chain-preview__deco {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 0;
+}
+
+#custom-button-container {
+  z-index: 1;
 }
