@@ -1,23 +1,44 @@
-export type Page =
-  | "home"
-  | "pokemon";
+export type Page = 'chain-drawing-preview' | 'canvas';
 
-export type WebviewToBlockMessage = { type: "INIT" } | {
-  type: "GET_POKEMON_REQUEST";
-  payload: { name: string };
-};
+export type WebviewToBlockMessage =
+  | { type: 'GET_COUNTDOWN_DURATION' }
+  | {
+      type: 'GET_REFERENCE_DRAWINGS';
+    }
+  | {
+      type: 'INIT';
+    }
+  | {
+      type: 'DRAWING_SUBMITTED';
+      payload: {
+        imageBlob: string;
+      };
+    };
 
-export type BlocksToWebviewMessage = {
-  type: "INIT_RESPONSE";
-  payload: {
-    postId: string;
-  };
-} | {
-  type: "GET_POKEMON_RESPONSE";
-  payload: { number: number; name: string; error?: string };
-};
+export type BlocksToWebviewMessage =
+  | {
+      type: 'COUNTDOWN_DATA';
+      payload: {
+        time: number;
+      };
+    }
+  | {
+      type: 'REFERENCE_DRAWINGS_DATA';
+      payload: [
+        {
+          user: string;
+          imageBlob: string;
+        },
+      ];
+    }
+  | {
+      type: 'INIT_RESPONSE';
+      payload: {
+        postType: number;
+      };
+    };
 
 export type DevvitMessage = {
-  type: "devvit-message";
+  type: 'devvit-message';
   data: { message: BlocksToWebviewMessage };
 };

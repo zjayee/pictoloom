@@ -2,10 +2,16 @@ import { createContext, useContext, useState } from 'react';
 import { Page } from '../shared';
 
 const PageContext = createContext<Page | null>(null);
-const PageUpdaterContext = createContext<React.Dispatch<React.SetStateAction<Page>> | null>(null);
+const PageUpdaterContext = createContext<React.Dispatch<
+  React.SetStateAction<Page>
+> | null>(null);
 
-export const PageContextProvider = ({ children }: { children: React.ReactNode }) => {
-  const [page, setPage] = useState<Page>('home');
+export const PageContextProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  const [page, setPage] = useState<Page>('chain-drawing-preview');
 
   return (
     <PageUpdaterContext.Provider value={setPage}>
