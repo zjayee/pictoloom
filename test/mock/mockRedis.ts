@@ -1,4 +1,4 @@
-class MockRedis {
+export class MockRedis {
   private store: Record<string, any>;
 
   constructor() {
