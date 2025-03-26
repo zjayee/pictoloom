@@ -1,0 +1,91 @@
+.chain-preview__container {
+  width: 100%;
+  text-align: center;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 1em;
+}
+
+.chain-preview__timer-container {
+  width: 23em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.chain-preview__timer-container img:first-of-type {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.chain-preview__timer-container img:last-of-type {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
+.chain-preview__timer {
+  font-size: 4rem;
+  font-weight: bold;
+  font-family: "Offbit DotBold", sans-serif;
+}
+
+.chain-preview__caption {
+  font-size: 1rem;
+}
+
+.chain-preview__gradient-block {
+  background: conic-gradient(
+    #b6d0f7 0%,
+    #d2e2ec 8%,
+    #eef4e1 15%,
+    #fafcfe 30%,
+    #e2c1f9 45%,
+    #bfd1f9 58%,
+    #fafcfe 75%,
+    #bae4e2 85%,
+    #b6d0f7 100%
+  );
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 308px;
+  height: 264px;
+  z-index: 1;
+}
+
+.chain-preview__image-container {
+  width: 294px;
+  height: 252px;
+  border-radius: 10px;
+  border: 1px solid #876ace;
+  overflow: hidden;
+  background-color: #ffffff30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chain-preview__image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+
+.chain-preview__deco {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 0;
+}
+
+#custom-button-container {
+  z-index: 1;
+}
