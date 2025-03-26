@@ -30,6 +30,7 @@ export class Cache {
       postId: string,
       roundNumber: string // Status can be "played" or "no_phrases" or "assigned"
     ) => `roundParticipantStatus:${postId}:${roundNumber}`,
+    voteTracking: (postId: string) => `voteTracking:${postId}`,
   };
 
   async addUserPhraseAssignment(
@@ -310,5 +311,55 @@ export class Cache {
       return [];
     }
     return JSON.parse(referenceGallery);
+  }
+
+  async addDrawingForVote(postId: string, userId: string, roundNumber: number) {
+    await this.redis.zAdd(this.keys.voteTracking(postId), {
+      score: 0,
+      member: roundNumber + ":" + userId,
+    });
+  }
+
+  async upvoteDrawing(postId: string, userId: string, roundNumber: number) {
+    await this.redis.zIncrBy(
+      this.keys.voteTracking(postId),
+      roundNumber + ":" + userId,
+      1
+    );
+  }
+
+  async downvoteDrawing(postId: string, userId: string, roundNumber: number) {
+    await this.redis.zIncrBy(
+      this.keys.voteTracking(postId),
+      roundNumber + ":" + userId,
+      -1
+    );
+  }
+
+  async getDrawingsForVote(postId: string, start: number, end: number) {
+    const drawingzMembers = await this.redis.zRange(
+      this.keys.voteTracking(postId),
+      start,
+      end
+    );
+
+    let drawings = [];
+    for (const drawing of drawingzMembers) {
+      const [roundNumber, userId] = drawing.member.split(":");
+      const drawingObj = await this.db.getDrawingObj(
+        postId,
+        Number(roundNumber),
+        "",
+        userId
+      );
+      if (drawingObj) {
+        drawings.push({
+          userId: userId,
+          drawing: drawingObj.drawing,
+          score: drawing.score,
+        });
+      }
+    }
+    return drawings;
   }
 }

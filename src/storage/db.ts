@@ -190,4 +190,13 @@ export class Db {
       [guess.userId]: JSON.stringify(info),
     });
   }
+
+  async getDrawingsForGame(
+    postId: string,
+    start?: number,
+    end?: number
+  ): Promise<Drawing[]> {
+    /* Returns all drawings for game sorted by popularity. If start and end are set returns that range. */
+    return [];
+  }
 }
