@@ -13,11 +13,19 @@ export class Cache {
   readonly keys = {
     numPhrases: (postId: string) => `numPhrases:${postId}`,
     referenceDrawing: (postId: string, roundNumber: string, phrase: string) =>
-      `referenceDrawing:${postId}:${roundNumber}`,
+      `referenceDrawing:${postId}:${roundNumber}:${phrase}`,
     phaseRoundAssignment: (postId: string, roundNumber: string) =>
       `phaseRound:${postId}:${roundNumber}`,
-    phraseUserAssignment: (postId: string, userId: string) =>
-      `phraseUser:${postId}:${userId}`,
+    phraseUserAssignment: (
+      postId: string,
+      roundNumber: string,
+      userId: string
+    ) => `phraseUser:${postId}:${roundNumber}:${userId}`,
+    referenceUserAssignment: (postId: string, roundNumber: string) =>
+      `referenceUser:${postId}:${roundNumber}`,
+    // Maps userid to drawings that used them as reference. Stores list of userids.
+    referenceDrawings: (postId: string, roundNumber: string) =>
+      `referenceDrawings:${postId}:${roundNumber}`,
     roundParticipantStatus: (
       postId: string,
       roundNumber: string // Status can be "played" or "no_phrases" or "assigned"
@@ -32,15 +40,18 @@ export class Cache {
   ): Promise<boolean> {
     /* Sets up the user phrase assignment check */
     const assigned = await this.redis.hGet(
-      this.keys.phraseUserAssignment(postId, userId),
+      this.keys.phraseUserAssignment(postId, String(roundNumber), userId),
       phrase
     );
     if (assigned) {
       return false;
     }
-    await this.redis.hSet(this.keys.phraseUserAssignment(postId, userId), {
-      [phrase]: String(roundNumber),
-    });
+    await this.redis.hSet(
+      this.keys.phraseUserAssignment(postId, String(roundNumber), userId),
+      {
+        [phrase]: String(roundNumber),
+      }
+    );
     return true;
   }
 
@@ -64,7 +75,7 @@ export class Cache {
 
     // Check if user has already been assigned a phrase
     const assignedPhrases = await this.redis.hGetAll(
-      this.keys.phraseUserAssignment(postId, userId)
+      this.keys.phraseUserAssignment(postId, String(roundNumber), userId)
     );
     if (assignedPhrases) {
       for (const phrase in assignedPhrases) {
@@ -135,7 +146,7 @@ export class Cache {
     // Check if user has submitted drawing for all phrases
     const numPhrases = await this.redis.get(this.keys.numPhrases(postId));
     const drawnPhrases = await this.redis.hLen(
-      this.keys.phraseUserAssignment(postId, userId)
+      this.keys.phraseUserAssignment(postId, String(roundNumber), userId)
     );
     if (drawnPhrases >= Number(numPhrases)) {
       await this.redis.hSet(
@@ -155,7 +166,7 @@ export class Cache {
     userId: string
   ): Promise<string | null> {
     const assignedPhrases = await this.redis.hGetAll(
-      this.keys.phraseUserAssignment(postId, userId)
+      this.keys.phraseUserAssignment(postId, String(roundNumber), userId)
     );
     for (const phrase in assignedPhrases) {
       if (assignedPhrases[phrase] === String(roundNumber)) {
@@ -221,7 +232,7 @@ export class Cache {
         1
       );
 
-      const drawingObj = await this.db.getDrawing(
+      const drawingObj = await this.db.getDrawingObj(
         postId,
         roundNumber,
         phrase,
@@ -233,5 +244,71 @@ export class Cache {
     }
 
     return drawings;
+  }
+
+  async assignReferenceForUser(
+    postId: string,
+    roundNumber: number,
+    userId: string,
+    references: string[] // List of userIds
+  ) {
+    const key = this.keys.referenceUserAssignment(postId, String(roundNumber));
+
+    await this.redis.hSet(key, {
+      [userId]: JSON.stringify(references),
+    });
+  }
+
+  async getAssignedReferences(
+    postId: string,
+    roundNumber: number,
+    userId: string
+  ): Promise<string[]> {
+    const key = this.keys.referenceUserAssignment(postId, String(roundNumber));
+    const references = await this.redis.hGet(key, userId);
+    if (!references) {
+      return [];
+    }
+    return JSON.parse(references);
+  }
+
+  async setupRoundReferenceGallery(postId: string, roundNumber: number) {
+    const key = this.keys.referenceDrawings(postId, String(roundNumber));
+
+    const assignedRefKey = this.keys.referenceUserAssignment(
+      postId,
+      String(roundNumber)
+    );
+    const assignedReferences = await this.redis.hGetAll(assignedRefKey);
+    const referenceMap: Record<string, string[]> = {};
+
+    for (const [userId, references] of Object.entries(assignedReferences)) {
+      const referenceList: string[] = JSON.parse(references);
+      for (const referenceUserId of referenceList) {
+        if (!referenceMap[referenceUserId]) {
+          referenceMap[referenceUserId] = [];
+        }
+        referenceMap[referenceUserId].push(userId);
+      }
+    }
+
+    for (const [userId, references] of Object.entries(referenceMap)) {
+      await this.redis.hSet(key, {
+        [userId]: JSON.stringify(references),
+      });
+    }
+  }
+
+  async getRoundReferenceGalleryIds(
+    postId: string,
+    roundNumber: number,
+    userId: string
+  ): Promise<string[]> {
+    const key = this.keys.referenceDrawings(postId, String(roundNumber));
+    const referenceGallery = await this.redis.hGet(key, userId);
+    if (!referenceGallery) {
+      return [];
+    }
+    return JSON.parse(referenceGallery);
   }
 }

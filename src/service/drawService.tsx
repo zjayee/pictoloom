@@ -60,6 +60,6 @@ export class DrawService {
       phrase: phrase,
     };
 
-    await this.db.saveDrawing(drawingObj, phrase);
+    await this.db.saveDrawing(drawingObj);
   }
 }

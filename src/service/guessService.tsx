@@ -62,7 +62,7 @@ export class GuessService {
       score: this.generateScore(phrase, guess),
     };
 
-    await this.db.saveGuess(guessObj, phrase);
+    await this.db.saveGuess(guessObj);
   }
 
   private generateScore(phrase: string, guess: string): number {
