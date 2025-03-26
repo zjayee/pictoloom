@@ -1,0 +1,20 @@
+@import url('fonts.css');
+@import 'tailwindcss';
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Offbit Bold', sans-serif;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(135deg, #9983ff 0%, #7277ff 50%, #8cff98 100%);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.countdown-clock {
+  font-size: 4.7rem;
+  font-family: 'Offbit DotBold', sans-serif;
+}
