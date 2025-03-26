@@ -53,7 +53,7 @@ export class GameService {
   async newRound(
     postId: string,
     roundType: RoundType,
-    roundLength: number = 3
+    roundLength: number = 5
   ) {
     /* Creates a new round object that's roundLength hours long */
     const start_time = new Date();

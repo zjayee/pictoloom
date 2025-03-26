@@ -31,6 +31,8 @@ export class Cache {
       roundNumber: string // Status can be "played" or "no_phrases" or "assigned"
     ) => `roundParticipantStatus:${postId}:${roundNumber}`,
     voteTracking: (postId: string) => `voteTracking:${postId}`,
+    // Maps "Draw" and "Guess" to comma seperated list of postIds
+    gameStatus: `gameStatus`,
   };
 
   async addUserPhraseAssignment(
@@ -361,5 +363,43 @@ export class Cache {
       }
     }
     return drawings;
+  }
+
+  async addGameStatus(postId: string, status: string) {
+    const statusKey = this.keys.gameStatus;
+    let postIds = await this.redis.hGet(statusKey, status);
+    if (!postIds) {
+      postIds = "";
+    }
+    postIds += postId + ",";
+    await this.redis.hSet(statusKey, {
+      [status]: postIds,
+    });
+  }
+
+  async addGamesToStatus(postIds: string[], status: string) {
+    const statusKey = this.keys.gameStatus;
+    let postIdsStr = await this.redis.hGet(statusKey, status);
+    if (!postIdsStr) {
+      postIdsStr = "";
+    }
+    postIdsStr += postIds.join(",") + ",";
+    await this.redis.hSet(statusKey, {
+      [status]: postIdsStr,
+    });
+  }
+
+  async getGamesByStatus(status: string) {
+    const statusKey = this.keys.gameStatus;
+    const postIds = await this.redis.hGet(statusKey, status);
+    if (!postIds) {
+      return [];
+    }
+    return postIds.split(",");
+  }
+
+  async clearGamesForStatus(status: string) {
+    const statusKey = this.keys.gameStatus;
+    await this.redis.hDel(statusKey, [status]);
   }
 }
