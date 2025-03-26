@@ -140,6 +140,7 @@ class CanvasPageApp {
         });
 
         if (window.devvit?.webview?.unmount) {
+          console.log("umounted");
           window.devvit.webview.unmount();
         }
       };

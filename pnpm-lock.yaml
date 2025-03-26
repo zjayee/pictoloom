@@ -9,27 +9,27 @@ importers:
   .:
     devDependencies:
       '@devvit/public-api':
-        specifier: 0.11.9
-        version: 0.11.9
+        specifier: 0.11.11
+        version: 0.11.11
       typescript:
         specifier: 5.3.2
         version: 5.3.2
 
 packages:
 
-  '@devvit/protos@0.11.9':
-    resolution: {integrity: sha512-sPMTaAvzgM5+YY5sc006w+majAJZrSuYJPzGWnQZcPf8RT4NWoPOkBQz7NtMBJzj73K/Bs3j0AaKQUJlH1yQtA==}
+  '@devvit/protos@0.11.11':
+    resolution: {integrity: sha512-h9VL54zfVIbnv/Wz1FofWZIhwI5jeksCzVAs08qDfQKuavkL+qPNkhM/OfQiVhxxTTTK8qf9A2gpV/tVdeYRiA==}
     peerDependencies:
       twirp-ts: ^2.5.0
     peerDependenciesMeta:
       twirp-ts:
         optional: true
 
-  '@devvit/public-api@0.11.9':
-    resolution: {integrity: sha512-iGDaSRnqZnKX/4xD4V1Fy5wli23xb26LCTiB84lkA1ZnMhSidjcNpT3xd6J6fTnyqrWERnpadkEPhXNUTPjXcg==}
+  '@devvit/public-api@0.11.11':
+    resolution: {integrity: sha512-XayxtnKHQFMPq/5uFVGQWXm7UW+/DfqFI1XqdqfNk0FLWbYbRFxyuoCi83h9rWk1jJIZyqj1JJ/i6xtnyAxrGw==}
 
-  '@devvit/shared-types@0.11.9':
-    resolution: {integrity: sha512-6LilsUcwd6CllUyyqv7IJofc5HTf9xzVqSS6+1yqoT1pjCeJUcsGUp/UXt937N+i7Gqb42dBlCI+osI0YWWCXg==}
+  '@devvit/shared-types@0.11.11':
+    resolution: {integrity: sha512-L04DMQaCY3iRTcbF6KRt0SjgNIEwAwcufpo2C34Vd7ddYlWGj8JzHPjKqZ4lH4lsFCF+EJbE8i2toiYfAr8SgQ==}
 
   '@protobufjs/aspromise@1.1.2':
     resolution: {integrity: sha512-j+gKExEuLmKwvz3OgROXtrJ2UG2x8Ch2YZUxahh+s1F2HZ+wAceUNLkvy6zKCPVRkU++ZWQrdxsUeQXmcg4uoQ==}
@@ -61,8 +61,8 @@ packages:
   '@protobufjs/utf8@1.1.0':
     resolution: {integrity: sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==}
 
-  '@types/node@22.13.10':
-    resolution: {integrity: sha512-I6LPUvlRH+O6VRUqYOcMudhaIdUVWfsjnZavnsraHvpBwaEyMN29ry+0UVJhImYL16xsscu0aske3yA+uPOWfw==}
+  '@types/node@22.13.13':
+    resolution: {integrity: sha512-ClsL5nMwKaBRwPcCvH8E7+nU4GxHVx1axNvMZTFHMEfNI7oahimt26P5zjVCRrjiIWj6YFXfE1v3dEp94wLcGQ==}
 
   base64-js@1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
@@ -128,24 +128,24 @@ packages:
 
 snapshots:
 
-  '@devvit/protos@0.11.9':
+  '@devvit/protos@0.11.11':
     dependencies:
       protobufjs: 7.3.2
       rxjs: 7.8.1
 
-  '@devvit/public-api@0.11.9':
+  '@devvit/public-api@0.11.11':
     dependencies:
-      '@devvit/protos': 0.11.9
-      '@devvit/shared-types': 0.11.9
+      '@devvit/protos': 0.11.11
+      '@devvit/shared-types': 0.11.11
       base64-js: 1.5.1
       clone-deep: 4.0.1
       moderndash: 4.0.0
     transitivePeerDependencies:
       - twirp-ts
 
-  '@devvit/shared-types@0.11.9':
+  '@devvit/shared-types@0.11.11':
     dependencies:
-      '@devvit/protos': 0.11.9
+      '@devvit/protos': 0.11.11
       jsonschema: 1.4.1
       uuid: 9.0.0
     transitivePeerDependencies:
@@ -174,7 +174,7 @@ snapshots:
 
   '@protobufjs/utf8@1.1.0': {}
 
-  '@types/node@22.13.10':
+  '@types/node@22.13.13':
     dependencies:
       undici-types: 6.20.0
 
@@ -217,7 +217,7 @@ snapshots:
       '@protobufjs/path': 1.1.2
       '@protobufjs/pool': 1.1.0
       '@protobufjs/utf8': 1.1.0
-      '@types/node': 22.13.10
+      '@types/node': 22.13.13
       long: 5.3.1
 
   rxjs@7.8.1:
