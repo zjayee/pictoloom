@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { CountdownClock } from '../../components/CountdownClock';
+import { sendToDevvit } from '../../utils';
 
 export const DrawingLanding: React.FC = () => {
   const [duration, setDuration] = useState<number | null>(null);
   const [numDrawn, setNumDrawn] = useState('...');
-  const [mountFn, setMountFn] = useState<(() => void) | null>(null);
   const [referenceDrawings, setReferenceUsernames] = useState<string[]>([]);
 
   useEffect(() => {
-    postMessageToDevvit({ type: 'MOUNT_WEBVIEW' });
-
-    postMessageToDevvit({ type: 'GET_COUNTDOWN_DURATION' });
-    postMessageToDevvit({ type: 'GET_REFERENCE_DRAWINGS' });
+    sendToDevvit({ type: 'INIT' });
+    sendToDevvit({ type: 'GET_COUNTDOWN_DURATION' });
+    sendToDevvit({ type: 'GET_REFERENCE_DRAWINGS' });
 
     const handleMessage = (event: MessageEvent) => {
       const { type, data } = event.data;
@@ -28,13 +27,6 @@ export const DrawingLanding: React.FC = () => {
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
   }, []);
-
-  const postMessageToDevvit = (msg: unknown) => {
-    window.parent?.postMessage(
-      { type: 'devvit-message', data: { message: msg } },
-      '*'
-    );
-  };
 
   return (
     <div className="relative h-full w-full overflow-hidden text-white">
@@ -88,7 +80,7 @@ export const DrawingLanding: React.FC = () => {
           <div className="flex flex-col items-start">
             {/* Start Button */}
             <div className="flex items-center">
-              <button onClick={() => mountFn && mountFn()}>
+              <button onClick={() => sendToDevvit({ type: 'GET_MOUNT_FN' })}>
                 <img
                   src="/assets/start-button.png"
                   width={275}
