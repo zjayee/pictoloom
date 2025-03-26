@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 
 export interface CountdownClockProps {
   startTimeInSeconds: number;
+  fontSize?: string;
 }
 
 export const CountdownClock: React.FC<CountdownClockProps> = ({
   startTimeInSeconds,
+  fontSize,
 }) => {
   const [remainingTime, setRemainingTime] = useState(startTimeInSeconds);
 
@@ -25,7 +27,10 @@ export const CountdownClock: React.FC<CountdownClockProps> = ({
   };
 
   return (
-    <div className="countdown-clock z-1 ml-[0.9em] flex w-[100%] items-center">
+    <div
+      className="countdown-clock z-1 flex w-[100%] items-center justify-center"
+      style={{ fontSize: fontSize ?? '4.7rem' }}
+    >
       {formatTime(remainingTime)}
     </div>
   );

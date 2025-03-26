@@ -16,6 +16,7 @@
   align-items: center;
   justify-content: center;
   position: relative;
+  height: 3em;
 }
 
 .chain-preview__timer-container img:first-of-type {
