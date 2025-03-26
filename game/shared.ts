@@ -1,6 +1,6 @@
-export type Page = 'chain-drawing-preview' | 'canvas';
+export type Page = 'chain-drawing-preview' | 'canvas' | 'landing';
 
-export type WebviewToBlockMessage =
+export type WebviewToBlocksMessage =
   | { type: 'GET_COUNTDOWN_DURATION' }
   | {
       type: 'GET_REFERENCE_DRAWINGS';
@@ -19,22 +19,23 @@ export type BlocksToWebviewMessage =
   | {
       type: 'COUNTDOWN_DATA';
       payload: {
-        time: number;
+        duration: number;
       };
     }
   | {
       type: 'REFERENCE_DRAWINGS_DATA';
-      payload: [
-        {
+      payload: {
+        drawings: {
           user: string;
-          imageBlob: string;
-        },
-      ];
+          blobUrl: string;
+        }[];
+      };
     }
   | {
       type: 'INIT_RESPONSE';
       payload: {
         postType: number;
+        participants: number;
       };
     };
 
