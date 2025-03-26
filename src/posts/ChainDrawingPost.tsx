@@ -59,22 +59,35 @@ export function ChainDrawingPost() {
   const { mount, postMessage } = useWebView({
     url: "chain-drawing-preview/ChainDrawingPreview.html",
 
-    onMessage: (message: { type: string }) => {
-      console.log("Received from web view:", message);
+    onMessage: (message: { type: string; data?: { blobUrl?: string } }) => {
+      console.log("📩 Received message from webview:", message);
 
-      if (message && message.type === "webViewReady") {
+      if (message.type === "getReferenceDrawings") {
         postMessage({
-          type: "initialData",
+          type: "referenceDrawingsData",
           data: {
-            duration: getPlaceholderTimeInSeconds(),
             drawings: getReferenceDrawings(),
           },
         });
       }
+
+      if (message.type === "getCountdownDuration") {
+        postMessage({
+          type: "countdownData",
+          data: {
+            duration: getPlaceholderTimeInSeconds(),
+          },
+        });
+      }
+
+      if (message.type === "drawingSubmitted") {
+        console.log("🖼️ Received drawing:", message.data?.blobUrl);
+        // TODO
+      }
     },
 
     onUnmount: () => {
-      console.log("Web view closed");
+      console.log("🧼 WebView closed");
     },
   });
 

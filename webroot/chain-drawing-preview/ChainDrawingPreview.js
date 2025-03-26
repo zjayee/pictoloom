@@ -1,18 +1,15 @@
 import { createCustomButton } from "../components/CustomButton.js";
+import { postWebViewMessage, CountdownManager } from "../utils.js";
 
 class ChainDrawingPreviewApp {
   constructor() {
-    this.countdownEl = /** @type {HTMLDivElement} */ (
-      document.querySelector("#countdown")
-    );
-
-    this.remaining = 0;
-    this.interval = null;
+    this.countdownEl = document.getElementById("countdown");
+    this.countdown = new CountdownManager(this.countdownEl);
 
     addEventListener("message", this.#onMessage);
-
     addEventListener("load", () => {
-      postWebViewMessage({ type: "webViewReady" });
+      postWebViewMessage({ type: "getCountdownDuration" });
+      postWebViewMessage({ type: "getReferenceDrawings" });
       this.addCustomButton();
     });
   }
@@ -24,6 +21,9 @@ class ChainDrawingPreviewApp {
     const button = await createCustomButton({
       text: "DRAW IT!",
       iconSrc: "../public/icons/pencil.svg",
+      onClick: () => {
+        window.location.href = "../canvas/Canvas.html";
+      },
     });
 
     if (button) {
@@ -39,29 +39,14 @@ class ChainDrawingPreviewApp {
     if (ev.data.type !== "devvit-message") return;
     const { message } = ev.data.data;
 
-    if (message.type === "initialData") {
-      const { duration, drawings } = message.data;
-      this.startCountdown(duration);
-      this.updatePreview(drawings?.[0]);
+    if (message.type === "countdownData") {
+      this.countdown.start(message.data.duration);
+    }
+
+    if (message.type === "referenceDrawingsData") {
+      this.updatePreview(message.data?.drawings?.[0]);
     }
   };
-
-  /**
-   * Starts the countdown timer.
-   * @param {number} seconds
-   */
-  startCountdown(seconds) {
-    this.remaining = seconds;
-    this.updateDisplay();
-
-    this.interval = setInterval(() => {
-      this.remaining--;
-      this.updateDisplay();
-      if (this.remaining <= 0) {
-        clearInterval(this.interval);
-      }
-    }, 1000);
-  }
 
   updatePreview(drawing) {
     if (!drawing) return;
@@ -78,28 +63,6 @@ class ChainDrawingPreviewApp {
       imgEl.src = drawing.blobUrl;
     }
   }
-
-  updateDisplay() {
-    if (!this.countdownEl) return;
-
-    const hours = Math.floor(this.remaining / 3600);
-    const minutes = Math.floor((this.remaining % 3600) / 60);
-    const seconds = this.remaining % 60;
-
-    const h = String(hours).padStart(2, "0");
-    const m = String(minutes).padStart(2, "0");
-    const s = String(seconds).padStart(2, "0");
-
-    this.countdownEl.textContent = `${h}:${m}:${s}`;
-  }
-}
-
-/**
- * Sends a message to the Devvit app.
- * @param {WebViewMessage} msg
- */
-function postWebViewMessage(msg) {
-  parent.postMessage(msg, "*");
 }
 
 new ChainDrawingPreviewApp();

@@ -1,0 +1,43 @@
+.canvas-page__container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5em;
+  gap: 1.5em;
+  color: white;
+  height: 100%;
+}
+
+.canvas-page__timer {
+  font-size: 2em;
+  font-family: "Offbit DotBold", sans-serif;
+}
+
+.canvas-page__color-picker {
+  display: flex;
+  gap: 1em;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.canvas-page__color {
+  width: 2em;
+  height: 2em;
+  border-radius: 50%;
+  border: 1px solid white;
+  cursor: pointer;
+}
+
+.canvas-page__color--active {
+  border: 2px solid #80eed3;
+}
+
+#drawing-canvas {
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  touch-action: none; /* disables zoom on mobile when drawing */
+  width: 294px;
+  height: 252px;
+}

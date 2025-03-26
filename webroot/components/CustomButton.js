@@ -1,6 +1,9 @@
 let templateLoaded = false;
 
-export async function createCustomButton({ text, iconSrc }) {
+/**
+ * @param {{ text: string, iconSrc: string, onClick?: () => void }} param0
+ */
+export async function createCustomButton({ text, iconSrc, onClick }) {
   if (!templateLoaded) {
     await injectTemplate();
     templateLoaded = true;
@@ -13,12 +16,19 @@ export async function createCustomButton({ text, iconSrc }) {
   }
 
   const node = template.content.cloneNode(true);
+
+  const root = node.querySelector(".custom-button");
   const icon = node.querySelector(".custom-button__icon");
   const label = node.querySelector(".custom-button__text");
 
   icon.src = iconSrc;
   icon.alt = text;
   label.textContent = text;
+
+  if (root && typeof onClick === "function") {
+    root.addEventListener("click", onClick);
+    root.style.cursor = "pointer";
+  }
 
   return node;
 }
