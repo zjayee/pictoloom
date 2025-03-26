@@ -1,10 +1,10 @@
-export type Page = 'chain-drawing-preview' | 'canvas' | 'landing';
+export type Page = 'reference' | 'canvas' | 'landing';
 
 export type WebviewToBlocksMessage =
   | { type: 'GET_COUNTDOWN_DURATION' }
   | { type: 'GET_REFERENCE_DRAWINGS' }
   | { type: 'INIT' }
-  | { type: 'GET_MOUNT_FN' }
+  | { type: 'GET_MOUNT_FN' } // ✅ NEW
   | {
       type: 'DRAWING_SUBMITTED';
       payload: {
@@ -34,9 +34,6 @@ export type BlocksToWebviewMessage =
         postType: number;
         participants: number;
       };
-    }
-  | {
-      type: 'MOUNT_FN_READY';
     };
 
 export type DevvitMessage = {

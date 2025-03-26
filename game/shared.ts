@@ -1,4 +1,4 @@
-export type Page = 'chain-drawing-preview' | 'canvas' | 'landing';
+export type Page = 'reference' | 'canvas' | 'landing';
 
 export type WebviewToBlocksMessage =
   | { type: 'GET_COUNTDOWN_DURATION' }
@@ -34,9 +34,6 @@ export type BlocksToWebviewMessage =
         postType: number;
         participants: number;
       };
-    }
-  | {
-      type: 'MOUNT_FN_READY';
     };
 
 export type DevvitMessage = {

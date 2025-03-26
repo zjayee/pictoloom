@@ -1,40 +1,45 @@
 import React, { useEffect, useState } from 'react';
 import { CountdownClock } from '../../components/CountdownClock';
 import { sendToDevvit } from '../../utils';
+import { useSetPage } from '../../hooks/usePage';
+import { Button } from '../../components/Button';
+import { useDevvitListener } from '../../hooks/useDevvitListener';
 
 export const DrawingLanding: React.FC = () => {
   const [duration, setDuration] = useState<number | null>(null);
-  const [numDrawn, setNumDrawn] = useState('...');
-  const [referenceDrawings, setReferenceUsernames] = useState<string[]>([]);
+  const [numDrawn, setNumDrawn] = useState(0);
+  const countdownData = useDevvitListener('COUNTDOWN_DATA');
+  const initData = useDevvitListener('INIT_RESPONSE');
 
   useEffect(() => {
     sendToDevvit({ type: 'INIT' });
     sendToDevvit({ type: 'GET_COUNTDOWN_DURATION' });
     sendToDevvit({ type: 'GET_REFERENCE_DRAWINGS' });
-
-    const handleMessage = (event: MessageEvent) => {
-      const { type, data } = event.data;
-
-      if (type === 'COUNTDOWN_DATA') {
-        setDuration(data.duration);
-      }
-
-      if (type === 'INIT_RESPONSE') {
-        setNumDrawn(data.participants);
-      }
-    };
-
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
   }, []);
 
+  useEffect(() => {
+    if (!countdownData) return;
+    setDuration(countdownData.duration);
+  }, [countdownData]);
+
+  useEffect(() => {
+    if (!initData) return;
+    setNumDrawn(initData.participants);
+  }, [initData]);
+
+  const setPage = useSetPage();
+
+  const handleStartDrawingPress = () => {
+    setPage('reference');
+  };
+
   return (
-    <div className="relative h-full w-full overflow-hidden text-white">
+    <div className="relative flex h-full w-full items-center justify-center bg-red-300 text-white">
       {/* Background */}
       <img
         src="/assets/bg-purple.png"
         alt="Background"
-        className="absolute inset-0 z-0 h-full w-full object-cover"
+        className="absolute inset-0 z-0 h-full w-full"
       />
 
       {/* BACK overlay */}
@@ -60,12 +65,19 @@ export const DrawingLanding: React.FC = () => {
       {/* Foreground UI */}
       <div className="relative z-30 flex h-full w-full">
         {/* Left Column */}
-        <div className="flex w-[417px] items-start justify-end pt-[30px]">
-          <CountdownClock startTimeInSeconds={duration ?? 0} />
+        <div className="relative mt-[1.875em] flex w-[60%] max-w-[417px] items-start justify-end">
+          {duration && <CountdownClock startTimeInSeconds={duration} />}
+          <img
+            src="/assets/clock.svg"
+            alt="Countdown clock"
+            width={91.14}
+            height={91.14}
+            className="absolute top-[0.8em] left-[0.5em] z-0"
+          />
         </div>
 
         {/* Right Column */}
-        <div className="flex h-full w-[284px] flex-col justify-between">
+        <div className="flex h-full w-[40%] max-w-[284px] flex-col justify-between">
           {/* Top: Round Image */}
           <div className="flex justify-end pt-[7px]">
             <img
@@ -77,34 +89,21 @@ export const DrawingLanding: React.FC = () => {
           </div>
 
           {/* Bottom UI */}
-          <div className="flex flex-col items-start">
+          <div className="flex flex-col items-end gap-y-[0.9em] pr-[.5em] pb-[2em]">
             {/* Start Button */}
-            <div className="flex items-center">
-              <button onClick={() => sendToDevvit({ type: 'GET_MOUNT_FN' })}>
-                <img
-                  src="/assets/start-button.png"
-                  width={275}
-                  height={64.5}
-                  alt="Start Drawing"
-                />
-              </button>
-              <div className="w-[17px]" />
-            </div>
-
-            <div className="h-[3.5px]" />
+            <Button
+              text="START DRAWING"
+              iconSrc="/icons/pencil.svg"
+              width="15.6em"
+              onClick={handleStartDrawingPress}
+            />
 
             {/* Tutorial Button */}
-            <div className="flex items-center">
-              <img
-                src="/assets/tutorial-button.png"
-                width={275}
-                height={64.5}
-                alt="How to Play"
-              />
-              <div className="w-[17px]" />
-            </div>
-
-            <div className="h-[8.5px]" />
+            <Button
+              text="HOW TO PLAY"
+              iconSrc="/icons/pencil.svg"
+              width="15.6em"
+            />
 
             {/* Users drawn */}
             <div className="flex items-end">
@@ -115,31 +114,19 @@ export const DrawingLanding: React.FC = () => {
                   height={84}
                   alt="Have drawn"
                 />
-                <div className="absolute top-0 left-0 flex h-[53px] w-[250px] items-center justify-center">
+                <div className="absolute top-0 left-0 flex h-[53px] w-[250px] items-center justify-center gap-x-[0.5em]">
                   <img
                     src="/assets/megaphone.png"
                     width={35.65}
                     height={30}
                     alt="Megaphone"
                   />
-                  <div className="w-[6px]" />
-                  {numDrawn}
-                  <div className="w-[4px]" />
-                  <div className="flex flex-col justify-end">
-                    <div className="h-[4px]" />
-                    <img
-                      src="/assets/users.png"
-                      width={72}
-                      height={32}
-                      alt="Users"
-                    />
-                  </div>
+                  <span className="mt-[0.3em] text-[1.3rem]">
+                    {numDrawn} USERS
+                  </span>
                 </div>
               </div>
-              <div className="w-[30px]" />
             </div>
-
-            <div className="h-[29px]" />
           </div>
         </div>
       </div>

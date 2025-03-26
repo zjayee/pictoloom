@@ -25,8 +25,7 @@ export const CountdownClock: React.FC<CountdownClockProps> = ({
   };
 
   return (
-    <div className="flex w-[95px] items-center">
-      <div className="w-[10px]" />
+    <div className="countdown-clock z-1 ml-[0.9em] flex w-[100%] items-center">
       {formatTime(remainingTime)}
     </div>
   );

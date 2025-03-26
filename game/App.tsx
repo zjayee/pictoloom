@@ -11,7 +11,7 @@ const getPage = (page: Page) => {
   switch (page) {
     case 'landing':
       return <DrawingLanding />;
-    case 'chain-drawing-preview':
+    case 'reference':
       return <ChainDrawingPreview />;
     case 'canvas':
       return <CanvasPage />;
@@ -27,5 +27,5 @@ export const App = () => {
     sendToDevvit({ type: 'INIT' });
   }, []);
 
-  return <div className="h-full">{getPage(page)}</div>;
+  return <div className="h-full w-full">{getPage(page)}</div>;
 };

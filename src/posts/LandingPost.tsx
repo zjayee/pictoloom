@@ -1,6 +1,7 @@
-import { Devvit, useWebView } from '@devvit/public-api';
+import { Devvit } from '@devvit/public-api';
 import { placeholderBlob } from '../utils/mock.js';
 import { WebviewToBlocksMessage } from '../shared.js';
+import { sendMessageToWebview } from '../utils/sendMessageToWebview.js';
 
 function getPlaceholderTimeInSeconds() {
   return 3 * 60 * 60;
@@ -15,57 +16,42 @@ function getReferenceDrawings() {
   ];
 }
 
-export function LandingPost() {
+export function LandingPost(context: Devvit.Context) {
   const handleMessage = (message: WebviewToBlocksMessage) => {
     console.log('📩 Received message from webview:', message);
 
     if (message.type === 'GET_REFERENCE_DRAWINGS') {
-      postMessage({
+      sendMessageToWebview(context, {
         type: 'REFERENCE_DRAWINGS_DATA',
-        data: {
+        payload: {
           drawings: getReferenceDrawings(),
         },
       });
     }
 
     if (message.type === 'GET_COUNTDOWN_DURATION') {
-      postMessage({
+      sendMessageToWebview(context, {
         type: 'COUNTDOWN_DATA',
-        data: {
+        payload: {
           duration: getPlaceholderTimeInSeconds(),
         },
       });
     }
 
     if (message.type === 'INIT') {
-      postMessage({
+      sendMessageToWebview(context, {
         type: 'INIT_RESPONSE',
-        data: {
+        payload: {
           postType: 1,
           participants: 398,
         },
       });
     }
 
-    if (message.type === 'GET_MOUNT_FN') {
-      mount();
-      postMessage({
-        type: 'MOUNT_FN_READY',
-      });
-    }
-
     if (message.type === 'DRAWING_SUBMITTED') {
       console.log('🖼️ Received drawing:', message.payload.imageBlob);
-      unmount();
     }
   };
-
-  const { mount, postMessage, unmount } = useWebView({
-    onMessage: handleMessage,
-    onUnmount: () => {
-      console.log('🧼 WebView closed');
-    },
-  });
 
   return (
     <vstack height="100%" width="100%" alignment="center middle">

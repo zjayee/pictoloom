@@ -20,7 +20,7 @@ export const ChainDrawingPreview: React.FC = () => {
   useEffect(() => {
     const handleMessage = (ev: MessageEvent) => {
       if (ev.data.type !== 'devvit-message') return;
-      const { message } = ev.data.data;
+      const { message } = ev.data.payload;
 
       if (message.type === 'COUNTDOWN_DATA') {
         startCountdown(message.data.duration);
