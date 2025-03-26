@@ -12,7 +12,7 @@
 }
 
 .custom-button__inner {
-  padding: 0.5em 2.5em 0.5em 2em;
+  padding: 0.45em 0.5em 0.45em 0;
   background: linear-gradient(to bottom, #f4f4f4, #fefefe);
   border-radius: 12px;
   display: flex;

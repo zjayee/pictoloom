@@ -1,11 +1,11 @@
-import "./createPost.js";
+import './createPost.js';
 
-import { Devvit } from "@devvit/public-api";
+import { Devvit } from '@devvit/public-api';
 
-import { appUpgradeSetup } from "./actions/installGame.js";
-import { dailyPostTrigger } from "./jobs/dailyPost.js";
-import { deleteTestPosts } from "./actions/deleteTestPosts.js";
-import ChainDrawingPost from "./posts/ChainDrawingPost.js";
+import { appUpgradeSetup } from './actions/installGame.js';
+import { dailyPostTrigger } from './jobs/dailyPost.js';
+import { deleteTestPosts } from './actions/deleteTestPosts.js';
+import { LandingPost } from './posts/LandingPost.js';
 
 Devvit.configure({
   redditAPI: true,
@@ -31,9 +31,9 @@ Devvit.addTrigger(dailyPostTrigger);
 /* QUICKSTART CODE */
 // Add a custom post type to Devvit
 Devvit.addCustomPostType({
-  name: "Web View Example",
-  height: "tall",
-  render: ChainDrawingPost,
+  name: 'Web View Example',
+  height: 'tall',
+  render: LandingPost,
 });
 
 export default Devvit;

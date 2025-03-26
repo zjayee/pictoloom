@@ -11,7 +11,7 @@ export const PageContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [page, setPage] = useState<Page>('chain-drawing-preview');
+  const [page, setPage] = useState<Page>('landing');
 
   return (
     <PageUpdaterContext.Provider value={setPage}>

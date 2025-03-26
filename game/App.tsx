@@ -5,10 +5,13 @@ import { sendToDevvit } from './utils';
 import { useDevvitListener } from './hooks/useDevvitListener';
 import { ChainDrawingPreview } from './pages/chain-drawing-preview/ChainDrawingPreview';
 import { CanvasPage } from './pages/canvas/CanvasPage';
+import { DrawingLanding } from './pages/landing/DrawingLanding';
 
 const getPage = (page: Page) => {
   switch (page) {
-    case 'chain-drawing-preview':
+    case 'landing':
+      return <DrawingLanding />;
+    case 'reference':
       return <ChainDrawingPreview />;
     case 'canvas':
       return <CanvasPage />;
@@ -24,5 +27,5 @@ export const App = () => {
     sendToDevvit({ type: 'INIT' });
   }, []);
 
-  return <div className="h-full">{getPage(page)}</div>;
+  return <div className="h-full w-full">{getPage(page)}</div>;
 };

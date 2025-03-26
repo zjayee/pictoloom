@@ -32,14 +32,22 @@ import { DevvitMessage, BlocksToWebviewMessage } from '../shared';
  * }
  * ```
  */
-export const useDevvitListener = <T extends BlocksToWebviewMessage['type']>(eventType: T) => {
+export const useDevvitListener = <T extends BlocksToWebviewMessage['type']>(
+  eventType: T
+) => {
   type Event = Extract<BlocksToWebviewMessage, { type: T }>;
-  const [data, setData] = useState<Event['payload'] | undefined>();
+  const [data, setData] =
+    useState<
+      Event extends { payload: unknown } ? Event['payload'] : undefined
+    >();
 
   useEffect(() => {
+    console.log('Received message from devvit:', data);
     const messageHandler = (ev: MessageEvent<DevvitMessage>) => {
       if (ev.data.type !== 'devvit-message') {
-        console.warn(`Received message with type ${ev.data.type} but expected 'devvit-message'`);
+        console.warn(
+          `Received message with type ${ev.data.type} but expected 'devvit-message'`
+        );
         return;
       }
 

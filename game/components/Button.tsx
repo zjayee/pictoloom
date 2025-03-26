@@ -5,14 +5,20 @@ type ButtonProps = {
   text: string;
   iconSrc: string;
   onClick?: () => void;
+  width?: string;
 };
 
-export const Button: React.FC<ButtonProps> = ({ text, iconSrc, onClick }) => {
+export const Button: React.FC<ButtonProps> = ({
+  text,
+  iconSrc,
+  onClick,
+  width,
+}) => {
   return (
     <div
-      className="custom-button"
+      className="custom-button cursor-pointer"
       onClick={onClick}
-      style={{ cursor: onClick ? 'pointer' : 'default' }}
+      style={{ cursor: onClick ? 'pointer' : 'default', width: width }}
     >
       <div className="custom-button__inner">
         <div className="custom-button__content">
