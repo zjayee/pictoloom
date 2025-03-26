@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Chain Drawing Preview</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <link rel="stylesheet" href="../style.css" />
+    <link rel="stylesheet" href="ChainDrawingPreview.css" />
+    <link rel="stylesheet" href="../components/CustomButton.css" />
+  </head>
+  <body>
+    <div class="chain-preview__container">
+      <img
+        class="chain-preview__deco"
+        src="../public/torus.png"
+        alt="torus"
+        width="420"
+      />
+
+      <div class="chain-preview__timer-container">
+        <img src="../public/sparkle.svg" alt="Sparkle" width="30" height="30" />
+        <div class="chain-preview__timer" id="countdown">00:00:00</div>
+        <img src="../public/sparkle.svg" alt="Sparkle" width="20" height="20" />
+      </div>
+
+      <div class="chain-preview__caption" id="caption-text">
+        <!-- Filled by JS -->
+      </div>
+
+      <div class="chain-preview__gradient-block">
+        <div class="chain-preview__image-container">
+          <img
+            id="drawing"
+            src=""
+            alt="Drawing Placeholder"
+            width="294"
+            height="252"
+          />
+        </div>
+      </div>
+
+      <div id="custom-button-container"></div>
+    </div>
+
+    <script src="ChainDrawingPreview.js" type="module"></script>
+  </body>
+</html>
