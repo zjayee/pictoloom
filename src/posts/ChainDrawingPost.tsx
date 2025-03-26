@@ -56,7 +56,7 @@ function getReferenceDrawings() {
 }
 
 export function ChainDrawingPost() {
-  const { mount, postMessage } = useWebView({
+  const { mount, postMessage, unmount } = useWebView({
     url: "chain-drawing-preview/ChainDrawingPreview.html",
 
     onMessage: (message: { type: string; data?: { blobUrl?: string } }) => {
@@ -82,6 +82,7 @@ export function ChainDrawingPost() {
 
       if (message.type === "drawingSubmitted") {
         console.log("🖼️ Received drawing:", message.data?.blobUrl);
+        unmount();
         // TODO
       }
     },

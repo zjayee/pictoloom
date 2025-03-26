@@ -138,11 +138,6 @@ class CanvasPageApp {
           type: "drawingSubmitted",
           data: { blobUrl: base64 },
         });
-
-        if (window.devvit?.webview?.unmount) {
-          console.log("umounted");
-          window.devvit.webview.unmount();
-        }
       };
       reader.readAsDataURL(blob);
     });

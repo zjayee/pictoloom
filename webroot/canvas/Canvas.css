@@ -19,13 +19,14 @@
   gap: 1em;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
 }
 
 .canvas-page__color {
   width: 2em;
   height: 2em;
   border-radius: 50%;
-  border: 1px solid white;
+  border: 2px solid white;
   cursor: pointer;
 }
 
