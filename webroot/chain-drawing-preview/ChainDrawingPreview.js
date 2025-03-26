@@ -40,8 +40,9 @@ class ChainDrawingPreviewApp {
     const { message } = ev.data.data;
 
     if (message.type === "initialData") {
-      const { duration } = message.data;
+      const { duration, drawings } = message.data;
       this.startCountdown(duration);
+      this.updatePreview(drawings?.[0]);
     }
   };
 
@@ -60,6 +61,22 @@ class ChainDrawingPreviewApp {
         clearInterval(this.interval);
       }
     }, 1000);
+  }
+
+  updatePreview(drawing) {
+    if (!drawing) return;
+
+    // Update caption text
+    const captionEl = document.getElementById("caption-text");
+    if (captionEl) {
+      captionEl.textContent = `${drawing.user} drew this based off a mystery word!`;
+    }
+
+    // Update image blob
+    const imgEl = document.getElementById("drawing");
+    if (imgEl && drawing.blobUrl) {
+      imgEl.src = drawing.blobUrl;
+    }
   }
 
   updateDisplay() {

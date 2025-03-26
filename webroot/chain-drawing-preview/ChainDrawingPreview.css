@@ -10,6 +10,26 @@
   gap: 1em;
 }
 
+.chain-preview__timer-container {
+  width: 23em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.chain-preview__timer-container img:first-of-type {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.chain-preview__timer-container img:last-of-type {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
 .chain-preview__timer {
   font-size: 4rem;
   font-weight: bold;

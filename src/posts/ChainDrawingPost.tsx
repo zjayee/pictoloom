@@ -1,6 +1,7 @@
 import { Devvit, useWebView } from "@devvit/public-api";
 import { CountdownClock } from "../components/CountdownClock.js";
 import { OffbitFont } from "../components/OffbitFont.js";
+import { placeholderBlob } from "./utils.js";
 
 const IMAGE_WIDTH = 718;
 const IMAGE_HEIGHT = 514;
@@ -44,6 +45,16 @@ function getNumUsersAlreadyDrawn() {
   return "398";
 }
 
+function getReferenceDrawings() {
+  // TODO
+  return [
+    {
+      user: "Greedy-Ad-6376",
+      blobUrl: placeholderBlob,
+    },
+  ];
+}
+
 export function ChainDrawingPost() {
   const { mount, postMessage } = useWebView({
     url: "chain-drawing-preview/ChainDrawingPreview.html",
@@ -56,6 +67,7 @@ export function ChainDrawingPost() {
           type: "initialData",
           data: {
             duration: getPlaceholderTimeInSeconds(),
+            drawings: getReferenceDrawings(),
           },
         });
       }
