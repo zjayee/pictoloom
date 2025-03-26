@@ -149,6 +149,34 @@ export class Cache {
     return true;
   }
 
+  async getUserAssignedPhrase(
+    postId: string,
+    roundNumber: number,
+    userId: string
+  ): Promise<string | null> {
+    const assignedPhrases = await this.redis.hGetAll(
+      this.keys.phraseUserAssignment(postId, userId)
+    );
+    for (const phrase in assignedPhrases) {
+      if (assignedPhrases[phrase] === String(roundNumber)) {
+        return phrase;
+      }
+    }
+    return null;
+  }
+
+  async getUserRoundStatus(
+    postId: string,
+    roundNumber: number,
+    userId: string
+  ): Promise<string> {
+    const result = await this.redis.hGet(
+      this.keys.roundParticipantStatus(postId, String(roundNumber)),
+      userId
+    );
+    return result ?? "none";
+  }
+
   async setupDrawingReferences(postId: string, roundNumber: number) {
     const phrases = await this.db.getPhrasesForGame(postId);
     // Get drawings for round and set up zset for reference counts

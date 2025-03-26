@@ -155,4 +155,17 @@ export class GameService {
 
     return await this.cache.canUserPlayRound(postId, currentRound, userId);
   }
+
+  async getUserRoundStatus(postId: string) {
+    const currentRound = await this.db.getGameCurrentRound(postId);
+    const userId = await this.reddit?.getCurrentUsername();
+    if (!userId) {
+      return "none";
+    }
+    if (currentRound === 0) {
+      return "none";
+    }
+
+    return await this.cache.getUserRoundStatus(postId, currentRound, userId);
+  }
 }
