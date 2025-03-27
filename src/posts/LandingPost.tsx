@@ -77,7 +77,7 @@ export function LandingPost(context: Devvit.Context) {
 
     if (message.type === 'GUESS_SUBMITTED') {
       console.log('🐷 Received guess:', message.payload.guess);
-      // TODO
+      await service.guess.submitGuess(postId, message.payload.guess);
     }
 
     if (message.type === 'GET_WORD') {
@@ -101,10 +101,14 @@ export function LandingPost(context: Devvit.Context) {
     }
 
     if (message.type === 'GET_REFERENCE_PARTICIPANTS') {
+      const numRef = await service.draw.getNumberofReferences(
+        postId,
+        message.payload.round
+      );
       sendMessageToWebview(context, {
         type: 'REFERENCE_PARTICIPANTS_DATA',
         payload: {
-          referenceParticipants: 12, // TODO: returns the number of ppl that used user's drawing as reference
+          referenceParticipants: numRef,
         },
       });
     }

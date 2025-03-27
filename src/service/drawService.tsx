@@ -83,7 +83,7 @@ export class DrawService {
     return drawing ?? placeholderBlob;
   }
 
-  async getReferenceNumber(postId: string, roundNumber: number) {
+  async getNumberofReferences(postId: string, roundNumber: number) {
     const userId = await this.reddit?.getCurrentUsername();
     if (!userId) {
       throw new Error('User not found');
