@@ -35,12 +35,22 @@ export class GalleryService {
     this.cache = cache;
   }
 
-  async upvoteDrawing(postId: string, roundNumber: number, userId: string) {
-    await this.cache.upvoteDrawing(postId, userId, roundNumber);
+  async upvoteDrawing(
+    postId: string,
+    roundNumber: number,
+    userId: string,
+    numVotes: number
+  ) {
+    await this.cache.upvoteDrawing(postId, userId, roundNumber, numVotes);
   }
 
-  async downvoteDrawing(postId: string, roundNumber: number, userId: string) {
-    await this.cache.downvoteDrawing(postId, userId, roundNumber);
+  async downvoteDrawing(
+    postId: string,
+    roundNumber: number,
+    userId: string,
+    numVotes: number
+  ) {
+    await this.cache.downvoteDrawing(postId, userId, roundNumber, numVotes);
   }
 
   async getRankedDrawings(postId: string, start: number, end: number) {
