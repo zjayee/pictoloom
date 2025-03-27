@@ -35,6 +35,7 @@ export const DrawingLanding: React.FC = () => {
   }, [countdownData]);
 
   useEffect(() => {
+    console.log('participants data');
     if (!participantsData) return;
     setNumDrawn(participantsData.participants);
   }, [participantsData]);
@@ -104,11 +105,7 @@ export const DrawingLanding: React.FC = () => {
         {/* Left Column */}
         <div className="relative mt-[1.5em] ml-[1.1em] flex h-full w-[60%] max-w-[417px] flex-col items-end justify-start">
           <div className="flex w-[100%] justify-start pl-[3.7em]">
-            {duration ? (
-              <CountdownClock startTimeInSeconds={duration} />
-            ) : (
-              <CountdownClock startTimeInSeconds={30 * 60} />
-            )}
+            {duration && <CountdownClock startTimeInSeconds={duration} />}
           </div>
 
           <img

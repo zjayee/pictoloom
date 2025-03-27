@@ -112,10 +112,8 @@ export const CanvasPage: React.FC = () => {
   return (
     <div className="canvas-page__container">
       <div className="canvas-page__timer">
-        {duration ? (
+        {duration && (
           <CountdownClock startTimeInSeconds={duration} fontSize="3rem" />
-        ) : (
-          <CountdownClock startTimeInSeconds={30 * 60} fontSize="3rem" />
         )}
       </div>
 
