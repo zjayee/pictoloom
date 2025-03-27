@@ -56,7 +56,7 @@ export const FinishedDrawingPage: React.FC = () => {
       />
 
       {/* Foreground UI */}
-      <div className="relative z-30 flex h-full w-full flex-col items-center justify-center gap-y-[1.5em]">
+      <div className="relative z-30 flex h-full w-full flex-col items-center justify-center gap-y-[1.4em]">
         {/* Top Row */}
         <div className="relative flex w-full max-w-[417px] flex-col items-center justify-center">
           {duration && <CountdownClock startTimeInSeconds={duration} />}
@@ -84,7 +84,7 @@ export const FinishedDrawingPage: React.FC = () => {
         </div>
 
         {/* Bottom Row */}
-        <div className="mb-[2em] ml-[1em] flex w-full items-center justify-center gap-x-[2em]">
+        <div className="mb-[2.5em] ml-[1em] flex w-full items-center justify-center gap-x-[2em]">
           <div className="relative">
             {data && data.postType === 'draw' && (
               <img
@@ -98,7 +98,7 @@ export const FinishedDrawingPage: React.FC = () => {
             {userDrawing && <ImageFrame url={userDrawing} />}
           </div>
 
-          <div className="flex w-[250px] flex-col items-center justify-center text-[1.3rem]">
+          <div className="flex w-[250px] flex-col items-center justify-center">
             <div className="mr-[0.5em] flex gap-x-[0.5em]">
               <img
                 src="/assets/megaphone.png"
@@ -106,9 +106,9 @@ export const FinishedDrawingPage: React.FC = () => {
                 height={30}
                 alt="Megaphone"
               />
-              <span className="mt-[0.3em]">{numDrawn} USERS</span>
+              <span className="mt-[0.3em] text-[1.3rem]">{numDrawn} USERS</span>
             </div>
-            <div className="mt-[0.2em] text-center">
+            <div className="mt-[0.2em] text-center text-[1.1rem]">
               used your drawing as a reference!
             </div>
           </div>

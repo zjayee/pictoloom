@@ -7,7 +7,12 @@ export type WebviewToBlocksMessage =
   | { type: 'GET_MOUNT_FN' }
   | { type: 'GET_USER_DRAWING' }
   | { type: 'GET_REFERENCE_PARTICIPANTS' }
-  | { type: 'GUESS_SUBMITTED' }
+  | {
+      type: 'GUESS_SUBMITTED';
+      payload: {
+        guess: string;
+      };
+    }
   | {
       type: 'DRAWING_SUBMITTED';
       payload: {
