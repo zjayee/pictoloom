@@ -83,7 +83,12 @@ export const DrawingLanding: React.FC = () => {
             className="absolute mt-[1.5em] ml-[2em]"
             style={{ transform: 'rotate(-10.11deg)' }}
           >
-            <ImageFrame url={currDrawing.blobUrl} blur />
+            {data && (
+              <ImageFrame
+                url={currDrawing.blobUrl}
+                blur={data.postType === 'draw'}
+              />
+            )}
           </div>
         ) : (
           'Loading'
@@ -119,11 +124,18 @@ export const DrawingLanding: React.FC = () => {
 
         {/* Right Column */}
         <div className="flex h-full w-[40%] max-w-[284px] flex-col justify-between pr-[0.5em]">
-          {/* Top: Round Image */}
           <div className="flex justify-end pt-[7px]">
             {data && data.postType === 'draw' && (
               <img
                 src={`/assets/round-${data.round}.gif`}
+                alt="Round"
+                width={140}
+                height={140}
+              />
+            )}
+            {data && data.postType === 'guess' && (
+              <img
+                src={`/assets/round-guess.gif`}
                 alt="Round"
                 width={140}
                 height={140}
@@ -134,17 +146,25 @@ export const DrawingLanding: React.FC = () => {
           {/* Bottom UI */}
           <div className="flex flex-col items-end gap-y-[0.9em] pr-[1.3em] pb-[1.4em]">
             {/* Start Button */}
-            <Button
-              text="START DRAWING"
-              iconSrc="/icons/pencil.svg"
-              width="15.6em"
-              onClick={handleStartDrawingPress}
-            />
+            {data && (
+              <Button
+                text={
+                  data.postType === 'draw' ? 'START DRAWING' : 'MAKE A GUESS'
+                }
+                iconSrc={
+                  data.postType === 'draw'
+                    ? '/icons/pencil.svg'
+                    : '/icons/message.svg'
+                }
+                width="15.6em"
+                onClick={handleStartDrawingPress}
+              />
+            )}
 
             {/* Tutorial Button */}
             <Button
               text="HOW TO PLAY"
-              iconSrc="/icons/pencil.svg"
+              iconSrc="/icons/book.svg"
               width="15.6em"
             />
 
