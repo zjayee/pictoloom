@@ -104,6 +104,7 @@ export type BlocksToWebviewMessage =
           blobUrl: string;
           user: string;
           upvotes: number;
+          round: number;
         }[];
       };
     }
