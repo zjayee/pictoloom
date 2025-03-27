@@ -310,7 +310,11 @@ export class Cache {
         drawing.member
       );
       if (drawingObj) {
-        drawings.push({ user: drawing.member, blobUrl: drawingObj.drawing });
+        drawings.push({
+          user: drawing.member,
+          blobUrl: drawingObj.drawing,
+          round: roundNumber - 1,
+        });
       }
     }
 
@@ -478,6 +482,18 @@ export class Cache {
       }
     }
     return drawings;
+  }
+
+  async getDrawingUpvotes(
+    postId: string,
+    drawingUserId: string,
+    roundNumber: number
+  ): Promise<number> {
+    const upvotes = await this.redis.zScore(
+      this.keys.voteTracking(postId),
+      roundNumber + ':' + drawingUserId
+    );
+    return upvotes ?? 0;
   }
 
   async addGameStatus(postId: string, status: string) {

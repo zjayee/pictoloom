@@ -106,6 +106,12 @@ export class GalleryService {
       );
       Object.assign(drawing, { voteStatus: status });
     }
-    return drawings;
+    return drawings as {
+      user: string;
+      blobUrl: string;
+      voteStatus: DrawingVoteStatus;
+      upvotes: number;
+      round: number;
+    }[];
   }
 }

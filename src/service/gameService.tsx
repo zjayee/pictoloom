@@ -162,6 +162,8 @@ export class GameService {
       user: string;
       blobUrl: string;
       voteStatus: 'upvoted' | 'downvoted' | 'none';
+      upvotes: number;
+      round: number;
     }[]
   > {
     const currentRoundNum = await this.db.getGameCurrentRound(postId);
@@ -184,7 +186,13 @@ export class GameService {
         ref.user,
         currentRoundNum - 1
       );
+      const upvotes = await this.cache.getDrawingUpvotes(
+        postId,
+        ref.user,
+        currentRoundNum - 1
+      );
       Object.assign(ref, { voteStatus: status });
+      Object.assign(ref, { upvotes: upvotes });
     }
 
     if (references.length == 0) {
@@ -193,6 +201,8 @@ export class GameService {
           user: 'Greedy-Ad-6376',
           blobUrl: mockPhraseBlobs[phrase as keyof typeof mockPhraseBlobs],
           voteStatus: 'none' as 'upvoted' | 'downvoted' | 'none',
+          upvotes: 1,
+          round: currentRoundNum - 1,
         },
       ];
       return mockRef;
@@ -201,6 +211,8 @@ export class GameService {
       user: string;
       blobUrl: string;
       voteStatus: 'upvoted' | 'downvoted' | 'none';
+      upvotes: number;
+      round: number;
     }[];
   }
 

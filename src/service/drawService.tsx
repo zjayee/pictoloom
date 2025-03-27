@@ -8,6 +8,7 @@ import { Cache } from '../storage/cache.js';
 import { Db } from '../storage/db.js';
 import { Drawing } from '../types.js';
 import { placeholderBlob } from '../utils/mock.js';
+import { blob } from 'stream/consumers';
 
 // Contains logic for drawing rounds.
 export class DrawService {
@@ -81,12 +82,39 @@ export class DrawService {
       throw new Error('Invalid round number');
     }
 
-    const drawing = await this.db.getDrawingContent(
+    const drawing = await this.db.getDrawingObj(
       postId,
       currentRoundNum,
+      '',
       userId
     );
-    return drawing ?? placeholderBlob;
+    const upvotes = await this.cache.getDrawingUpvotes(
+      postId,
+      userId,
+      currentRoundNum
+    );
+
+    if (!drawing) {
+      return {
+        blobUrl: placeholderBlob,
+        upvotes: upvotes,
+        voteStatus: 'none',
+        round: currentRoundNum,
+      };
+    } else {
+      const drawingVoteStatus = await this.cache.getDrawingVoteStatus(
+        postId,
+        userId,
+        drawing.userId,
+        currentRoundNum
+      );
+      return {
+        blobUrl: drawing.drawing,
+        upvotes: upvotes,
+        voteStatus: drawingVoteStatus,
+        round: currentRoundNum,
+      };
+    }
   }
 
   async getNumberofReferences(postId: string, roundNumber: number) {
