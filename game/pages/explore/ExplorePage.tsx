@@ -81,7 +81,7 @@ export const ExplorePage: React.FC = () => {
           {drawings.map((drawing, index) => (
             <div
               key={index}
-              className="flex w-[308px] flex-col items-center justify-center"
+              className="flex w-[308px] flex-col items-center justify-center gap-y-[0.5em]"
             >
               <ImageFrame url={drawing.blobUrl} />
               <div className="flex w-full items-center justify-between">

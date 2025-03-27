@@ -6,10 +6,14 @@ import './ChainDrawingPreview.css';
 import { useDevvitListener } from '../../hooks/useDevvitListener';
 import { CountdownClock } from '../../components/CountdownClock';
 import ImageFrame from '../../components/ImageFrame';
+import { UpvoteDownvoteButtons } from '../../components/UpvoteDownvoteButton';
 
 type DrawingData = {
-  user: string;
   blobUrl: string;
+  user: string;
+  upvotes: number;
+  round: number;
+  voteStatus: 'none' | 'upvoted' | 'downvoted';
 };
 
 export const ChainDrawingPreview: React.FC = () => {
@@ -85,7 +89,24 @@ export const ChainDrawingPreview: React.FC = () => {
           </div>
 
           {currDrawing ? (
-            <ImageFrame url={currDrawing.blobUrl} />
+            <div className="flex w-[308px] flex-col gap-y-[0.5em]">
+              <ImageFrame url={currDrawing.blobUrl} />
+              <UpvoteDownvoteButtons
+                voteStatus={currDrawing.voteStatus}
+                upvotes={currDrawing.upvotes}
+                onVoteChange={(newStatus, voteDelta) => {
+                  if (currDrawing) {
+                    setCurrDrawing({
+                      ...currDrawing,
+                      voteStatus: newStatus,
+                      upvotes: currDrawing.upvotes + voteDelta,
+                    });
+                  }
+                }}
+                userId={currDrawing.user}
+                currentRound={currDrawing.round}
+              />
+            </div>
           ) : (
             'Loading...'
           )}
