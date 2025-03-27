@@ -35,6 +35,7 @@ export const DrawingLanding: React.FC = () => {
   }, [countdownData]);
 
   useEffect(() => {
+    console.log('participants data');
     if (!participantsData) return;
     setNumDrawn(participantsData.participants);
   }, [participantsData]);
