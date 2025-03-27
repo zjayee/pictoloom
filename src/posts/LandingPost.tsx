@@ -40,10 +40,19 @@ export function LandingPost(context: Devvit.Context) {
     }
 
     if (message.type === 'GET_COUNTDOWN_DURATION') {
+      const round = await service.game.getCurrentRound(postId);
+      console.log('Round:', round);
+      if (!round) {
+        throw new Error('Round not found');
+      }
+      const duration = Math.floor(
+        (new Date(round.endTime).getTime() - Date.now()) / 1000
+      );
+      console.log('Duration:', duration);
       sendMessageToWebview(context, {
         type: 'COUNTDOWN_DATA',
         payload: {
-          duration: getPlaceholderTimeInSeconds(),
+          duration: duration,
         },
       });
     }
