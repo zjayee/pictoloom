@@ -53,7 +53,8 @@ export function LandingPost(context: Devvit.Context) {
       sendMessageToWebview(context, {
         type: 'INIT_RESPONSE',
         payload: {
-          postType: round.roundType,
+          // postType: round.roundType,
+          postType: 'guess',
           round: Number(round.roundNumber),
           gameStatus: gameStatus,
           canDraw: canDraw,

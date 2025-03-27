@@ -44,8 +44,13 @@ export const DrawingLanding: React.FC = () => {
     if (!initData) return;
     setData(initData);
 
-    if (!initData.canDraw) {
+    console.log('init', initData);
+
+    if (!initData.canDraw && initData.postType == 'draw') {
       setPage('end');
+    }
+    if (!initData.canDraw && initData.postType == 'guess') {
+      setPage('score');
     }
   }, [initData]);
 
