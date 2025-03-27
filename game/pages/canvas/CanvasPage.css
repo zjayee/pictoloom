@@ -7,6 +7,7 @@
   gap: 1.5em;
   color: white;
   height: 100%;
+  position: relative;
 }
 
 .canvas-page__timer {

@@ -32,7 +32,14 @@ export const GuessPage: React.FC = () => {
   };
 
   return (
-    <div className="guess-page__container flex h-full w-full flex-col items-center justify-center gap-y-[1em] text-white">
+    <div className="relative flex h-full w-full flex-col items-center justify-center gap-y-[1em] text-white">
+      <img
+        src="/assets/banana-peek.png"
+        alt="Banana peek"
+        width={281}
+        height={248}
+        className="absolute right-0 bottom-0 z-0"
+      />
       <div className="guess-page__timer">
         {duration && (
           <CountdownClock startTimeInSeconds={duration} fontSize="3rem" />
@@ -44,7 +51,7 @@ export const GuessPage: React.FC = () => {
         placeholder="I think the mystery word is..."
         value={guess}
         onChange={(e) => setGuess(e.target.value)}
-        className="mb-[1em] w-[25em] rounded-full border border-[#876ACE] bg-white px-6 py-3 text-black placeholder-gray-300 shadow-[0_5px_0_0_#80EED3] focus:outline-none"
+        className="z-1 mb-[1em] w-[25em] rounded-full border border-[#876ACE] bg-white px-6 py-3 text-black placeholder-gray-300 shadow-[0_5px_0_0_#80EED3] focus:outline-none"
       />
 
       <Button
