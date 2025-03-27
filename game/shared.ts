@@ -6,7 +6,20 @@ export type WebviewToBlocksMessage =
   | { type: 'INIT' }
   | { type: 'GET_MOUNT_FN' }
   | { type: 'GET_USER_DRAWING' }
-  | { type: 'GET_REFERENCE_PARTICIPANTS'; payload: { round: number } }
+  | { type: 'GET_SCORE' }
+  | {
+      type: 'GET_PAGINATED_DRAWINGS';
+      payload: {
+        start: number;
+        end: number;
+      };
+    }
+  | {
+      type: 'GET_REFERENCE_PARTICIPANTS';
+      payload: {
+        round: number;
+      };
+    }
   | {
       type: 'GUESS_SUBMITTED';
       payload: {
@@ -17,6 +30,20 @@ export type WebviewToBlocksMessage =
       type: 'DRAWING_SUBMITTED';
       payload: {
         imageBlob: string;
+      };
+    }
+  | {
+      type: 'UPVOTE';
+      payload: {
+        userId: string;
+        round: number;
+      };
+    }
+  | {
+      type: 'DOWNVOTE';
+      payload: {
+        userId: string;
+        round: number;
       };
     }
   | { type: 'GET_PARTICIPANTS' }
@@ -48,6 +75,22 @@ export type BlocksToWebviewMessage =
       type: 'REFERENCE_PARTICIPANTS_DATA';
       payload: {
         referenceParticipants: number;
+      };
+    }
+  | {
+      type: 'SCORE_DATA';
+      payload: {
+        score: number;
+      };
+    }
+  | {
+      type: 'PAGINATED_DRAWINGS_DATA';
+      payload: {
+        drawings: {
+          blobUrl: string;
+          user: string;
+          upvotes: number;
+        }[];
       };
     }
   | {
