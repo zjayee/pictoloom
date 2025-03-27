@@ -4,16 +4,17 @@ import type {
   RedisClient,
   Scheduler,
   ZRangeOptions,
-} from "@devvit/public-api";
+} from '@devvit/public-api';
 
-import { DrawService } from "./drawService.js";
-import { Cache } from "../storage/cache.js";
-import { Db } from "../storage/db.js";
-import { GameService } from "./gameService.js";
-import { PhraseBankService } from "./phrasebankService.js";
-import { GuessService } from "./guessService.js";
+import { DrawService } from './drawService.js';
+import { Cache } from '../storage/cache.js';
+import { Db } from '../storage/db.js';
+import { GameService } from './gameService.js';
+import { PhraseBankService } from './phrasebankService.js';
+import { GuessService } from './guessService.js';
+import { GalleryService } from './galleryService.js';
 
-import { Devvit } from "@devvit/public-api";
+import { Devvit } from '@devvit/public-api';
 
 // Handles the logic behind the application
 export class Service {
@@ -26,6 +27,7 @@ export class Service {
   readonly phraseBank: PhraseBankService;
   readonly draw: DrawService;
   readonly guess: GuessService;
+  readonly gallery: GalleryService;
 
   constructor(context: {
     redis: RedisClient;
@@ -42,5 +44,6 @@ export class Service {
     this.phraseBank = new PhraseBankService(context, this.db);
     this.draw = new DrawService(context, this.db, this.cache);
     this.guess = new GuessService(context, this.db, this.cache);
+    this.gallery = new GalleryService(context, this.db, this.cache);
   }
 }

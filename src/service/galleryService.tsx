@@ -34,4 +34,12 @@ export class GalleryService {
     this.db = db;
     this.cache = cache;
   }
+
+  async upvoteDrawing(postId: string, roundNumber: number, userId: string) {
+    await this.cache.upvoteDrawing(postId, userId, roundNumber);
+  }
+
+  async downvoteDrawing(postId: string, roundNumber: number, userId: string) {
+    await this.cache.downvoteDrawing(postId, userId, roundNumber);
+  }
 }

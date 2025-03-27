@@ -3,6 +3,7 @@ import { WebviewToBlocksMessage } from '../shared.js';
 import { sendMessageToWebview } from '../utils/sendMessageToWebview.js';
 import { Service } from '../service/service.js';
 import { placeholderBlob } from '../utils/mock.js';
+import { a } from 'motion/react-client';
 
 export function LandingPost(context: Devvit.Context) {
   const service = new Service(context);
@@ -139,15 +140,19 @@ export function LandingPost(context: Devvit.Context) {
     }
 
     if (message.type === 'UPVOTE') {
-      // TODO
-      console.log('UserId', message.payload.userId);
-      console.log('Round number', message.payload.round);
+      await service.gallery.upvoteDrawing(
+        postId,
+        message.payload.round,
+        message.payload.userId
+      );
     }
 
     if (message.type === 'DOWNVOTE') {
-      // TODO
-      console.log('UserId', message.payload.userId);
-      console.log('Round number', message.payload.round);
+      await service.gallery.downvoteDrawing(
+        postId,
+        message.payload.round,
+        message.payload.userId
+      );
     }
   };
 
