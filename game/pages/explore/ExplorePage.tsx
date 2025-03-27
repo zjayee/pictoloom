@@ -153,28 +153,40 @@ export const ExplorePage: React.FC = () => {
       <h1 className="p-4 text-2xl font-bold">EXPLORE</h1>
 
       {/* Scrollable posts container */}
-      <div className="flex-1 overflow-y-auto px-4 pb-4">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="flex w-full flex-col overflow-y-auto pb-4">
+        <div className="w-full items-center justify-center gap-y-[1.5em]">
           {drawings.map((drawing, index) => (
-            <div key={index} className="flex flex-col items-center">
+            <div
+              key={index}
+              className="flex w-[308px] flex-col items-center justify-center"
+            >
               <ImageFrame url={drawing.blobUrl} />
-              <div className="mt-2 font-bold">{drawing.user}</div>
-
-              <UpvoteDownvoteButtons
-                voteStatus={drawing.voteStatus}
-                upvotes={drawing.upvotes}
-                onUpvote={() => handleUpvote(index)}
-                onDownvote={() => handleDownvote(index)}
-              />
+              <div className="flex w-full items-center justify-between">
+                <UpvoteDownvoteButtons
+                  voteStatus={drawing.voteStatus}
+                  upvotes={drawing.upvotes}
+                  onUpvote={() => handleUpvote(index)}
+                  onDownvote={() => handleDownvote(index)}
+                />
+                <div className="mt-2 font-bold">{drawing.user}</div>
+              </div>
             </div>
           ))}
         </div>
 
-        {loading && <div className="mt-4">Loading...</div>}
+        {loading && (
+          <div className="mt-4 flex items-center justify-center">
+            Loading...
+          </div>
+        )}
         {hasMore && !loading && (
           <div ref={observerRef} className="h-4 w-full bg-transparent" />
         )}
-        {!hasMore && <div className="mt-4">No more drawings.</div>}
+        {!hasMore && (
+          <div className="mt-4 flex w-full items-center justify-center">
+            No more drawings.
+          </div>
+        )}
       </div>
     </div>
   );
