@@ -100,15 +100,17 @@ export const FinishedDrawingPage: React.FC = () => {
 
           <div className="flex w-[250px] flex-col items-center justify-center">
             <div className="mr-[0.5em] flex gap-x-[0.5em]">
-              <img
-                src="/assets/megaphone.png"
-                width={35.65}
-                height={30}
-                alt="Megaphone"
-              />
+              <div>
+                <img
+                  src="/assets/megaphone.png"
+                  width={35.65}
+                  height={30}
+                  alt="Megaphone"
+                />
+              </div>
               <span className="mt-[0.3em] text-[1.3rem]">{numDrawn} USERS</span>
             </div>
-            <div className="mt-[0.2em] text-center text-[1.1rem]">
+            <div className="mt-[0.1em] text-center text-[1.1rem]">
               used your drawing as a reference!
             </div>
           </div>
