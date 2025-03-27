@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { sendToDevvit } from '../../utils';
 import './CanvasPage.css';
 import { Button } from '../../components/Button';
@@ -14,22 +14,22 @@ const COLORS = [
   '#6BCB77',
   '#4D96FF',
   '#9D4EDD',
+  '#FFC0CB', // Pink added
 ];
 
 export const CanvasPage: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [selectedColor, setSelectedColor] = useState(COLORS[0]);
+  const [selectedColor, setSelectedColor] = useState<string | null>(COLORS[0]);
   const [isDrawing, setIsDrawing] = useState(false);
+  const [isErasing, setIsErasing] = useState(false); // New eraser state
   const [duration, setDuration] = useState<number | null>(null);
   const countdownData = useDevvitListener('COUNTDOWN_DATA');
-
   const setPage = useSetPage();
 
   // Drawing logic
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
@@ -52,9 +52,16 @@ export const CanvasPage: React.FC = () => {
     const draw = (e: MouseEvent | TouchEvent) => {
       if (!isDrawing) return;
       const { x, y } = getPos(e);
+      if (isErasing) {
+        // Eraser mode: use destination-out to erase
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.lineWidth = 20;
+      } else {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.strokeStyle = selectedColor || '#000000'; // Default to black if no color is selected
+        ctx.lineWidth = 4;
+      }
       ctx.lineTo(x, y);
-      ctx.strokeStyle = selectedColor;
-      ctx.lineWidth = 4;
       ctx.lineCap = 'round';
       ctx.stroke();
     };
@@ -68,7 +75,6 @@ export const CanvasPage: React.FC = () => {
     canvas.addEventListener('mousemove', draw);
     canvas.addEventListener('mouseup', end);
     canvas.addEventListener('mouseout', end);
-
     canvas.addEventListener('touchstart', start);
     canvas.addEventListener('touchmove', draw);
     canvas.addEventListener('touchend', end);
@@ -78,12 +84,11 @@ export const CanvasPage: React.FC = () => {
       canvas.removeEventListener('mousemove', draw);
       canvas.removeEventListener('mouseup', end);
       canvas.removeEventListener('mouseout', end);
-
       canvas.removeEventListener('touchstart', start);
       canvas.removeEventListener('touchmove', draw);
       canvas.removeEventListener('touchend', end);
     };
-  }, [isDrawing, selectedColor]);
+  }, [isDrawing, selectedColor, isErasing]);
 
   useEffect(() => {
     sendToDevvit({ type: 'GET_COUNTDOWN_DURATION' });
@@ -137,9 +142,37 @@ export const CanvasPage: React.FC = () => {
               color === selectedColor ? 'canvas-page__color--active' : ''
             }`}
             style={{ backgroundColor: color }}
-            onClick={() => setSelectedColor(color)}
+            onClick={() => {
+              setSelectedColor(color);
+              setIsErasing(false); // Disable eraser when a colour is chosen
+            }}
           />
         ))}
+        {/* Eraser Button */}
+        <button
+          className={`canvas-page__color ${isErasing ? 'canvas-page__color--active' : ''}`}
+          onClick={() => {
+            setIsErasing((prev) => !prev);
+            setSelectedColor(null);
+          }}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            className="icon icon-tabler icons-tabler-outline icon-tabler-eraser"
+          >
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M19 20h-10.5l-4.21 -4.3a1 1 0 0 1 0 -1.41l10 -10a1 1 0 0 1 1.41 0l5 5a1 1 0 0 1 0 1.41l-9.2 9.3" />
+            <path d="M18 13.3l-6.3 -6.3" />
+          </svg>
+        </button>
       </div>
 
       <canvas
@@ -161,3 +194,5 @@ export const CanvasPage: React.FC = () => {
     </div>
   );
 };
+
+export default CanvasPage;
