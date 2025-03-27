@@ -115,6 +115,14 @@ export const CanvasPage: React.FC = () => {
 
   return (
     <div className="canvas-page__container">
+      <img
+        src="/assets/banana-peek.png"
+        alt="Banana peek"
+        width={281}
+        height={248}
+        className="absolute right-0 bottom-0 z-0"
+      />
+
       <div className="canvas-page__timer">
         {duration && (
           <CountdownClock startTimeInSeconds={duration} fontSize="3rem" />
@@ -139,9 +147,10 @@ export const CanvasPage: React.FC = () => {
         ref={canvasRef}
         width={300}
         height={300}
+        className="z-1"
       ></canvas>
 
-      <div id="custom-button-container">
+      <div id="custom-button-container" className="z-1">
         <Button
           text="DONE"
           iconSrc="../public/icons/star.svg"
@@ -149,13 +158,6 @@ export const CanvasPage: React.FC = () => {
           width="10em"
         />
       </div>
-      <img
-        src="/assets/banana-peek.png"
-        alt="Banana peek"
-        width={281}
-        height={248}
-        className="absolute right-0 bottom-0"
-      />
     </div>
   );
 };
