@@ -415,7 +415,7 @@ export class Cache {
           blobUrl: drawingObj.drawing,
           user: userId,
           upvotes: drawing.score,
-          round: roundNumber,
+          round: Number(roundNumber),
         });
       }
     }
