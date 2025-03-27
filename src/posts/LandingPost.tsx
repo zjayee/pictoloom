@@ -75,7 +75,7 @@ export function LandingPost(context: Devvit.Context) {
     }
 
     if (message.type === 'GUESS_SUBMITTED') {
-      console.log('🖼️ Received gyess');
+      console.log('🐷 Received guess:', message.payload.guess);
       // TODO
     }
 
