@@ -154,7 +154,7 @@ export const ExplorePage: React.FC = () => {
 
       {/* Scrollable posts container */}
       <div className="flex w-full flex-col overflow-y-auto pb-4">
-        <div className="w-full items-center justify-center gap-y-[1.5em]">
+        <div className="flex w-full flex-col items-center justify-center gap-y-[1.5em]">
           {drawings.map((drawing, index) => (
             <div
               key={index}
