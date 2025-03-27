@@ -3,47 +3,46 @@ import { useDevvitListener } from '../../hooks/useDevvitListener';
 import { sendToDevvit } from '../../utils';
 import ImageFrame from '../../components/ImageFrame';
 import './ExplorePage.css';
+import {
+  UpvoteDownvoteButtons,
+  VoteStatus,
+} from '../../components/UpvoteDownvoteButton';
 
 type Drawing = {
   blobUrl: string;
   user: string;
   upvotes: number;
-};
-
-type VoteStatus = 'none' | 'upvoted' | 'downvoted';
-
-type DrawingWithVote = Drawing & {
-  voteStatus: VoteStatus;
+  voteStatus: VoteStatus; // 'none' | 'upvoted' | 'downvoted'
 };
 
 export const ExplorePage: React.FC = () => {
-  // State for drawings including vote status
-  const [drawings, setDrawings] = useState<DrawingWithVote[]>([]);
+  const [drawings, setDrawings] = useState<Drawing[]>([]);
   const [startIndex, setStartIndex] = useState(0);
   const limit = 12;
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  // Listen for paginated drawings data from backend
   const paginatedData = useDevvitListener('PAGINATED_DRAWINGS_DATA');
 
   useEffect(() => {
     if (paginatedData && paginatedData.drawings) {
-      // Map incoming drawings to include a voteStatus property (default "none")
-      const newDrawings: DrawingWithVote[] = (
-        paginatedData.drawings as Drawing[]
-      ).map((d) => ({ ...d, voteStatus: 'none' }));
-      // If fewer than expected items returned, assume no more drawings.
+      const newDrawings: Drawing[] = paginatedData.drawings.map(
+        (d: Omit<Drawing, 'voteStatus'>) => ({
+          ...d,
+          voteStatus: 'none',
+        })
+      );
+
       if (newDrawings.length < limit) {
         setHasMore(false);
       }
+
       setDrawings((prev) => [...prev, ...newDrawings]);
       setStartIndex((prev) => prev + newDrawings.length);
       setLoading(false);
     }
   }, [paginatedData]);
 
-  // Function to request more drawings
   const fetchDrawings = useCallback(() => {
     if (loading || !hasMore) return;
     setLoading(true);
@@ -56,17 +55,17 @@ export const ExplorePage: React.FC = () => {
     });
   }, [loading, hasMore, startIndex]);
 
-  // IntersectionObserver to trigger fetch on scroll
   const observerRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
+      ([entry]) => {
+        if (entry.isIntersecting) {
           fetchDrawings();
         }
       },
       { threshold: 1.0 }
     );
+
     if (observerRef.current) {
       observer.observe(observerRef.current);
     }
@@ -77,31 +76,26 @@ export const ExplorePage: React.FC = () => {
     };
   }, [fetchDrawings]);
 
-  // Placeholder values (replace with your own logic)
   const currentRound = 1;
   const userId = 'currentUserId';
 
-  // Handler for toggling upvote on a drawing
   const handleUpvote = (index: number) => {
     setDrawings((prev) => {
       const newDrawings = [...prev];
       const drawing = newDrawings[index];
+
       if (drawing.voteStatus === 'upvoted') {
-        // Toggle off upvote: decrement upvotes
         newDrawings[index] = {
           ...drawing,
           voteStatus: 'none',
           upvotes: drawing.upvotes - 1,
         };
-        // (Optional: send a cancel vote message)
       } else {
-        // If it was downvoted, remove that vote first (no upvote count change since downvote isn’t counted)
         let newUpvotes = drawing.upvotes;
         if (drawing.voteStatus === 'downvoted') {
-          // Removing downvote does not affect upvote count (assuming downvotes are not counted)
-          newUpvotes = drawing.upvotes; // no change
-        } else {
-          // Currently "none"
+          newUpvotes = drawing.upvotes + 1;
+        }
+        if (drawing.voteStatus === 'none') {
           newUpvotes = drawing.upvotes + 1;
         }
         newDrawings[index] = {
@@ -109,7 +103,6 @@ export const ExplorePage: React.FC = () => {
           voteStatus: 'upvoted',
           upvotes: newUpvotes,
         };
-        // Send UPVOTE message
         sendToDevvit({
           type: 'UPVOTE',
           payload: {
@@ -122,17 +115,17 @@ export const ExplorePage: React.FC = () => {
     });
   };
 
-  // Handler for toggling downvote on a drawing
   const handleDownvote = (index: number) => {
     setDrawings((prev) => {
       const newDrawings = [...prev];
       const drawing = newDrawings[index];
+
       if (drawing.voteStatus === 'downvoted') {
-        // Toggle off downvote: set to none
-        newDrawings[index] = { ...drawing, voteStatus: 'none' };
-        // (Optional: send cancel vote message)
+        newDrawings[index] = {
+          ...drawing,
+          voteStatus: 'none',
+        };
       } else {
-        // If it was upvoted, remove upvote (decrement upvotes) then set to downvoted
         let newUpvotes = drawing.upvotes;
         if (drawing.voteStatus === 'upvoted') {
           newUpvotes = drawing.upvotes - 1;
@@ -142,7 +135,7 @@ export const ExplorePage: React.FC = () => {
           voteStatus: 'downvoted',
           upvotes: newUpvotes,
         };
-        // Send DOWNVOTE message
+        // Send downvote message
         sendToDevvit({
           type: 'DOWNVOTE',
           payload: {
@@ -156,46 +149,27 @@ export const ExplorePage: React.FC = () => {
   };
 
   return (
-    <div className="explore-page-container flex flex-col items-center gap-4 text-white">
+    <div className="flex flex-col items-center gap-4 p-[1em] text-white">
       <h1 className="text-2xl font-bold">Explore</h1>
+
       <div className="grid w-full grid-cols-1 gap-4 px-4 md:grid-cols-2 lg:grid-cols-3">
         {drawings.map((drawing, index) => (
-          <div
-            key={index}
-            className="flex flex-col items-center rounded bg-gray-800 p-4"
-          >
+          <div key={index} className="flex flex-col items-center">
             <ImageFrame url={drawing.blobUrl} />
             <div className="mt-2 font-bold">{drawing.user}</div>
-            <div className="mt-1 flex items-center gap-4">
-              {/* Upvote button */}
-              <button
-                onClick={() => handleUpvote(index)}
-                className={`flex h-10 w-10 items-center justify-center rounded-full border ${
-                  drawing.voteStatus === 'upvoted'
-                    ? 'border-orange-500 text-orange-500'
-                    : 'border-gray-500 text-gray-500'
-                }`}
-              >
-                ▲
-              </button>
-              <span>{drawing.upvotes}</span>
-              {/* Downvote button */}
-              <button
-                onClick={() => handleDownvote(index)}
-                className={`flex h-10 w-10 items-center justify-center rounded-full border ${
-                  drawing.voteStatus === 'downvoted'
-                    ? 'border-blue-500 text-blue-500'
-                    : 'border-gray-500 text-gray-500'
-                }`}
-              >
-                ▼
-              </button>
-            </div>
+
+            <UpvoteDownvoteButtons
+              voteStatus={drawing.voteStatus}
+              upvotes={drawing.upvotes}
+              onUpvote={() => handleUpvote(index)}
+              onDownvote={() => handleDownvote(index)}
+            />
           </div>
         ))}
       </div>
+
       {loading && <div className="mt-4">Loading...</div>}
-      {hasMore && !loading && <div ref={observerRef} className="h-4"></div>}
+      {hasMore && !loading && <div ref={observerRef} className="h-4" />}
       {!hasMore && <div className="mt-4">No more drawings.</div>}
     </div>
   );
