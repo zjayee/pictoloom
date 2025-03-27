@@ -1,4 +1,5 @@
 import { Devvit } from '@devvit/public-api';
+import { Service } from './service/service.js';
 
 // Adds a new menu item to the subreddit allowing to create a new post
 Devvit.addMenuItem({
@@ -17,6 +18,8 @@ Devvit.addMenuItem({
         </vstack>
       ),
     });
+    const service = new Service(context);
+    await service.game.newGame(post.id);
     ui.showToast({ text: 'Created post!' });
     ui.navigateTo(post);
   },

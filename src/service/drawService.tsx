@@ -2,11 +2,11 @@ import type {
   RedditAPIClient,
   RedisClient,
   Scheduler,
-} from "@devvit/public-api";
+} from '@devvit/public-api';
 
-import { Cache } from "../storage/cache.js";
-import { Db } from "../storage/db.js";
-import { Drawing } from "../types.js";
+import { Cache } from '../storage/cache.js';
+import { Db } from '../storage/db.js';
+import { Drawing } from '../types.js';
 
 // Contains logic for drawing rounds.
 export class DrawService {
@@ -34,11 +34,11 @@ export class DrawService {
   async submitDrawing(postId: string, drawing: string) {
     const userId = await this.reddit?.getCurrentUsername();
     if (!userId) {
-      throw new Error("User not found");
+      throw new Error('User not found');
     }
     const currentRoundNum = await this.db.getGameCurrentRound(postId);
     if (currentRoundNum === 0) {
-      throw new Error("Invalid round number");
+      throw new Error('Invalid round number');
     }
 
     const phrase = await this.cache.getUserAssignedPhrase(
@@ -47,10 +47,11 @@ export class DrawService {
       userId
     );
     if (!phrase) {
-      throw new Error("Phrase not found");
+      throw new Error('Phrase not found');
     }
 
     this.db.incrRoundParticipantNum(postId, currentRoundNum);
+    this.cache.addDrawingForVote(postId, userId, currentRoundNum);
 
     const drawingObj: Drawing = {
       gameId: postId,

@@ -65,6 +65,7 @@ export class Cache {
     // Set up phrase assignment counts
     const key = this.keys.phaseRoundAssignment(postId, String(roundNumber));
     for (const phrase of phrases) {
+      console.log('adding phrase to round assignment: ' + phrase);
       await this.redis.zAdd(key, { score: 0, member: phrase });
     }
   }
@@ -98,6 +99,7 @@ export class Cache {
         i,
         i + 1
       );
+      i++;
 
       assigned = await this.addUserPhraseAssignment(
         postId,
@@ -216,6 +218,7 @@ export class Cache {
   async getReferenceDrawings(
     postId: string,
     roundNumber: number,
+    userId: string,
     phrase: string,
     count: number
   ): Promise<{ user: string; blobUrl: string }[]> {
@@ -245,6 +248,13 @@ export class Cache {
         drawings.push({ user: drawing.member, blobUrl: drawingObj.drawing });
       }
     }
+
+    this.assignReferenceForUser(
+      postId,
+      roundNumber,
+      userId,
+      referenceDrawingUserIds.map((d) => d.member)
+    );
 
     return drawings;
   }

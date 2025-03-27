@@ -30,6 +30,7 @@ export function LandingPost(context: Devvit.Context) {
     if (message.type === 'GET_REFERENCE_DRAWINGS') {
       const phrase = await service.game.selectPhraseForRound(postId);
       const drawings = await service.game.selectReferences(postId, phrase, 1);
+
       sendMessageToWebview(context, {
         type: 'REFERENCE_DRAWINGS_DATA',
         payload: {

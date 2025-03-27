@@ -2,14 +2,15 @@ import type {
   RedditAPIClient,
   RedisClient,
   Scheduler,
-} from "@devvit/public-api";
+} from '@devvit/public-api';
 
-import type { Game, Round, RoundType } from "../types.js";
+import type { Game, Round, RoundType } from '../types.js';
 
-import { Db } from "../storage/db.js";
-import { Cache } from "../storage/cache.js";
+import { Db } from '../storage/db.js';
+import { Cache } from '../storage/cache.js';
+import { placeholderBlob } from '../utils/mock.js';
 
-import { Devvit } from "@devvit/public-api";
+import { Devvit } from '@devvit/public-api';
 
 // Contains game setup logic. Handles game creation and round creation.
 export class GameService {
@@ -36,10 +37,13 @@ export class GameService {
   // Set up a new game
   async newGame(postId: string) {
     const phrases = await this.choosePhrases(3);
+    await this.cache.setNumberPhrasesForGame(postId, phrases.length);
+
+    console.log('chose phrases: ' + phrases);
     const game: Game = {
       id: postId,
       phrases: phrases,
-      status: "draw",
+      status: 'draw',
       currentRound: 0,
     };
 
@@ -47,7 +51,7 @@ export class GameService {
     await this.db.saveGame(game);
 
     // Start a new round
-    await this.newRound(postId, "draw");
+    await this.newRound(postId, 'draw');
   }
 
   async newRound(
@@ -73,9 +77,14 @@ export class GameService {
     // Increment round number
     await this.db.incrementRound(postId);
 
+    // Setup cache for round
+    await this.cache.setupPhraseAssignment(postId, round.roundNumber);
+    await this.cache.setupDrawingReferences(postId, round.roundNumber);
+    await this.cache.setupRoundReferenceGallery(postId, round.roundNumber);
+
     // Setup round
-    if (roundType === "guess") {
-      await this.db.setGameStatus(postId, "guess");
+    if (roundType === 'guess') {
+      await this.db.setGameStatus(postId, 'guess');
     } else {
       // Set up drawing references
       if (round.roundNumber > 1) {
@@ -99,10 +108,10 @@ export class GameService {
 
   private async choosePhrases(count: number) {
     /* Chooses count number of phrases from phrase bank */
-    const phraseBankWords = await this.db.getPhraseBank("default");
+    const phraseBankWords = await this.db.getPhraseBank('default');
     const idxs = new Set<number>();
 
-    if (phraseBankWords.length < count) {
+    if (phraseBankWords.length <= count) {
       return phraseBankWords;
     }
 
@@ -119,7 +128,7 @@ export class GameService {
     const currentRoundNum = await this.db.getGameCurrentRound(postId);
     const userId = await this.reddit?.getCurrentUsername();
     if (!userId) {
-      throw new Error("User not found");
+      throw new Error('User not found');
     }
     const phrase = await this.cache.assignPhraseForRound(
       postId,
@@ -133,14 +142,25 @@ export class GameService {
     postId: string,
     phrase: string,
     number_of_references: number
-  ) {
+  ): Promise<{ user: string; blobUrl: string }[]> {
     const currentRoundNum = await this.db.getGameCurrentRound(postId);
-    return await this.cache.getReferenceDrawings(
+    const userId = await this.reddit?.getCurrentUsername();
+    if (!userId) {
+      throw new Error('User not found');
+    }
+    const references = await this.cache.getReferenceDrawings(
       postId,
       currentRoundNum,
+      userId,
       phrase,
       number_of_references
     );
+
+    if (references.length == 0) {
+      // TODO: make real placeholders
+      return [{ user: 'Greedy-Ad-6376', blobUrl: placeholderBlob }];
+    }
+    return references;
   }
 
   async canParticipate(postId: string) {
@@ -160,10 +180,10 @@ export class GameService {
     const currentRound = await this.db.getGameCurrentRound(postId);
     const userId = await this.reddit?.getCurrentUsername();
     if (!userId) {
-      return "none";
+      return 'none';
     }
     if (currentRound === 0) {
-      return "none";
+      return 'none';
     }
 
     return await this.cache.getUserRoundStatus(postId, currentRound, userId);
