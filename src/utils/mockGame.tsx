@@ -29,9 +29,14 @@ export class MockGameState {
     if (!currentRound) {
       throw new Error('Game not found');
     }
-    const roundType = currentRound == '3' ? 'guess' : 'draw';
+
     // Go to next round
-    await this.service.game.newRound(postId, roundType);
+    if (currentRound == '4') {
+      await this.service.game.endGame(postId);
+    } else {
+      const roundType = currentRound == '3' ? 'guess' : 'draw';
+      await this.service.game.newRound(postId, roundType);
+    }
   }
 
   async setGameDecrementRound(postId: string) {

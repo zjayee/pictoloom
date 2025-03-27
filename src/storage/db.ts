@@ -44,6 +44,11 @@ export class Db {
     await this.redis.hSet(this.keys.game(gameId), { status });
   }
 
+  async getGameStatus(gameId: string): Promise<GameStatus> {
+    const status = await this.redis.hGet(this.keys.game(gameId), 'status');
+    return status ? (status as GameStatus) : 'end';
+  }
+
   async getGame(gameId: string): Promise<Game | null> {
     const game = await this.redis.hGetAll(this.keys.game(gameId));
     if (!game) {
