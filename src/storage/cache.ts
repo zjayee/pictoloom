@@ -42,13 +42,16 @@ export class Cache {
     phrase: string
   ): Promise<boolean> {
     /* Sets up the user phrase assignment check */
-    const assigned = await this.redis.hGet(
-      this.keys.phraseUserAssignment(postId, String(roundNumber), userId),
-      phrase
-    );
-    if (assigned) {
-      return false;
+    for (let i = 0; i <= roundNumber; i++) {
+      const assigned = await this.redis.hGet(
+        this.keys.phraseUserAssignment(postId, String(roundNumber), userId),
+        phrase
+      );
+      if (assigned) {
+        return false;
+      }
     }
+
     await this.redis.hSet(
       this.keys.phraseUserAssignment(postId, String(roundNumber), userId),
       {
@@ -267,8 +270,7 @@ export class Cache {
       0,
       -1
     );
-    console.log('phrase:', phrase);
-    console.log('UserIds:', userIdsall);
+
     const referenceDrawingUserIds = await this.redis.zRange(
       this.keys.referenceDrawing(postId, String(roundNumber), phrase),
       0,
