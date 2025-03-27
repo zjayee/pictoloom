@@ -32,6 +32,7 @@ export const ChainDrawingPreview: React.FC = () => {
     sendToDevvit({ type: 'GET_COUNTDOWN_DURATION' });
     sendToDevvit({ type: 'GET_REFERENCE_DRAWINGS' });
     sendToDevvit({ type: 'GET_WORD' });
+    sendToDevvit({ type: 'INIT' });
   }, []);
 
   useEffect(() => {
