@@ -65,10 +65,11 @@ export class GameService {
     const end_time = new Date(
       start_time.getTime() + roundLength * 60 * 60 * 1000
     );
+    const roundNum = await this.db.getGameCurrentRound(postId);
 
     const round: Round = {
       roundType: roundType,
-      roundNumber: 1,
+      roundNumber: Number(roundNum) + 1,
       startTime: start_time.toISOString(),
       endTime: end_time.toISOString(),
       participantNum: 0,
