@@ -3,6 +3,28 @@ import { CountdownClock } from '../../components/CountdownClock';
 import { sendToDevvit } from '../../utils';
 import { useDevvitListener } from '../../hooks/useDevvitListener';
 import ImageFrame from '../../components/ImageFrame';
+import { UpvoteDownvoteButtons } from '../../components/UpvoteDownvoteButton';
+
+type DrawingData = {
+  blobUrl: string;
+  user: string;
+  upvotes: number;
+  round: number;
+  voteStatus: 'none' | 'upvoted' | 'downvoted';
+};
+
+const mockDrawing: DrawingData = {
+  blobUrl: '',
+  user: 'Hello',
+  upvotes: 12,
+  round: 2,
+  voteStatus: 'none',
+};
+
+const mockData: { postType: 'draw' | 'guess'; round: number } = {
+  postType: 'draw',
+  round: 2,
+};
 
 export const FinishedDrawingPage: React.FC = () => {
   const [duration, setDuration] = useState<number | null>(null);
@@ -11,7 +33,7 @@ export const FinishedDrawingPage: React.FC = () => {
     postType: 'draw' | 'guess';
     round: number;
   } | null>(null);
-  const [userDrawing, setUserDrawing] = useState<string | null>(null);
+  const [userDrawing, setUserDrawing] = useState<DrawingData | null>(null);
   const countdownData = useDevvitListener('COUNTDOWN_DATA');
   const referenceParticipantsData = useDevvitListener(
     'REFERENCE_PARTICIPANTS_DATA'
@@ -46,7 +68,7 @@ export const FinishedDrawingPage: React.FC = () => {
 
   useEffect(() => {
     if (!userDrawingData) return;
-    setUserDrawing(userDrawingData.blobUrl);
+    setUserDrawing(userDrawingData);
   }, [userDrawingData]);
 
   return (
@@ -95,10 +117,31 @@ export const FinishedDrawingPage: React.FC = () => {
                 alt="Round"
                 width={140}
                 height={140}
-                className="absolute right-[-3em] bottom-[-3em]"
+                className="absolute right-[-3em] bottom-[-3em] z-10"
               />
             )}
-            {userDrawing && <ImageFrame url={userDrawing} />}
+            {userDrawing && data && (
+              <div className="mb-[0.5em] flex w-[308px] flex-col gap-y-[0.5em]">
+                <ImageFrame url={userDrawing.blobUrl} />
+                <div className="flex">
+                  <UpvoteDownvoteButtons
+                    voteStatus={userDrawing.voteStatus}
+                    upvotes={userDrawing.upvotes}
+                    onVoteChange={(newStatus, voteDelta) => {
+                      if (userDrawing) {
+                        setUserDrawing({
+                          ...userDrawing,
+                          voteStatus: newStatus,
+                          upvotes: userDrawing.upvotes + voteDelta,
+                        });
+                      }
+                    }}
+                    userId={userDrawing.user}
+                    currentRound={data.round}
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="flex w-[250px] flex-col items-center justify-center">

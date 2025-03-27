@@ -11,7 +11,7 @@ export const PageContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [page, setPage] = useState<Page>('guess');
+  const [page, setPage] = useState<Page>('end');
 
   return (
     <PageUpdaterContext.Provider value={setPage}>
