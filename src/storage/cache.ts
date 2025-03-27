@@ -14,8 +14,8 @@ export class Cache {
     numPhrases: (postId: string) => `numPhrases:${postId}`,
     referenceDrawing: (postId: string, roundNumber: string, phrase: string) =>
       `referenceDrawing:${postId}:${roundNumber}:${phrase}`,
-    phaseRoundAssignment: (postId: string, roundNumber: string) =>
-      `phaseRound:${postId}:${roundNumber}`,
+    phraseRoundAssignment: (postId: string, roundNumber: string) =>
+      `phraseRound:${postId}:${roundNumber}`,
     phraseUserAssignment: (
       postId: string,
       roundNumber: string,
@@ -63,7 +63,7 @@ export class Cache {
     const phrases = await this.db.getPhrasesForGame(postId);
 
     // Set up phrase assignment counts
-    const key = this.keys.phaseRoundAssignment(postId, String(roundNumber));
+    const key = this.keys.phraseRoundAssignment(postId, String(roundNumber));
     for (const phrase of phrases) {
       await this.redis.zAdd(key, { score: 0, member: phrase });
     }
@@ -94,12 +94,11 @@ export class Cache {
     let assigned = false;
     do {
       phrase = await this.redis.zRange(
-        this.keys.phaseRoundAssignment(postId, String(roundNumber)),
+        this.keys.phraseRoundAssignment(postId, String(roundNumber)),
         i,
         i + 1
       );
       i++;
-
       assigned = await this.addUserPhraseAssignment(
         postId,
         roundNumber,
@@ -110,7 +109,7 @@ export class Cache {
 
     // Increment reference count for phrase
     await this.redis.zIncrBy(
-      this.keys.phaseRoundAssignment(postId, String(roundNumber)),
+      this.keys.phraseRoundAssignment(postId, String(roundNumber)),
       phrase[0].member,
       1
     );
@@ -192,12 +191,33 @@ export class Cache {
     return result ?? 'none';
   }
 
+  async getUserIdsForPhraseRound(
+    postId: string,
+    roundNumber: number,
+    phrase: string
+  ) {
+    const getSubmittedUserIdsForRound =
+      await this.db.getSubmittedUserIdsForRound(postId, roundNumber);
+
+    const userIds = [];
+    for (const userId of getSubmittedUserIdsForRound) {
+      if (
+        (await this.getUserAssignedPhrase(postId, roundNumber, userId)) ===
+        phrase
+      ) {
+        userIds.push(userId);
+      }
+    }
+
+    return userIds;
+  }
+
   async setupDrawingReferences(postId: string, roundNumber: number) {
     const phrases = await this.db.getPhrasesForGame(postId);
     // Get drawings for round and set up zset for reference counts
 
     for (const phrase of phrases) {
-      const drawingUserIds = await this.db.getUserIdsForRound(
+      const drawingUserIds = await this.getUserIdsForPhraseRound(
         postId,
         roundNumber,
         phrase
@@ -212,6 +232,24 @@ export class Cache {
         await this.redis.zAdd(key, { score: 0, member: userId });
       }
     }
+  }
+
+  async getNumberOfReferenceDrawings(
+    postId: string,
+    roundNumber: number,
+    userId: string
+  ): Promise<number> {
+    const phrase = await this.getUserAssignedPhrase(
+      postId,
+      roundNumber,
+      userId
+    );
+    if (!phrase) {
+      return 0;
+    }
+
+    const key = this.keys.referenceDrawing(postId, String(roundNumber), phrase);
+    return await this.redis.zCard(key);
   }
 
   async getReferenceDrawings(

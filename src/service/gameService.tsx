@@ -4,7 +4,7 @@ import type {
   Scheduler,
 } from '@devvit/public-api';
 
-import type { Game, Round, RoundType } from '../types.js';
+import type { Game, GameStatus, Round, RoundType } from '../types.js';
 
 import { Db } from '../storage/db.js';
 import { Cache } from '../storage/cache.js';
@@ -95,6 +95,16 @@ export class GameService {
 
     // Save round to Redis
     await this.db.saveRound(postId, round);
+  }
+
+  async endGame(postId: string) {
+    /* Ends the game */
+    await this.db.setGameStatus(postId, 'end');
+  }
+
+  async getGameStatus(postId: string): Promise<GameStatus> {
+    /* Returns the status of the game */
+    return await this.db.getGameStatus(postId);
   }
 
   async getCurrentRound(postId: string): Promise<Round | null> {

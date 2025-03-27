@@ -1,4 +1,4 @@
-import type { RedisClient } from "@devvit/public-api";
+import type { RedisClient } from '@devvit/public-api';
 
 import type {
   Game,
@@ -7,7 +7,7 @@ import type {
   RoundType,
   Drawing,
   Guess,
-} from "../types.js";
+} from '../types.js';
 
 // File contains logic for saving and retrieving data from Redis.
 export class Db {
@@ -37,11 +37,16 @@ export class Db {
   }
 
   async incrementRound(gameId: string) {
-    await this.redis.hIncrBy(this.keys.game(gameId), "currentRound", 1);
+    await this.redis.hIncrBy(this.keys.game(gameId), 'currentRound', 1);
   }
 
   async setGameStatus(gameId: string, status: GameStatus) {
     await this.redis.hSet(this.keys.game(gameId), { status });
+  }
+
+  async getGameStatus(gameId: string): Promise<GameStatus> {
+    const status = await this.redis.hGet(this.keys.game(gameId), 'status');
+    return status ? (status as GameStatus) : 'end';
   }
 
   async getGame(gameId: string): Promise<Game | null> {
@@ -58,14 +63,14 @@ export class Db {
   }
 
   async getPhrasesForGame(gameId: string): Promise<string[]> {
-    const game = await this.redis.hGet(this.keys.game(gameId), "phrases");
+    const game = await this.redis.hGet(this.keys.game(gameId), 'phrases');
     return game ? JSON.parse(game) : [];
   }
 
   async getGameCurrentRound(gameId: string): Promise<number> {
     const currentRound = await this.redis.hGet(
       this.keys.game(gameId),
-      "currentRound"
+      'currentRound'
     );
     return currentRound ? Number(currentRound) : 0;
   }
@@ -99,7 +104,7 @@ export class Db {
   async incrRoundParticipantNum(postId: string, roundNumber: number) {
     await this.redis.hIncrBy(
       this.keys.round(postId, String(roundNumber)),
-      "participantNum",
+      'participantNum',
       1
     );
   }
@@ -132,11 +137,7 @@ export class Db {
     );
   }
 
-  async getUserIdsForRound(
-    postId: string,
-    roundNumber: number,
-    phrase: string
-  ) {
+  async getSubmittedUserIdsForRound(postId: string, roundNumber: number) {
     const drawings = await this.redis.hGetAll(
       this.keys.drawing(postId, String(roundNumber))
     );

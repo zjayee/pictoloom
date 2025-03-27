@@ -7,6 +7,7 @@ import type {
 import { Cache } from '../storage/cache.js';
 import { Db } from '../storage/db.js';
 import { Drawing } from '../types.js';
+import { placeholderBlob } from '../utils/mock.js';
 
 // Contains logic for drawing rounds.
 export class DrawService {
@@ -62,5 +63,36 @@ export class DrawService {
     };
 
     await this.db.saveDrawing(drawingObj);
+  }
+
+  async getCurUserDrawing(postId: string) {
+    const userId = await this.reddit?.getCurrentUsername();
+    if (!userId) {
+      throw new Error('User not found');
+    }
+    const currentRoundNum = await this.db.getGameCurrentRound(postId);
+    if (currentRoundNum === 0) {
+      throw new Error('Invalid round number');
+    }
+
+    const drawing = await this.db.getDrawingContent(
+      postId,
+      currentRoundNum,
+      userId
+    );
+    return drawing ?? placeholderBlob;
+  }
+
+  async getNumberofReferences(postId: string, roundNumber: number) {
+    const userId = await this.reddit?.getCurrentUsername();
+    if (!userId) {
+      throw new Error('User not found');
+    }
+    const references = await this.cache.getNumberOfReferenceDrawings(
+      postId,
+      roundNumber,
+      userId
+    );
+    return references;
   }
 }

@@ -45,6 +45,7 @@ export function LandingPost(context: Devvit.Context) {
 
     if (message.type === 'INIT') {
       const round = await service.game.getCurrentRound(postId);
+      const gameStatus = await service.game.getGameStatus(postId);
       if (!round) {
         throw new Error('Round not found');
       }
@@ -54,7 +55,7 @@ export function LandingPost(context: Devvit.Context) {
         payload: {
           postType: 'guess',
           round: Number(round.roundNumber),
-          gameStatus: 'guess', // TODO
+          gameStatus: gameStatus,
         },
       });
     }
@@ -76,7 +77,7 @@ export function LandingPost(context: Devvit.Context) {
 
     if (message.type === 'GUESS_SUBMITTED') {
       console.log('🐷 Received guess:', message.payload.guess);
-      // TODO
+      await service.guess.submitGuess(postId, message.payload.guess);
     }
 
     if (message.type === 'GET_WORD') {
@@ -90,19 +91,25 @@ export function LandingPost(context: Devvit.Context) {
     }
 
     if (message.type === 'GET_USER_DRAWING') {
+      const drawingBlob = await service.draw.getCurUserDrawing(postId);
       sendMessageToWebview(context, {
         type: 'USER_DRAWING_DATA',
         payload: {
-          blobUrl: placeholderBlob, // TODO: returns the drawing the user drew in the current round
+          blobUrl: drawingBlob,
         },
       });
     }
 
     if (message.type === 'GET_REFERENCE_PARTICIPANTS') {
+      console.log('reference participants', message.payload.round);
+      const numRef = await service.draw.getNumberofReferences(
+        postId,
+        message.payload.round
+      );
       sendMessageToWebview(context, {
         type: 'REFERENCE_PARTICIPANTS_DATA',
         payload: {
-          referenceParticipants: 12, // TODO: returns the number of ppl that used user's drawing as reference
+          referenceParticipants: numRef,
         },
       });
     }
