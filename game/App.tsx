@@ -7,6 +7,7 @@ import { ChainDrawingPreview } from './pages/chain-drawing-preview/ChainDrawingP
 import { CanvasPage } from './pages/canvas/CanvasPage';
 import { DrawingLanding } from './pages/landing/DrawingLanding';
 import { FinishedDrawingPage } from './pages/finished-drawing-page/FinishedDrawingPage';
+import { GuessPage } from './pages/guess/GuessPage';
 
 const getPage = (page: Page) => {
   switch (page) {
@@ -18,6 +19,8 @@ const getPage = (page: Page) => {
       return <CanvasPage />;
     case 'end':
       return <FinishedDrawingPage />;
+    case 'guess':
+      return <GuessPage />;
     default:
       throw new Error(`Unknown page: ${page satisfies never}`);
   }

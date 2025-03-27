@@ -112,7 +112,7 @@ export const ChainDrawingPreview: React.FC = () => {
               ? '/icons/pencil.svg'
               : '/icons/message.svg'
           }
-          onClick={() => setPage('canvas')}
+          onClick={() => setPage(data.postType === 'draw' ? 'canvas' : 'guess')}
           width="13em"
         />
       )}
