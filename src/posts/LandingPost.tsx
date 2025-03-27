@@ -27,7 +27,6 @@ export function LandingPost(context: Devvit.Context) {
 
     if (message.type === 'GET_COUNTDOWN_DURATION') {
       const round = await service.game.getCurrentRound(postId);
-      console.log('Round:', round);
       if (!round) {
         throw new Error('Round not found');
       }
@@ -54,10 +53,11 @@ export function LandingPost(context: Devvit.Context) {
     }
 
     if (message.type === 'GET_PARTICIPANTS') {
+      const round = await service.game.getCurrentRound(postId);
       sendMessageToWebview(context, {
         type: 'PARTICIPANTS_DATA',
         payload: {
-          participants: 398,
+          participants: round?.participantNum ?? 398,
         },
       });
     }
@@ -67,10 +67,11 @@ export function LandingPost(context: Devvit.Context) {
     }
 
     if (message.type === 'GET_WORD') {
+      const phrase = await service.game.selectPhraseForRound(postId);
       sendMessageToWebview(context, {
         type: 'WORD_DATA',
         payload: {
-          word: 'RUBBER DUCK',
+          word: phrase,
         },
       });
     }
