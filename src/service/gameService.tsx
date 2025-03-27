@@ -143,6 +143,7 @@ export class GameService {
       currentRoundNum,
       userId
     );
+    console.log(currentRoundNum, '| assigned phrase:', phrase);
     return phrase;
   }
 
@@ -171,7 +172,6 @@ export class GameService {
           blobUrl: mockPhraseBlobs[phrase as keyof typeof mockPhraseBlobs],
         },
       ];
-      console.log('mockRef:', mockRef);
       return mockRef;
     }
     return references;
