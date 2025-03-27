@@ -4,7 +4,13 @@ import type {
   Scheduler,
 } from '@devvit/public-api';
 
-import type { Game, GameStatus, Round, RoundType } from '../types.js';
+import type {
+  DrawingVoteStatus,
+  Game,
+  GameStatus,
+  Round,
+  RoundType,
+} from '../types.js';
 
 import { Db } from '../storage/db.js';
 import { Cache } from '../storage/cache.js';
@@ -151,7 +157,15 @@ export class GameService {
     postId: string,
     phrase: string,
     number_of_references: number
-  ): Promise<{ user: string; blobUrl: string }[]> {
+  ): Promise<
+    {
+      user: string;
+      blobUrl: string;
+      voteStatus: 'upvoted' | 'downvoted' | 'none';
+      upvotes: number;
+      round: number;
+    }[]
+  > {
     const currentRoundNum = await this.db.getGameCurrentRound(postId);
     const userId = await this.reddit?.getCurrentUsername();
     if (!userId) {
@@ -165,16 +179,41 @@ export class GameService {
       number_of_references
     );
 
+    for (const ref of references) {
+      const status = await this.cache.getDrawingVoteStatus(
+        postId,
+        userId,
+        ref.user,
+        currentRoundNum - 1
+      );
+      const upvotes = await this.cache.getDrawingUpvotes(
+        postId,
+        ref.user,
+        currentRoundNum - 1
+      );
+      Object.assign(ref, { voteStatus: status });
+      Object.assign(ref, { upvotes: upvotes });
+    }
+
     if (references.length == 0) {
       const mockRef = [
         {
           user: 'Greedy-Ad-6376',
           blobUrl: mockPhraseBlobs[phrase as keyof typeof mockPhraseBlobs],
+          voteStatus: 'none' as 'upvoted' | 'downvoted' | 'none',
+          upvotes: 1,
+          round: currentRoundNum - 1,
         },
       ];
       return mockRef;
     }
-    return references;
+    return references as {
+      user: string;
+      blobUrl: string;
+      voteStatus: 'upvoted' | 'downvoted' | 'none';
+      upvotes: number;
+      round: number;
+    }[];
   }
 
   async canParticipate(postId: string) {

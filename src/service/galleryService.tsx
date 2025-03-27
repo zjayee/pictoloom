@@ -97,6 +97,21 @@ export class GalleryService {
   }
 
   async getRankedDrawings(postId: string, start: number, end: number) {
-    return await this.cache.getDrawingsForVote(postId, start, end);
+    const drawings = await this.cache.getDrawingsForVote(postId, start, end);
+    for (const drawing of drawings) {
+      const status = await this.getDrawingVoteStatus(
+        postId,
+        drawing.round,
+        drawing.user
+      );
+      Object.assign(drawing, { voteStatus: status });
+    }
+    return drawings as {
+      user: string;
+      blobUrl: string;
+      voteStatus: DrawingVoteStatus;
+      upvotes: number;
+      round: number;
+    }[];
   }
 }

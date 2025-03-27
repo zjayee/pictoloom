@@ -92,11 +92,17 @@ export function LandingPost(context: Devvit.Context) {
     }
 
     if (message.type === 'GET_USER_DRAWING') {
-      const drawingBlob = await service.draw.getCurUserDrawing(postId);
+      const drawingInfo = await service.draw.getCurUserDrawing(postId);
       sendMessageToWebview(context, {
         type: 'USER_DRAWING_DATA',
         payload: {
-          blobUrl: drawingBlob,
+          blobUrl: drawingInfo.blobUrl,
+          upvotes: drawingInfo.upvotes,
+          round: drawingInfo.round,
+          voteStatus: drawingInfo.voteStatus as
+            | 'none'
+            | 'upvoted'
+            | 'downvoted',
         },
       });
     }
