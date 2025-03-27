@@ -37,7 +37,7 @@ export function LandingPost(context: Devvit.Context) {
       sendMessageToWebview(context, {
         type: 'COUNTDOWN_DATA',
         payload: {
-          duration: 5 * 60 * 60,
+          duration: duration,
         },
       });
     }
