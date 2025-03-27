@@ -2,13 +2,17 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useDevvitListener } from '../../hooks/useDevvitListener';
 import { sendToDevvit } from '../../utils';
 import ImageFrame from '../../components/ImageFrame';
-import { Button } from '../../components/Button';
 import './ExplorePage.css';
+import {
+  UpvoteDownvoteButtons,
+  VoteStatus,
+} from '../../components/UpvoteDownvoteButton';
 
 type Drawing = {
   blobUrl: string;
   user: string;
   upvotes: number;
+  voteStatus: VoteStatus; // 'none' | 'upvoted' | 'downvoted'
 };
 
 export const ExplorePage: React.FC = () => {
@@ -22,11 +26,17 @@ export const ExplorePage: React.FC = () => {
 
   useEffect(() => {
     if (paginatedData && paginatedData.drawings) {
-      const newDrawings = paginatedData.drawings as Drawing[];
-      // If fewer than expected items returned, assume there are no more drawings
+      const newDrawings: Drawing[] = paginatedData.drawings.map(
+        (d: Omit<Drawing, 'voteStatus'>) => ({
+          ...d,
+          voteStatus: 'none',
+        })
+      );
+
       if (newDrawings.length < limit) {
         setHasMore(false);
       }
+
       setDrawings((prev) => [...prev, ...newDrawings]);
       setStartIndex((prev) => prev + newDrawings.length);
       setLoading(false);
@@ -48,13 +58,14 @@ export const ExplorePage: React.FC = () => {
   const observerRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
+      ([entry]) => {
+        if (entry.isIntersecting) {
           fetchDrawings();
         }
       },
       { threshold: 1.0 }
     );
+
     if (observerRef.current) {
       observer.observe(observerRef.current);
     }
@@ -68,67 +79,115 @@ export const ExplorePage: React.FC = () => {
   const currentRound = 1;
   const userId = 'currentUserId';
 
-  // Handlers for upvote and downvote
   const handleUpvote = (index: number) => {
     setDrawings((prev) => {
       const newDrawings = [...prev];
-      newDrawings[index] = {
-        ...newDrawings[index],
-        upvotes: newDrawings[index].upvotes + 1,
-      };
+      const drawing = newDrawings[index];
+
+      if (drawing.voteStatus === 'upvoted') {
+        newDrawings[index] = {
+          ...drawing,
+          voteStatus: 'none',
+          upvotes: drawing.upvotes - 1,
+        };
+      } else {
+        let newUpvotes = drawing.upvotes;
+        if (drawing.voteStatus === 'downvoted') {
+          newUpvotes = drawing.upvotes + 1;
+        }
+        if (drawing.voteStatus === 'none') {
+          newUpvotes = drawing.upvotes + 1;
+        }
+        newDrawings[index] = {
+          ...drawing,
+          voteStatus: 'upvoted',
+          upvotes: newUpvotes,
+        };
+        sendToDevvit({
+          type: 'UPVOTE',
+          payload: {
+            userId,
+            round: currentRound,
+          },
+        });
+      }
       return newDrawings;
-    });
-    sendToDevvit({
-      type: 'UPVOTE',
-      payload: {
-        userId,
-        round: currentRound,
-      },
     });
   };
 
-  const handleDownvote = (_: number) => {
-    sendToDevvit({
-      type: 'DOWNVOTE',
-      payload: {
-        userId,
-        round: currentRound,
-      },
+  const handleDownvote = (index: number) => {
+    setDrawings((prev) => {
+      const newDrawings = [...prev];
+      const drawing = newDrawings[index];
+
+      if (drawing.voteStatus === 'downvoted') {
+        newDrawings[index] = {
+          ...drawing,
+          voteStatus: 'none',
+        };
+      } else {
+        let newUpvotes = drawing.upvotes;
+        if (drawing.voteStatus === 'upvoted') {
+          newUpvotes = drawing.upvotes - 1;
+        }
+        newDrawings[index] = {
+          ...drawing,
+          voteStatus: 'downvoted',
+          upvotes: newUpvotes,
+        };
+        // Send downvote message
+        sendToDevvit({
+          type: 'DOWNVOTE',
+          payload: {
+            userId,
+            round: currentRound,
+          },
+        });
+      }
+      return newDrawings;
     });
   };
 
   return (
-    <div className="explore-page-container flex flex-col items-center gap-4 text-white">
-      <h1>Check out what other users drew this round</h1>
-      <div className="grid w-full grid-cols-1 gap-4 px-4 md:grid-cols-2 lg:grid-cols-3">
-        {drawings.map((drawing, index) => (
-          <div
-            key={index}
-            className="flex flex-col items-center rounded bg-gray-800 p-4"
-          >
-            <ImageFrame url={drawing.blobUrl} />
-            <div className="mt-2 font-bold">{drawing.user}</div>
-            <div className="mt-1 flex items-center gap-2">
-              <Button
-                text="Upvote"
-                onClick={() => handleUpvote(index)}
-                width="8em"
-                iconSrc="/icons/upvote.svg"
-              />
-              <span>{drawing.upvotes}</span>
-              <Button
-                text="Downvote"
-                onClick={() => handleDownvote(index)}
-                width="8em"
-                iconSrc="/icons/downvote.svg"
-              />
+    <div className="flex h-screen w-full flex-col text-white">
+      <h1 className="p-4 text-2xl font-bold">EXPLORE</h1>
+
+      {/* Scrollable posts container */}
+      <div className="flex w-full flex-col overflow-y-auto pb-4">
+        <div className="flex w-full flex-col items-center justify-center gap-y-[3em]">
+          {drawings.map((drawing, index) => (
+            <div
+              key={index}
+              className="flex w-[308px] flex-col items-center justify-center"
+            >
+              <ImageFrame url={drawing.blobUrl} />
+              <div className="flex w-full items-center justify-between">
+                <UpvoteDownvoteButtons
+                  voteStatus={drawing.voteStatus}
+                  upvotes={drawing.upvotes}
+                  onUpvote={() => handleUpvote(index)}
+                  onDownvote={() => handleDownvote(index)}
+                />
+                <div className="mt-2 font-bold">{drawing.user}</div>
+              </div>
             </div>
+          ))}
+        </div>
+
+        {loading && (
+          <div className="mt-4 flex items-center justify-center">
+            Loading...
           </div>
-        ))}
+        )}
+        {hasMore && !loading && (
+          <div ref={observerRef} className="h-4 w-full bg-transparent" />
+        )}
+        {!hasMore && (
+          <div className="mt-4 flex w-full items-center justify-center">
+            No more drawings.
+          </div>
+        )}
       </div>
-      {loading && <div>Loading...</div>}
-      {hasMore && !loading && <div ref={observerRef} className="h-4"></div>}
-      {!hasMore && <div>No more drawings.</div>}
     </div>
   );
 };

@@ -78,7 +78,7 @@ export const ChainDrawingPreview: React.FC = () => {
         <img src="/assets/sparkle.svg" alt="Sparkle" width={20} height={20} />
       </div>
 
-      {data && data.round !== 1 ? (
+      {data && (data.postType === 'guess' || data.round !== 1) ? (
         <>
           <div className="chain-preview__caption">
             {currDrawing?.user} drew this based off a mystery word!

@@ -35,7 +35,6 @@ export const DrawingLanding: React.FC = () => {
   }, [countdownData]);
 
   useEffect(() => {
-    console.log('participants data');
     if (!participantsData) return;
     setNumDrawn(participantsData.participants);
   }, [participantsData]);
@@ -44,8 +43,11 @@ export const DrawingLanding: React.FC = () => {
     if (!initData) return;
     setData(initData);
 
-    if (!initData.canDraw) {
+    if (!initData.canDraw && initData.postType == 'draw') {
       setPage('end');
+    }
+    if (!initData.canDraw && initData.postType == 'guess') {
+      setPage('score');
     }
   }, [initData]);
 
