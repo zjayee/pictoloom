@@ -4,6 +4,14 @@ import type {
   Scheduler,
 } from '@devvit/public-api';
 
+import {
+  dancingDuckBlob,
+  fluffyDogBlob,
+  bananaDJBlob,
+  RobotLoveBlob,
+  screamingPigBlob,
+} from './mock.js';
+
 import { Service } from '../service/service.js';
 
 // Logic for setting game state for testing
@@ -55,3 +63,11 @@ export class MockGameState {
     });
   }
 }
+
+export const mockPhraseBlobs = {
+  'dancing duck': dancingDuckBlob,
+  'fluffy dog': fluffyDogBlob,
+  'banana DJ': bananaDJBlob,
+  'Robot falling in love': RobotLoveBlob,
+  'Screaming pig': screamingPigBlob,
+};

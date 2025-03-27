@@ -2,11 +2,11 @@ import type {
   RedditAPIClient,
   RedisClient,
   Scheduler,
-} from "@devvit/public-api";
+} from '@devvit/public-api';
 
-import { Db } from "../storage/db.js";
+import { Db } from '../storage/db.js';
 
-import { Devvit } from "@devvit/public-api";
+import { Devvit } from '@devvit/public-api';
 
 // Contains phrase bank logic. Handles phrase bank creation and phrase bank retrieval.
 export class PhraseBankService {

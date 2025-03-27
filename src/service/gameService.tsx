@@ -9,6 +9,7 @@ import type { Game, GameStatus, Round, RoundType } from '../types.js';
 import { Db } from '../storage/db.js';
 import { Cache } from '../storage/cache.js';
 import { placeholderBlob } from '../utils/mock.js';
+import { mockPhraseBlobs } from '../utils/mockGame.js';
 
 import { Devvit } from '@devvit/public-api';
 
@@ -164,8 +165,14 @@ export class GameService {
     );
 
     if (references.length == 0) {
-      // TODO: make real placeholders
-      return [{ user: 'Greedy-Ad-6376', blobUrl: placeholderBlob }];
+      const mockRef = [
+        {
+          user: 'Greedy-Ad-6376',
+          blobUrl: mockPhraseBlobs[phrase as keyof typeof mockPhraseBlobs],
+        },
+      ];
+      console.log('mockRef:', mockRef);
+      return mockRef;
     }
     return references;
   }

@@ -3,13 +3,13 @@ import { Service } from './service/service.js';
 
 // Adds a new menu item to the subreddit allowing to create a new post
 Devvit.addMenuItem({
-  label: 'Create New Devvit Post (with Web View)',
+  label: '[Pictoloom] Create new game',
   location: 'subreddit',
   onPress: async (_event, context) => {
     const { reddit, ui } = context;
     const subreddit = await reddit.getCurrentSubreddit();
     const post = await reddit.submitPost({
-      title: 'Web View Example',
+      title: 'Pictoloom Game',
       subredditName: subreddit.name,
       // The preview appears while the post loads
       preview: (

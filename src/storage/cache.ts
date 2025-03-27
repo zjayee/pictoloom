@@ -65,6 +65,7 @@ export class Cache {
     // Set up phrase assignment counts
     const key = this.keys.phraseRoundAssignment(postId, String(roundNumber));
     for (const phrase of phrases) {
+      console.log('Phrase:', phrase);
       await this.redis.zAdd(key, { score: 0, member: phrase });
     }
   }
