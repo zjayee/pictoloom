@@ -1,10 +1,13 @@
-export type Page = 'reference' | 'canvas' | 'landing';
+export type Page = 'reference' | 'canvas' | 'landing' | 'end';
 
 export type WebviewToBlocksMessage =
   | { type: 'GET_COUNTDOWN_DURATION' }
   | { type: 'GET_REFERENCE_DRAWINGS' }
   | { type: 'INIT' }
   | { type: 'GET_MOUNT_FN' }
+  | { type: 'GET_USER_DRAWING' }
+  | { type: 'GET_REFERENCE_PARTICIPANTS' }
+  | { type: 'GUESS_SUBMITTED' }
   | {
       type: 'DRAWING_SUBMITTED';
       payload: {
@@ -31,10 +34,23 @@ export type BlocksToWebviewMessage =
       };
     }
   | {
+      type: 'USER_DRAWING_DATA';
+      payload: {
+        blobUrl: string;
+      };
+    }
+  | {
+      type: 'REFERENCE_PARTICIPANTS_DATA';
+      payload: {
+        referenceParticipants: number;
+      };
+    }
+  | {
       type: 'INIT_RESPONSE';
       payload: {
         postType: 'draw' | 'guess';
         round: number;
+        gameStatus: 'draw' | 'guess' | 'end';
       };
     }
   | {
