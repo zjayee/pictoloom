@@ -8,7 +8,7 @@ interface UpvoteDownvoteButtonsProps {
   upvotes: number;
   userId: string;
   currentRound: number;
-  // Callback returns new vote status and the delta (change in upvote count) for UI updates.
+  // Callback returns new vote status and the delta (change in vote count) for UI updates.
   onVoteChange?: (newStatus: VoteStatus, voteDelta: number) => void;
 }
 
@@ -22,15 +22,17 @@ interface UpvoteDownvoteButtonsProps {
  * To handle vote switches correctly:
  * - If the user is currently upvoted and they press downvote, we send:
  *   - One DOWNVOTE message to cancel the upvote (–1),
- *   - A second DOWNVOTE message to register the downvote (–1 more).
- *   The net effect is a decrease of 2.
+ *   - A second DOWNVOTE message to register the downvote (–1 more),
+ *   resulting in a net change of –2.
  *
  * - If the user is currently downvoted and they press upvote, we send:
  *   - One UPVOTE message to cancel the downvote (+1),
- *   - A second UPVOTE message to register the upvote (+1 more).
- *   The net effect is an increase of 2.
+ *   - A second UPVOTE message to register the upvote (+1 more),
+ *   resulting in a net change of +2.
  *
  * - Toggling off (clicking the active vote) sends one message to cancel it.
+ *   • Toggling off upvote sends one DOWNVOTE (–1).
+ *   • Toggling off downvote sends one UPVOTE (+1).
  */
 export const UpvoteDownvoteButtons: React.FC<UpvoteDownvoteButtonsProps> = ({
   voteStatus,
@@ -44,7 +46,7 @@ export const UpvoteDownvoteButtons: React.FC<UpvoteDownvoteButtonsProps> = ({
     let newStatus: VoteStatus = voteStatus;
 
     if (voteStatus === 'upvoted') {
-      // Toggle off upvote: send one DOWNVOTE message to cancel.
+      // Toggle off upvote: send one DOWNVOTE to cancel the upvote.
       sendToDevvit({
         type: 'DOWNVOTE',
         payload: { userId, round: currentRound },
@@ -53,18 +55,18 @@ export const UpvoteDownvoteButtons: React.FC<UpvoteDownvoteButtonsProps> = ({
       voteDelta = -1;
     } else if (voteStatus === 'downvoted') {
       // Switching from downvoted to upvoted:
-      // Cancel downvote with one UPVOTE message.
+      // Cancel the downvote with one UPVOTE message,
+      // then register the upvote with another UPVOTE.
       sendToDevvit({
         type: 'UPVOTE',
         payload: { userId, round: currentRound },
       });
-      // Then register the upvote with another UPVOTE.
       sendToDevvit({
         type: 'UPVOTE',
         payload: { userId, round: currentRound },
       });
       newStatus = 'upvoted';
-      voteDelta = 1;
+      voteDelta = 2;
     } else {
       // From neutral: simply register upvote.
       sendToDevvit({
@@ -82,27 +84,27 @@ export const UpvoteDownvoteButtons: React.FC<UpvoteDownvoteButtonsProps> = ({
     let newStatus: VoteStatus = voteStatus;
 
     if (voteStatus === 'downvoted') {
-      // Toggle off downvote: send one UPVOTE message to cancel.
+      // Toggle off downvote: send one UPVOTE to cancel the downvote.
       sendToDevvit({
         type: 'UPVOTE',
         payload: { userId, round: currentRound },
       });
       newStatus = 'none';
-      voteDelta = 0; // Downvotes don't affect the displayed upvote count.
+      voteDelta = 1;
     } else if (voteStatus === 'upvoted') {
       // Switching from upvoted to downvoted:
-      // Cancel upvote: send one DOWNVOTE message to cancel (+ -1).
+      // Cancel the upvote with one DOWNVOTE message,
+      // then register the downvote with another DOWNVOTE.
       sendToDevvit({
         type: 'DOWNVOTE',
         payload: { userId, round: currentRound },
       });
-      // Then register downvote: send another DOWNVOTE message.
       sendToDevvit({
         type: 'DOWNVOTE',
         payload: { userId, round: currentRound },
       });
       newStatus = 'downvoted';
-      voteDelta = -1;
+      voteDelta = -2;
     } else {
       // From neutral: simply register downvote.
       sendToDevvit({
@@ -110,24 +112,24 @@ export const UpvoteDownvoteButtons: React.FC<UpvoteDownvoteButtonsProps> = ({
         payload: { userId, round: currentRound },
       });
       newStatus = 'downvoted';
-      voteDelta = 0; // No effect on upvote count.
+      voteDelta = -1;
     }
     onVoteChange?.(newStatus, voteDelta);
   };
 
   return (
     <div
-      className="flex h-[2em] w-[5em] cursor-pointer items-center justify-center gap-x-[0.3em] rounded-full px-[0.5em] text-white transition-colors select-none"
+      className="z-10 flex h-[2em] w-[5em] cursor-pointer items-center justify-center gap-x-[0.3em] rounded-full px-[0.5em] text-white transition-colors select-none"
       style={{ background: 'rgba(0, 0, 0, 0.3)' }}
     >
       {/* Up Arrow */}
       <button
         onClick={handleUpvote}
-        className={`flex items-center justify-center rounded-full transition-colors duration-200 focus:outline-none ${
+        className={`flex cursor-pointer items-center justify-center rounded-full transition-colors duration-200 focus:outline-none ${
           voteStatus === 'upvoted'
             ? 'text-[#FF4500]'
             : 'text-gray-300 hover:text-[#FF4500]'
-        } hover:bg-[#3a3a3c]`}
+        }`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -153,11 +155,11 @@ export const UpvoteDownvoteButtons: React.FC<UpvoteDownvoteButtonsProps> = ({
       {/* Down Arrow */}
       <button
         onClick={handleDownvote}
-        className={`flex items-center justify-center rounded-full transition-colors duration-200 focus:outline-none ${
+        className={`flex cursor-pointer items-center justify-center rounded-full transition-colors duration-200 focus:outline-none ${
           voteStatus === 'downvoted'
             ? 'text-[#7193FF]'
             : 'text-gray-300 hover:text-[#7193FF]'
-        } hover:bg-[#3a3a3c]`}
+        } `}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
