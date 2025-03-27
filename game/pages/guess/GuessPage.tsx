@@ -28,7 +28,7 @@ export const GuessPage: React.FC = () => {
       type: 'GUESS_SUBMITTED',
       payload: { guess },
     });
-    setPage('end');
+    setPage('score');
   };
 
   return (

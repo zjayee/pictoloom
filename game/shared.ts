@@ -1,4 +1,11 @@
-export type Page = 'reference' | 'canvas' | 'landing' | 'end' | 'guess';
+export type Page =
+  | 'reference'
+  | 'canvas'
+  | 'landing'
+  | 'end'
+  | 'guess'
+  | 'explore'
+  | 'score';
 
 export type WebviewToBlocksMessage =
   | { type: 'GET_COUNTDOWN_DURATION' }
@@ -6,6 +13,7 @@ export type WebviewToBlocksMessage =
   | { type: 'INIT' }
   | { type: 'GET_MOUNT_FN' }
   | { type: 'GET_USER_DRAWING' }
+  | { type: 'GET_USER_GUESS' } // ✅ NEW
   | { type: 'GET_SCORE' }
   | {
       type: 'GET_PAGINATED_DRAWINGS';
@@ -69,6 +77,12 @@ export type BlocksToWebviewMessage =
       type: 'USER_DRAWING_DATA';
       payload: {
         blobUrl: string;
+      };
+    }
+  | {
+      type: 'USER_GUESS_DATA'; // ✅ NEW
+      payload: {
+        guess: string;
       };
     }
   | {

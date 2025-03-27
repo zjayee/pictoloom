@@ -156,6 +156,15 @@ export function LandingPost(context: Devvit.Context) {
         message.payload.userId
       );
     }
+
+    if (message.type === 'GET_USER_GUESS') {
+      sendMessageToWebview(context, {
+        type: 'USER_GUESS_DATA',
+        payload: {
+          guess: 'Fat pig', // TODO
+        },
+      });
+    }
   };
 
   return (
