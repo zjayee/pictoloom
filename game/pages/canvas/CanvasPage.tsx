@@ -107,10 +107,10 @@ export const CanvasPage: React.FC = () => {
           type: 'DRAWING_SUBMITTED',
           payload: { imageBlob: base64 as string },
         });
+        setPage('end');
       };
       reader.readAsDataURL(blob);
     });
-    setPage('end');
   };
 
   return (
