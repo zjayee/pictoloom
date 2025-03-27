@@ -11,7 +11,8 @@ export type WebviewToBlocksMessage =
         imageBlob: string;
       };
     }
-  | { type: 'GET_PARTICIPANTS' };
+  | { type: 'GET_PARTICIPANTS' }
+  | { type: 'GET_WORD' };
 
 export type BlocksToWebviewMessage =
   | {
@@ -40,6 +41,12 @@ export type BlocksToWebviewMessage =
       type: 'PARTICIPANTS_DATA';
       payload: {
         participants: number;
+      };
+    }
+  | {
+      type: 'WORD_DATA';
+      payload: {
+        word: string;
       };
     };
 

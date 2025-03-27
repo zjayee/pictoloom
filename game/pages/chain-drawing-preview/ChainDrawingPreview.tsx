@@ -15,15 +15,23 @@ type DrawingData = {
 export const ChainDrawingPreview: React.FC = () => {
   const [drawingData, setDrawingData] = useState<DrawingData[] | null>(null);
   const [duration, setDuration] = useState<number | null>(null);
+  const [currDrawing, setCurrDrawing] = useState<DrawingData | null>(null);
+  const [mysteryWord, setMysteryWord] = useState('');
+  const [data, setData] = useState<{
+    postType: 'draw' | 'guess';
+    round: number;
+  } | null>(null);
   const countdownData = useDevvitListener('COUNTDOWN_DATA');
   const referenceDrawingData = useDevvitListener('REFERENCE_DRAWINGS_DATA');
-  const [currDrawing, setCurrDrawing] = useState<DrawingData | null>(null);
+  const initData = useDevvitListener('INIT_RESPONSE');
+  const mysteryWordData = useDevvitListener('WORD_DATA');
 
   const setPage = useSetPage();
 
   useEffect(() => {
     sendToDevvit({ type: 'GET_COUNTDOWN_DURATION' });
     sendToDevvit({ type: 'GET_REFERENCE_DRAWINGS' });
+    sendToDevvit({ type: 'GET_WORD' });
   }, []);
 
   useEffect(() => {
@@ -41,6 +49,16 @@ export const ChainDrawingPreview: React.FC = () => {
       setCurrDrawing(referenceDrawingData.drawings[0]);
     }
   }, [referenceDrawingData]);
+
+  useEffect(() => {
+    if (!initData) return;
+    setData(initData);
+  }, [initData]);
+
+  useEffect(() => {
+    if (!mysteryWordData) return;
+    setMysteryWord(mysteryWordData.word);
+  }, [mysteryWordData]);
 
   return (
     <div className="chain-preview__container">
@@ -61,11 +79,31 @@ export const ChainDrawingPreview: React.FC = () => {
         <img src="/assets/sparkle.svg" alt="Sparkle" width={20} height={20} />
       </div>
 
-      <div className="chain-preview__caption">
-        {currDrawing?.user} drew this based off a mystery word!
-      </div>
+      {data && data.round !== 1 ? (
+        <>
+          <div className="chain-preview__caption">
+            {currDrawing?.user} drew this based off a mystery word!
+          </div>
 
-      {currDrawing ? <ImageFrame url={currDrawing.blobUrl} /> : 'Loading...'}
+          {currDrawing ? (
+            <ImageFrame url={currDrawing.blobUrl} />
+          ) : (
+            'Loading...'
+          )}
+        </>
+      ) : mysteryWord ? (
+        <div className="z-10 my-[1em] flex flex-col gap-y-[2em]">
+          <div>The mystery word is...</div>
+          <div
+            style={{ background: 'rgba(0, 0, 0, 0.3)' }}
+            className="rounded-[15px] px-[0.75em] pt-[0.3em] pb-[0.15em] text-[4rem]"
+          >
+            {mysteryWord}
+          </div>
+        </div>
+      ) : (
+        'Loading...'
+      )}
 
       <Button
         text="DRAW IT!"

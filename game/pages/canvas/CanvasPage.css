@@ -12,6 +12,7 @@
 .canvas-page__timer {
   font-size: 2em;
   font-family: 'Offbit DotBold', sans-serif;
+  margin-bottom: -0.5em;
 }
 
 .canvas-page__color-picker {
