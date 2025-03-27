@@ -76,8 +76,8 @@ export function LandingPost(context: Devvit.Context) {
     }
 
     if (message.type === 'GUESS_SUBMITTED') {
-      console.log('🖼️ Received gyess');
-      // TODO
+      console.log('🖼️ Received guess');
+      // await service.guess.submitGuess(postId, message.payload.guess);
     }
 
     if (message.type === 'GET_WORD') {
@@ -91,10 +91,11 @@ export function LandingPost(context: Devvit.Context) {
     }
 
     if (message.type === 'GET_USER_DRAWING') {
+      const drawingBlob = await service.draw.getCurUserDrawing(postId);
       sendMessageToWebview(context, {
         type: 'USER_DRAWING_DATA',
         payload: {
-          blobUrl: placeholderBlob, // TODO: returns the drawing the user drew in the current round
+          blobUrl: drawingBlob,
         },
       });
     }

@@ -234,6 +234,24 @@ export class Cache {
     }
   }
 
+  async getNumberOfReferenceDrawings(
+    postId: string,
+    roundNumber: number,
+    userId: string
+  ): Promise<number> {
+    const phrase = await this.getUserAssignedPhrase(
+      postId,
+      roundNumber,
+      userId
+    );
+    if (!phrase) {
+      return 0;
+    }
+
+    const key = this.keys.referenceDrawing(postId, String(roundNumber), phrase);
+    return await this.redis.zCard(key);
+  }
+
   async getReferenceDrawings(
     postId: string,
     roundNumber: number,
