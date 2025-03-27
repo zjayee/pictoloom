@@ -81,6 +81,7 @@ export type BlocksToWebviewMessage =
       type: 'USER_DRAWING_DATA';
       payload: {
         blobUrl: string;
+        user: string;
         upvotes: number;
         round: number;
         voteStatus: 'none' | 'upvoted' | 'downvoted';

@@ -56,13 +56,13 @@ export const UpvoteDownvoteButtons: React.FC<UpvoteDownvoteButtonsProps> = ({
 
   return (
     <div
-      className="flex h-[2em] cursor-pointer items-center justify-center gap-x-[0.3em] rounded-full px-[0.5em] text-white transition-colors"
+      className="flex h-[2em] items-center justify-center gap-x-[0.3em] rounded-full px-[0.5em] text-white transition-colors select-none"
       style={{ background: 'rgba(0, 0, 0, 0.25)' }}
     >
       {/* Up Arrow */}
       <button
         onClick={handleUpvote}
-        className={`flex items-center justify-center rounded-full transition-colors duration-200 focus:outline-none ${voteStatus === 'upvoted' ? 'text-[#FF4500]' : 'text-gray-300 hover:text-[#FF4500]'}`}
+        className={`flex cursor-pointer items-center justify-center rounded-full transition-colors duration-200 focus:outline-none ${voteStatus === 'upvoted' ? 'text-[#FF4500]' : 'text-gray-300 hover:text-[#FF4500]'}`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -88,7 +88,7 @@ export const UpvoteDownvoteButtons: React.FC<UpvoteDownvoteButtonsProps> = ({
       {/* Down Arrow */}
       <button
         onClick={handleDownvote}
-        className={`flex items-center justify-center rounded-full transition-colors duration-200 focus:outline-none ${voteStatus === 'downvoted' ? 'text-[#7193FF]' : 'text-gray-300 hover:text-[#7193FF]'}`}
+        className={`flex cursor-pointer items-center justify-center rounded-full transition-colors duration-200 focus:outline-none ${voteStatus === 'downvoted' ? 'text-[#7193FF]' : 'text-gray-300 hover:text-[#7193FF]'}`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
