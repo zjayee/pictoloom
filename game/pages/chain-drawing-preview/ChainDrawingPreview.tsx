@@ -72,10 +72,8 @@ export const ChainDrawingPreview: React.FC = () => {
 
       <div className="chain-preview__timer-container">
         <img src="/assets/sparkle.svg" alt="Sparkle" width={30} height={30} />
-        {duration ? (
+        {duration && (
           <CountdownClock startTimeInSeconds={duration} fontSize="4rem" />
-        ) : (
-          <CountdownClock startTimeInSeconds={30 * 60} fontSize="4rem" />
         )}
         <img src="/assets/sparkle.svg" alt="Sparkle" width={20} height={20} />
       </div>

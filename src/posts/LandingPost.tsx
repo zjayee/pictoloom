@@ -37,17 +37,22 @@ export function LandingPost(context: Devvit.Context) {
       sendMessageToWebview(context, {
         type: 'COUNTDOWN_DATA',
         payload: {
-          duration: duration,
+          duration: 5 * 60 * 60,
         },
       });
     }
 
     if (message.type === 'INIT') {
+      const round = await service.game.getCurrentRound(postId);
+      if (!round) {
+        throw new Error('Round not found');
+      }
+      console.log('Round:', round);
       sendMessageToWebview(context, {
         type: 'INIT_RESPONSE',
         payload: {
-          postType: 'draw',
-          round: 1,
+          postType: round.roundType,
+          round: Number(round.roundNumber),
         },
       });
     }
