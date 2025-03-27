@@ -42,13 +42,16 @@ export class Cache {
     phrase: string
   ): Promise<boolean> {
     /* Sets up the user phrase assignment check */
-    const assigned = await this.redis.hGet(
-      this.keys.phraseUserAssignment(postId, String(roundNumber), userId),
-      phrase
-    );
-    if (assigned) {
-      return false;
+    for (let i = 0; i <= roundNumber; i++) {
+      const assigned = await this.redis.hGet(
+        this.keys.phraseUserAssignment(postId, String(roundNumber), userId),
+        phrase
+      );
+      if (assigned) {
+        return false;
+      }
     }
+
     await this.redis.hSet(
       this.keys.phraseUserAssignment(postId, String(roundNumber), userId),
       {
@@ -129,6 +132,20 @@ export class Cache {
   async setNumberPhrasesForGame(postId: string, numPhrases: number) {
     /* Sets the number of phrases for the game */
     await this.redis.set(this.keys.numPhrases(postId), String(numPhrases));
+  }
+
+  async setRoundParticipantStatus(
+    postId: string,
+    roundNumber: number,
+    userId: string,
+    status: string
+  ) {
+    await this.redis.hSet(
+      this.keys.roundParticipantStatus(postId, String(roundNumber)),
+      {
+        [userId]: status,
+      }
+    );
   }
 
   async canUserPlayRound(
@@ -267,8 +284,7 @@ export class Cache {
       0,
       -1
     );
-    console.log('phrase:', phrase);
-    console.log('UserIds:', userIdsall);
+
     const referenceDrawingUserIds = await this.redis.zRange(
       this.keys.referenceDrawing(postId, String(roundNumber), phrase),
       0,
