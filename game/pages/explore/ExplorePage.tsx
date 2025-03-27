@@ -74,7 +74,7 @@ export const ExplorePage: React.FC = () => {
   }, [fetchDrawings]);
 
   return (
-    <div className="flex h-screen w-full flex-col text-white">
+    <div className="flex h-screen w-full flex-col items-center justify-center text-white">
       <h1 className="p-4 text-2xl font-bold">EXPLORE</h1>
       <div className="flex w-full flex-col overflow-y-auto pb-4">
         <div className="flex w-full flex-col items-center justify-center gap-y-[3em]">
@@ -114,11 +114,6 @@ export const ExplorePage: React.FC = () => {
         )}
         {hasMore && !loading && (
           <div ref={observerRef} className="h-4 w-full bg-transparent" />
-        )}
-        {!hasMore && (
-          <div className="mt-4 flex w-full items-center justify-center">
-            No more drawings.
-          </div>
         )}
       </div>
     </div>
