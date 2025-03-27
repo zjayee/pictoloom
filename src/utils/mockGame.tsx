@@ -29,7 +29,7 @@ export class MockGameState {
     if (!currentRound) {
       throw new Error('Game not found');
     }
-    const roundType = currentRound === '3' ? 'draw' : 'guess';
+    const roundType = currentRound == '3' ? 'guess' : 'draw';
     // Go to next round
     await this.service.game.newRound(postId, roundType);
   }

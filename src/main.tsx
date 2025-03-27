@@ -19,7 +19,6 @@ Devvit.addMenuItem(deleteTestPosts);
 
 /* Post Menu Items */
 Devvit.addMenuItem(incrementRound);
-Devvit.addMenuItem(decrementRound);
 
 /* Triggers */
 Devvit.addTrigger(appUpgradeSetup);
