@@ -6,7 +6,7 @@ export type WebviewToBlocksMessage =
   | { type: 'INIT' }
   | { type: 'GET_MOUNT_FN' }
   | { type: 'GET_USER_DRAWING' }
-  | { type: 'GET_REFERENCE_PARTICIPANTS' }
+  | { type: 'GET_REFERENCE_PARTICIPANTS'; payload: { round: number } }
   | {
       type: 'GUESS_SUBMITTED';
       payload: {
