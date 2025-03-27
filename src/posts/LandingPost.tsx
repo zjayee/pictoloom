@@ -142,18 +142,22 @@ export function LandingPost(context: Devvit.Context) {
     }
 
     if (message.type === 'UPVOTE') {
+      const numVotes = 1;
       await service.gallery.upvoteDrawing(
         postId,
         message.payload.round,
-        message.payload.userId
+        message.payload.userId,
+        numVotes
       );
     }
 
     if (message.type === 'DOWNVOTE') {
+      const numVotes = 1;
       await service.gallery.downvoteDrawing(
         postId,
         message.payload.round,
-        message.payload.userId
+        message.payload.userId,
+        numVotes
       );
     }
 

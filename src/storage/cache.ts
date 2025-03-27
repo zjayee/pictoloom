@@ -394,19 +394,29 @@ export class Cache {
     });
   }
 
-  async upvoteDrawing(postId: string, userId: string, roundNumber: number) {
+  async upvoteDrawing(
+    postId: string,
+    userId: string,
+    roundNumber: number,
+    numVotes: number
+  ) {
     await this.redis.zIncrBy(
       this.keys.voteTracking(postId),
       roundNumber + ':' + userId,
-      1
+      numVotes
     );
   }
 
-  async downvoteDrawing(postId: string, userId: string, roundNumber: number) {
+  async downvoteDrawing(
+    postId: string,
+    userId: string,
+    roundNumber: number,
+    numVotes: number
+  ) {
     await this.redis.zIncrBy(
       this.keys.voteTracking(postId),
       roundNumber + ':' + userId,
-      -1
+      -1 * numVotes
     );
   }
 
