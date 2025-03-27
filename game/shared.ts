@@ -13,7 +13,7 @@ export type WebviewToBlocksMessage =
   | { type: 'INIT' }
   | { type: 'GET_MOUNT_FN' }
   | { type: 'GET_USER_DRAWING' }
-  | { type: 'GET_USER_GUESS' } // ✅ NEW
+  | { type: 'GET_USER_GUESS' }
   | { type: 'GET_SCORE' }
   | {
       type: 'GET_PAGINATED_DRAWINGS';
@@ -104,6 +104,7 @@ export type BlocksToWebviewMessage =
           blobUrl: string;
           user: string;
           upvotes: number;
+          round: number;
         }[];
       };
     }
