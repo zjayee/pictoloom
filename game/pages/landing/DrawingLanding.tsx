@@ -44,7 +44,7 @@ export const DrawingLanding: React.FC = () => {
     if (!initData) return;
     setData(initData);
 
-    if (initData.gameStatus === 'end') {
+    if (!initData.canDraw) {
       setPage('end');
     }
   }, [initData]);
