@@ -11,7 +11,7 @@ export const PageContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [page, setPage] = useState<Page>('end');
+  const [page, setPage] = useState<Page>('loading');
 
   return (
     <PageUpdaterContext.Provider value={setPage}>

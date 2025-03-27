@@ -61,7 +61,7 @@ export const DrawingLanding: React.FC = () => {
   };
 
   return (
-    <div className="relative flex h-full w-full items-center justify-center bg-red-300 text-white">
+    <div className="relative flex h-full w-full items-center justify-center text-white">
       {/* Background */}
       <img
         src="/assets/bg-purple.png"
