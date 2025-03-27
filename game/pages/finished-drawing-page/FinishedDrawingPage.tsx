@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { CountdownClock } from '../../components/CountdownClock';
 import { sendToDevvit } from '../../utils';
 import { useDevvitListener } from '../../hooks/useDevvitListener';
+import ImageFrame from '../../components/ImageFrame';
 
 export const FinishedDrawingPage: React.FC = () => {
   const [duration, setDuration] = useState<number | null>(null);
@@ -10,14 +11,19 @@ export const FinishedDrawingPage: React.FC = () => {
     postType: 'draw' | 'guess';
     round: number;
   } | null>(null);
+  const [userDrawing, setUserDrawing] = useState<string | null>(null);
   const countdownData = useDevvitListener('COUNTDOWN_DATA');
+  const referenceParticipantsData = useDevvitListener(
+    'REFERENCE_PARTICIPANTS_DATA'
+  );
   const initData = useDevvitListener('INIT_RESPONSE');
-  const referenceDrawingData = useDevvitListener('REFERENCE_DRAWINGS_DATA');
+  const userDrawingData = useDevvitListener('USER_DRAWING_DATA');
 
   useEffect(() => {
-    sendToDevvit({ type: 'INIT' });
     sendToDevvit({ type: 'GET_COUNTDOWN_DURATION' });
-    sendToDevvit({ type: 'GET_REFERENCE_DRAWINGS' });
+    sendToDevvit({ type: 'GET_REFERENCE_PARTICIPANTS' });
+    sendToDevvit({ type: 'GET_USER_DRAWING' });
+    sendToDevvit({ type: 'INIT' });
   }, []);
 
   useEffect(() => {
@@ -26,9 +32,19 @@ export const FinishedDrawingPage: React.FC = () => {
   }, [countdownData]);
 
   useEffect(() => {
+    if (!referenceParticipantsData) return;
+    setNumDrawn(referenceParticipantsData.referenceParticipants);
+  }, [referenceParticipantsData]);
+
+  useEffect(() => {
     if (!initData) return;
     setData(initData);
   }, [initData]);
+
+  useEffect(() => {
+    if (!userDrawingData) return;
+    setUserDrawing(userDrawingData.blobUrl);
+  }, [userDrawingData]);
 
   return (
     <div className="relative flex h-full w-full items-center justify-center bg-red-300 text-white">
@@ -40,27 +56,37 @@ export const FinishedDrawingPage: React.FC = () => {
       />
 
       {/* Foreground UI */}
-      <div className="relative z-30 flex h-full w-full items-center justify-center">
-        {/* Left Column */}
-        <div className="relative mt-[2em] ml-[1.1em] flex h-full w-[60%] max-w-[417px] flex-col items-end justify-start">
-          <div className="flex w-[100%] justify-start pl-[3.7em]">
-            {duration && <CountdownClock startTimeInSeconds={duration} />}
-          </div>
-
+      <div className="relative z-30 flex h-full w-full flex-col items-center justify-center gap-y-[1em]">
+        {/* Top Row */}
+        <div className="relative flex w-full max-w-[417px] flex-col items-center justify-center">
+          {/* {duration && <CountdownClock startTimeInSeconds={duration} />} */}
+          <CountdownClock startTimeInSeconds={5 * 60 * 60} />
           <img
             src="/assets/clock.svg"
             alt="Countdown clock"
             width={91.14}
             height={91.14}
-            className="absolute top-[1.1em] left-[-0.2em] z-0"
+            className="absolute top-[1.1em] left-[-0.4em] z-0"
+          />
+          <img
+            src="/assets/sparkle.svg"
+            alt="Sparkle"
+            width={30}
+            height={30}
+            className="absolute right-0 bottom-[2.5em] z-0"
+          />
+          <img
+            src="/assets/sparkle.svg"
+            alt="Sparkle"
+            width={20}
+            height={20}
+            className="absolute right-[1.75em] bottom-[0.8em] z-0"
           />
         </div>
 
-        {/* Right Column */}
-        <div className="flex h-full w-[40%] max-w-[284px] flex-col justify-between pr-[1em]">
-          {/* Top: Round Image */}
-          <div className="flex justify-end pt-[1em]">
-            {/* {data && data.postType === 'draw' && (
+        {/* Bottom Row */}
+        <div className="mb-[1em] flex w-full items-center justify-center gap-x-[2em]">
+          {/* {data && data.postType === 'draw' && (
               <img
                 src={`/assets/round-${data.round}.gif`}
                 alt="Round"
@@ -68,29 +94,29 @@ export const FinishedDrawingPage: React.FC = () => {
                 height={140}
               />
             )} */}
+          <div className="relative">
             <img
               src={`/assets/round-1.gif`}
               alt="Round"
               width={140}
               height={140}
+              className="absolute right-[-3em] bottom-[-3em]"
             />
+            {userDrawing && <ImageFrame url={userDrawing} />}
           </div>
 
-          {/* Bottom UI */}
-          <div className="flex flex-col items-end gap-y-[0.9em] pr-[1.3em] pb-[1.4em]">
-            {/* Users drawn */}
-            <div className="relative w-[250px]">
-              <div className="absolute top-0 left-0 flex h-[53px] w-[250px] items-center justify-center gap-x-[0.5em]">
-                <img
-                  src="/assets/megaphone.png"
-                  width={35.65}
-                  height={30}
-                  alt="Megaphone"
-                />
-                <span className="mt-[0.3em] text-[1.3rem]">
-                  {numDrawn} USERS
-                </span>
-              </div>
+          <div className="flex w-[250px] flex-col items-center justify-center text-[1.3rem]">
+            <div className="mr-[0.5em] flex gap-x-[0.5em]">
+              <img
+                src="/assets/megaphone.png"
+                width={35.65}
+                height={30}
+                alt="Megaphone"
+              />
+              <span className="mt-[0.3em]">{numDrawn} USERS</span>
+            </div>
+            <div className="mt-[0.2em] text-center">
+              used your drawing as a reference!
             </div>
           </div>
         </div>
