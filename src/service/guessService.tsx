@@ -73,6 +73,14 @@ export class GuessService {
     return await this.db.getUserGuessScore(postId, userId);
   }
 
+  async getUserGuess(postId: string) {
+    const userId = await this.reddit?.getCurrentUsername();
+    if (!userId) {
+      throw new Error('User not found');
+    }
+    return (await this.db.getUserGuess(postId, userId)) ?? '';
+  }
+
   private generateScore(phrase: string, guess: string): number {
     // TODO: Implement vector encoding and cosine similarity
     const distance = levenshtein.get(phrase, guess);

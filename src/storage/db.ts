@@ -8,6 +8,8 @@ import type {
   Drawing,
   Guess,
 } from '../types.js';
+import { g } from 'motion/react-client';
+import { J } from 'vitest/dist/chunks/reporters.QZ837uWx.js';
 
 // File contains logic for saving and retrieving data from Redis.
 export class Db {
@@ -198,6 +200,14 @@ export class Db {
       return 0;
     }
     return JSON.parse(guess).score;
+  }
+
+  async getUserGuess(postId: string, userId: string): Promise<string | null> {
+    const guess = await this.redis.hGet(this.keys.guess(postId), userId);
+    if (!guess) {
+      return null;
+    }
+    return JSON.parse(guess).guess;
   }
 
   async getDrawingsForGame(

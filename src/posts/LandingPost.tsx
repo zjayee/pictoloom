@@ -158,10 +158,11 @@ export function LandingPost(context: Devvit.Context) {
     }
 
     if (message.type === 'GET_USER_GUESS') {
+      const guess = await service.guess.getUserGuess(postId);
       sendMessageToWebview(context, {
         type: 'USER_GUESS_DATA',
         payload: {
-          guess: 'Fat pig', // TODO
+          guess: guess,
         },
       });
     }
