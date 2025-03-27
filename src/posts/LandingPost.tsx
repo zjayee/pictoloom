@@ -1,5 +1,4 @@
 import { Devvit } from '@devvit/public-api';
-import { placeholderBlob } from '../utils/mock.js';
 import { WebviewToBlocksMessage } from '../shared.js';
 import { sendMessageToWebview } from '../utils/sendMessageToWebview.js';
 import { Service } from '../service/service.js';
@@ -49,7 +48,7 @@ export function LandingPost(context: Devvit.Context) {
         type: 'INIT_RESPONSE',
         payload: {
           postType: 'draw',
-          round: 2,
+          round: 1,
         },
       });
     }
@@ -65,6 +64,15 @@ export function LandingPost(context: Devvit.Context) {
 
     if (message.type === 'DRAWING_SUBMITTED') {
       console.log('🖼️ Received drawing:', message.payload.imageBlob);
+    }
+
+    if (message.type === 'GET_WORD') {
+      sendMessageToWebview(context, {
+        type: 'WORD_DATA',
+        payload: {
+          word: 'RUBBER DUCK',
+        },
+      });
     }
   };
 

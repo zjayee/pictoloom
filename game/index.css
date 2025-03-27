@@ -12,6 +12,8 @@ html {
   display: flex;
   justify-content: center;
   align-items: flex-end;
+  max-height: 514px;
+  overflow: hidden;
 }
 
 .countdown-clock {
