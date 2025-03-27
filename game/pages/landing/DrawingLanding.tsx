@@ -76,6 +76,19 @@ export const DrawingLanding: React.FC = () => {
           width={718}
           height={514}
         />
+        {/* {currDrawing ? (
+          <div className="absolute">
+            <ImageFrame url={currDrawing?.user} />
+          </div>
+        ) : (
+          'Loading'
+        )} */}
+        <div
+          className="absolute mt-[1.5em] ml-[2em]"
+          style={{ transform: 'rotate(-10.11deg)' }}
+        >
+          <ImageFrame url={'/mock/fat_pig.png'} blur />
+        </div>
       </div>
 
       {/* FRONT overlay */}
@@ -86,9 +99,6 @@ export const DrawingLanding: React.FC = () => {
           width={718}
           height={514}
         />
-        <div className="absolute">
-          <ImageFrame url="" />
-        </div>
       </div>
 
       {/* Foreground UI */}
