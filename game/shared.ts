@@ -69,8 +69,11 @@ export type BlocksToWebviewMessage =
       type: 'REFERENCE_DRAWINGS_DATA';
       payload: {
         drawings: {
-          user: string;
           blobUrl: string;
+          user: string;
+          upvotes: number;
+          round: number;
+          voteStatus: 'none' | 'upvoted' | 'downvoted';
         }[];
       };
     }
@@ -78,10 +81,13 @@ export type BlocksToWebviewMessage =
       type: 'USER_DRAWING_DATA';
       payload: {
         blobUrl: string;
+        upvotes: number;
+        round: number;
+        voteStatus: 'none' | 'upvoted' | 'downvoted';
       };
     }
   | {
-      type: 'USER_GUESS_DATA'; // ✅ NEW
+      type: 'USER_GUESS_DATA';
       payload: {
         guess: string;
       };
@@ -106,6 +112,7 @@ export type BlocksToWebviewMessage =
           user: string;
           upvotes: number;
           round: number;
+          voteStatus: 'none' | 'upvoted' | 'downvoted';
         }[];
       };
     }
