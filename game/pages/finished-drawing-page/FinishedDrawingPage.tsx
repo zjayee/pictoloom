@@ -56,11 +56,10 @@ export const FinishedDrawingPage: React.FC = () => {
       />
 
       {/* Foreground UI */}
-      <div className="relative z-30 flex h-full w-full flex-col items-center justify-center gap-y-[1em]">
+      <div className="relative z-30 flex h-full w-full flex-col items-center justify-center gap-y-[1.5em]">
         {/* Top Row */}
         <div className="relative flex w-full max-w-[417px] flex-col items-center justify-center">
-          {/* {duration && <CountdownClock startTimeInSeconds={duration} />} */}
-          <CountdownClock startTimeInSeconds={5 * 60 * 60} />
+          {duration && <CountdownClock startTimeInSeconds={duration} />}
           <img
             src="/assets/clock.svg"
             alt="Countdown clock"
@@ -85,23 +84,17 @@ export const FinishedDrawingPage: React.FC = () => {
         </div>
 
         {/* Bottom Row */}
-        <div className="mb-[1em] flex w-full items-center justify-center gap-x-[2em]">
-          {/* {data && data.postType === 'draw' && (
+        <div className="mb-[2em] ml-[1em] flex w-full items-center justify-center gap-x-[2em]">
+          <div className="relative">
+            {data && data.postType === 'draw' && (
               <img
                 src={`/assets/round-${data.round}.gif`}
                 alt="Round"
                 width={140}
                 height={140}
+                className="absolute right-[-3em] bottom-[-3em]"
               />
-            )} */}
-          <div className="relative">
-            <img
-              src={`/assets/round-1.gif`}
-              alt="Round"
-              width={140}
-              height={140}
-              className="absolute right-[-3em] bottom-[-3em]"
-            />
+            )}
             {userDrawing && <ImageFrame url={userDrawing} />}
           </div>
 
