@@ -38,7 +38,6 @@ export const FinishedDrawingPage: React.FC = () => {
   useEffect(() => {
     if (!initData) return;
     setData(initData);
-    console.log('init data', initData);
     sendToDevvit({
       type: 'GET_REFERENCE_PARTICIPANTS',
       payload: { round: initData.round },

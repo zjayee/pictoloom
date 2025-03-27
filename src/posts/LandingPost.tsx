@@ -53,7 +53,7 @@ export function LandingPost(context: Devvit.Context) {
       sendMessageToWebview(context, {
         type: 'INIT_RESPONSE',
         payload: {
-          postType: 'guess',
+          postType: round.roundType,
           round: Number(round.roundNumber),
           gameStatus: gameStatus,
         },
@@ -101,7 +101,6 @@ export function LandingPost(context: Devvit.Context) {
     }
 
     if (message.type === 'GET_REFERENCE_PARTICIPANTS') {
-      console.log('reference participants', message.payload.round);
       const numRef = await service.draw.getNumberofReferences(
         postId,
         message.payload.round
