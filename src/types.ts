@@ -30,8 +30,9 @@ export type Guess = {
   score: number;
 };
 
-export type RoundType = "draw" | "guess";
-export type GameStatus = "draw" | "guess" | "end";
+export type RoundType = 'draw' | 'guess';
+export type GameStatus = 'draw' | 'guess' | 'end';
+export type DrawingVoteStatus = 'upvoted' | 'downvoted' | 'none';
 
 export type CommentId = `t1_${string}`;
 export type UserId = `t2_${string}`;

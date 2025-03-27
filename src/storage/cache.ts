@@ -1,5 +1,6 @@
 import type { RedisClient, ZMember } from '@devvit/public-api';
 import { Db } from './db.js';
+import { DrawingVoteStatus } from '../types.js';
 
 export class Cache {
   readonly redis: RedisClient;
@@ -33,6 +34,8 @@ export class Cache {
     voteTracking: (postId: string) => `voteTracking:${postId}`,
     // Maps "Draw" and "Guess" to comma seperated list of postIds
     gameStatus: `gameStatus`,
+    drawingUserUpvotes: (postId: string, roundNumber: string, userId: string) =>
+      `drawingUserVotes:${postId}:${roundNumber}:${userId}`,
   };
 
   async addUserPhraseAssignment(
@@ -396,28 +399,57 @@ export class Cache {
 
   async upvoteDrawing(
     postId: string,
-    userId: string,
+    votingUserId: string,
+    drawingUserId: string,
     roundNumber: number,
     numVotes: number
   ) {
     await this.redis.zIncrBy(
       this.keys.voteTracking(postId),
-      roundNumber + ':' + userId,
+      roundNumber + ':' + drawingUserId,
       numVotes
+    );
+
+    await this.redis.hSet(
+      this.keys.drawingUserUpvotes(postId, String(roundNumber), votingUserId),
+      {
+        [drawingUserId]: 'upvoted',
+      }
     );
   }
 
   async downvoteDrawing(
     postId: string,
-    userId: string,
+    votingUserId: string,
+    drawingUserId: string,
     roundNumber: number,
     numVotes: number
   ) {
     await this.redis.zIncrBy(
       this.keys.voteTracking(postId),
-      roundNumber + ':' + userId,
+      roundNumber + ':' + drawingUserId,
       -1 * numVotes
     );
+
+    await this.redis.hSet(
+      this.keys.drawingUserUpvotes(postId, String(roundNumber), votingUserId),
+      {
+        [drawingUserId]: 'downvoted',
+      }
+    );
+  }
+
+  async getDrawingVoteStatus(
+    postId: string,
+    votingUserId: string,
+    drawingUserId: string,
+    roundNumber: number
+  ): Promise<DrawingVoteStatus> {
+    const status = await this.redis.hGet(
+      this.keys.drawingUserUpvotes(postId, String(roundNumber), votingUserId),
+      drawingUserId
+    );
+    return (status as DrawingVoteStatus) ?? 'none';
   }
 
   async getDrawingsForVote(postId: string, start: number, end: number) {

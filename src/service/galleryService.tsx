@@ -4,7 +4,13 @@ import type {
   Scheduler,
 } from '@devvit/public-api';
 
-import type { Game, GameStatus, Round, RoundType } from '../types.js';
+import type {
+  DrawingVoteStatus,
+  Game,
+  GameStatus,
+  Round,
+  RoundType,
+} from '../types.js';
 
 import { Db } from '../storage/db.js';
 import { Cache } from '../storage/cache.js';
@@ -41,7 +47,17 @@ export class GalleryService {
     userId: string,
     numVotes: number
   ) {
-    await this.cache.upvoteDrawing(postId, userId, roundNumber, numVotes);
+    const votingUserId = await this.reddit?.getCurrentUsername();
+    if (!votingUserId) {
+      throw new Error('User not found');
+    }
+    await this.cache.upvoteDrawing(
+      postId,
+      votingUserId,
+      userId,
+      roundNumber,
+      numVotes
+    );
   }
 
   async downvoteDrawing(
@@ -50,7 +66,34 @@ export class GalleryService {
     userId: string,
     numVotes: number
   ) {
-    await this.cache.downvoteDrawing(postId, userId, roundNumber, numVotes);
+    const votingUserId = await this.reddit?.getCurrentUsername();
+    if (!votingUserId) {
+      throw new Error('User not found');
+    }
+    await this.cache.downvoteDrawing(
+      postId,
+      votingUserId,
+      userId,
+      roundNumber,
+      numVotes
+    );
+  }
+
+  async getDrawingVoteStatus(
+    postId: string,
+    roundNumber: number,
+    userId: string
+  ): Promise<DrawingVoteStatus> {
+    const votingUserId = await this.reddit?.getCurrentUsername();
+    if (!votingUserId) {
+      throw new Error('User not found');
+    }
+    return await this.cache.getDrawingVoteStatus(
+      postId,
+      votingUserId,
+      userId,
+      roundNumber
+    );
   }
 
   async getRankedDrawings(postId: string, start: number, end: number) {
