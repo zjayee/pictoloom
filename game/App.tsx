@@ -10,9 +10,12 @@ import { FinishedDrawingPage } from './pages/finished-drawing-page/FinishedDrawi
 import { GuessPage } from './pages/guess/GuessPage';
 import { ScorePage } from './pages/score-page/ScorePage';
 import ExplorePage from './pages/explore/ExplorePage';
+import { LoadingPage } from './pages/loading/LoadingPage';
 
 const getPage = (page: Page) => {
   switch (page) {
+    case 'loading':
+      return <LoadingPage />;
     case 'landing':
       return <DrawingLanding />;
     case 'reference':
