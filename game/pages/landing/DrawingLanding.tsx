@@ -43,6 +43,10 @@ export const DrawingLanding: React.FC = () => {
   useEffect(() => {
     if (!initData) return;
     setData(initData);
+
+    if (initData.gameStatus === 'end') {
+      setPage('end');
+    }
   }, [initData]);
 
   useEffect(() => {
