@@ -63,7 +63,8 @@ export function LandingPost(context: Devvit.Context) {
     }
 
     if (message.type === 'DRAWING_SUBMITTED') {
-      console.log('🖼️ Received drawing:', message.payload.imageBlob);
+      console.log('🖼️ Received drawing');
+      await service.draw.submitDrawing(postId, message.payload.imageBlob);
     }
 
     if (message.type === 'GET_WORD') {
