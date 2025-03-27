@@ -29,7 +29,10 @@ export const CountdownClock: React.FC<CountdownClockProps> = ({
   return (
     <div
       className="countdown-clock z-1 flex items-center justify-center"
-      style={{ fontSize: fontSize ?? '4.9rem' }}
+      style={{
+        fontSize: fontSize ?? '4.9rem',
+        fontFamily: "'Offbit DotBold', sans-serif",
+      }}
     >
       {formatTime(remainingTime)}
     </div>

@@ -1,0 +1,51 @@
+.chain-preview__container {
+  width: 100%;
+  text-align: center;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 1em;
+}
+
+.chain-preview__timer-container {
+  width: 23em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  height: 3.4em;
+  margin-bottom: -0.5em;
+}
+
+.chain-preview__timer-container img:first-of-type {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.chain-preview__timer-container img:last-of-type {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
+.chain-preview__timer {
+  font-size: 4rem;
+  font-weight: bold;
+  font-family: 'Offbit DotBold', sans-serif;
+  margin-bottom: -0.2em;
+}
+
+.chain-preview__caption {
+  font-size: 1rem;
+}
+
+.chain-preview__deco {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 0;
+}

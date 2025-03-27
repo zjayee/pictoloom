@@ -147,6 +147,15 @@ export function LandingPost(context: Devvit.Context) {
       console.log('UserId', message.payload.userId);
       console.log('Round number', message.payload.round);
     }
+
+    if (message.type === 'GET_USER_GUESS') {
+      sendMessageToWebview(context, {
+        type: 'USER_GUESS_DATA',
+        payload: {
+          guess: 'Fat pig', // TODO
+        },
+      });
+    }
   };
 
   return (
