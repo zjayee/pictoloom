@@ -103,6 +103,7 @@ export function LandingPost(context: Devvit.Context) {
             | 'none'
             | 'upvoted'
             | 'downvoted',
+          user: drawingInfo.userId,
         },
       });
     }
