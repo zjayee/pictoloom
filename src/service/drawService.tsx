@@ -53,6 +53,12 @@ export class DrawService {
 
     this.db.incrRoundParticipantNum(postId, currentRoundNum);
     this.cache.addDrawingForVote(postId, userId, currentRoundNum);
+    this.cache.setRoundParticipantStatus(
+      postId,
+      currentRoundNum,
+      userId,
+      'played'
+    );
 
     const drawingObj: Drawing = {
       gameId: postId,

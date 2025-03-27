@@ -134,6 +134,20 @@ export class Cache {
     await this.redis.set(this.keys.numPhrases(postId), String(numPhrases));
   }
 
+  async setRoundParticipantStatus(
+    postId: string,
+    roundNumber: number,
+    userId: string,
+    status: string
+  ) {
+    await this.redis.hSet(
+      this.keys.roundParticipantStatus(postId, String(roundNumber)),
+      {
+        [userId]: status,
+      }
+    );
+  }
+
   async canUserPlayRound(
     postId: string,
     roundNumber: number,
