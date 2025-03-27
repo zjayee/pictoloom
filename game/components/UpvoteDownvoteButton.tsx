@@ -1,51 +1,109 @@
 import React from 'react';
+import { sendToDevvit } from '../utils';
 
 export type VoteStatus = 'none' | 'upvoted' | 'downvoted';
 
 interface UpvoteDownvoteButtonsProps {
   voteStatus: VoteStatus;
   upvotes: number;
-  onUpvote: () => void;
-  onDownvote: () => void;
+  userId: string;
+  currentRound: number;
+  onVoteChange?: (newStatus: VoteStatus, voteDelta: number) => void;
 }
 
-/**
- * A pill-like container with an up arrow, vote count, and down arrow,
- * styled to mimic Reddit's upvote/downvote with hover states.
- */
 export const UpvoteDownvoteButtons: React.FC<UpvoteDownvoteButtonsProps> = ({
   voteStatus,
   upvotes,
-  onUpvote,
-  onDownvote,
+  userId,
+  currentRound,
+  onVoteChange,
 }) => {
+  const handleUpvote = () => {
+    let voteDelta = 0;
+    let newStatus: VoteStatus = voteStatus;
+
+    if (voteStatus === 'upvoted') {
+      newStatus = 'none';
+      voteDelta = -1;
+    } else {
+      newStatus = 'upvoted';
+      voteDelta = voteStatus === 'downvoted' ? 1 : 1;
+      sendToDevvit({
+        type: 'UPVOTE',
+        payload: { userId, round: currentRound },
+      });
+    }
+    onVoteChange?.(newStatus, voteDelta);
+  };
+
+  const handleDownvote = () => {
+    let voteDelta = 0;
+    let newStatus: VoteStatus = voteStatus;
+
+    if (voteStatus === 'downvoted') {
+      newStatus = 'none';
+      voteDelta = 0;
+    } else {
+      newStatus = 'downvoted';
+      voteDelta = voteStatus === 'upvoted' ? -1 : 0;
+      sendToDevvit({
+        type: 'DOWNVOTE',
+        payload: { userId, round: currentRound },
+      });
+    }
+    onVoteChange?.(newStatus, voteDelta);
+  };
+
   return (
-    <div className="mt-3 flex items-center gap-2 rounded-full bg-[#272729] px-4 py-2 text-white">
+    <div
+      className="flex h-[2em] w-[5em] cursor-pointer items-center justify-center gap-x-[0.5em] rounded-full text-white transition-colors"
+      style={{ background: 'rgba(0, 0, 0, 0.25)' }}
+    >
       {/* Up Arrow */}
       <button
-        onClick={onUpvote}
-        className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition-colors duration-200 focus:outline-none ${
-          voteStatus === 'upvoted'
-            ? 'text-[#FF4500]'
-            : 'text-gray-300 hover:text-[#FF4500]'
-        } hover:bg-[#3a3a3c]`}
+        onClick={handleUpvote}
+        className={`flex items-center justify-center rounded-full transition-colors duration-200 focus:outline-none ${voteStatus === 'upvoted' ? 'text-[#FF4500]' : 'text-gray-300 hover:text-[#FF4500]'} hover:bg-[#3a3a3c]`}
       >
-        ▲
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill={voteStatus !== 'upvoted' ? 'none' : 'currentColor'}
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+          <path d="M9 20v-8h-3.586a1 1 0 0 1 -.707 -1.707l6.586 -6.586a1 1 0 0 1 1.414 0l6.586 6.586a1 1 0 0 1 -.707 1.707h-3.586v8a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+        </svg>
       </button>
 
       {/* Upvote Count */}
-      <span className="font-semibold">{upvotes}</span>
+      <span className="mt-[0.2em] flex items-center justify-center font-semibold">
+        {upvotes}
+      </span>
 
       {/* Down Arrow */}
       <button
-        onClick={onDownvote}
-        className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition-colors duration-200 focus:outline-none ${
-          voteStatus === 'downvoted'
-            ? 'text-[#7193FF]'
-            : 'text-gray-300 hover:text-[#7193FF]'
-        } hover:bg-[#3a3a3c]`}
+        onClick={handleDownvote}
+        className={`flex items-center justify-center rounded-full transition-colors duration-200 focus:outline-none ${voteStatus === 'downvoted' ? 'text-[#7193FF]' : 'text-gray-300 hover:text-[#7193FF]'} hover:bg-[#3a3a3c]`}
       >
-        ▼
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill={voteStatus !== 'downvoted' ? 'none' : 'currentColor'}
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+          <path d="M15 4v8h3.586a1 1 0 0 1 .707 1.707l-6.586 6.586a1 1 0 0 1 -1.414 0l-6.586 -6.586a1 1 0 0 1 .707 -1.707h3.586v-8a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1z" />
+        </svg>
       </button>
     </div>
   );
