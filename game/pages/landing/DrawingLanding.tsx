@@ -126,13 +126,6 @@ export const DrawingLanding: React.FC = () => {
           />
         </div>
 
-        <button
-          className="z-30 cursor-pointer"
-          onClick={() => setPage('score')}
-        >
-          Hi
-        </button>
-
         {/* Right Column */}
         <div className="flex h-full w-[40%] max-w-[284px] flex-col justify-between pr-[0.5em]">
           <div className="flex justify-end pt-[7px]">
