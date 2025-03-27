@@ -149,6 +149,13 @@ export const CanvasPage: React.FC = () => {
           width="10em"
         />
       </div>
+      <img
+        src="/assets/banana-peek.png"
+        alt="Banana peek"
+        width={281}
+        height={248}
+        className="absolute right-0 bottom-0"
+      />
     </div>
   );
 };
