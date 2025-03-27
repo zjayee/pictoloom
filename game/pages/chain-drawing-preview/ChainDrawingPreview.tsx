@@ -16,6 +16,19 @@ type DrawingData = {
   voteStatus: 'none' | 'upvoted' | 'downvoted';
 };
 
+const mockDrawing: DrawingData = {
+  blobUrl: '',
+  user: 'Hello',
+  upvotes: 12,
+  round: 2,
+  voteStatus: 'none',
+};
+
+const mockData: { postType: 'draw' | 'guess'; round: number } = {
+  postType: 'draw',
+  round: 2,
+};
+
 export const ChainDrawingPreview: React.FC = () => {
   const [drawingData, setDrawingData] = useState<DrawingData[] | null>(null);
   const [duration, setDuration] = useState<number | null>(null);
@@ -66,7 +79,7 @@ export const ChainDrawingPreview: React.FC = () => {
   }, [mysteryWordData]);
 
   return (
-    <div className="chain-preview__container">
+    <div className="chain-preview__container relative">
       <img
         className="chain-preview__deco"
         src="/assets/torus.png"
@@ -88,27 +101,27 @@ export const ChainDrawingPreview: React.FC = () => {
             {currDrawing?.user} drew this based off a mystery word!
           </div>
 
-          {currDrawing ? (
-            <div className="flex w-[308px] flex-col gap-y-[0.5em]">
+          {currDrawing && (
+            <div className="mb-[0.5em] flex w-[308px] flex-col gap-y-[0.5em]">
               <ImageFrame url={currDrawing.blobUrl} />
-              <UpvoteDownvoteButtons
-                voteStatus={currDrawing.voteStatus}
-                upvotes={currDrawing.upvotes}
-                onVoteChange={(newStatus, voteDelta) => {
-                  if (currDrawing) {
-                    setCurrDrawing({
-                      ...currDrawing,
-                      voteStatus: newStatus,
-                      upvotes: currDrawing.upvotes + voteDelta,
-                    });
-                  }
-                }}
-                userId={currDrawing.user}
-                currentRound={currDrawing.round}
-              />
+              <div className="flex">
+                <UpvoteDownvoteButtons
+                  voteStatus={currDrawing.voteStatus}
+                  upvotes={currDrawing.upvotes}
+                  onVoteChange={(newStatus, voteDelta) => {
+                    if (currDrawing) {
+                      setCurrDrawing({
+                        ...currDrawing,
+                        voteStatus: newStatus,
+                        upvotes: currDrawing.upvotes + voteDelta,
+                      });
+                    }
+                  }}
+                  userId={currDrawing.user}
+                  currentRound={currDrawing.round}
+                />
+              </div>
             </div>
-          ) : (
-            'Loading...'
           )}
         </>
       ) : mysteryWord ? (
