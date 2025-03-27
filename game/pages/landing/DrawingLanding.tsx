@@ -9,9 +9,10 @@ import ImageFrame from '../../components/ImageFrame';
 export const DrawingLanding: React.FC = () => {
   const [duration, setDuration] = useState<number | null>(null);
   const [numDrawn, setNumDrawn] = useState(0);
-  const [data, setData] = useState<{ postType: number; round: number } | null>(
-    null
-  );
+  const [data, setData] = useState<{
+    postType: 'draw' | 'guess';
+    round: number;
+  } | null>(null);
   const [currDrawing, setCurrDrawing] = useState<{
     user: string;
     blobUrl: string;
@@ -76,19 +77,16 @@ export const DrawingLanding: React.FC = () => {
           width={718}
           height={514}
         />
-        {/* {currDrawing ? (
-          <div className="absolute">
-            <ImageFrame url={currDrawing?.user} />
+        {currDrawing ? (
+          <div
+            className="absolute mt-[1.5em] ml-[2em]"
+            style={{ transform: 'rotate(-10.11deg)' }}
+          >
+            <ImageFrame url={currDrawing.blobUrl} blur />
           </div>
         ) : (
           'Loading'
-        )} */}
-        <div
-          className="absolute mt-[1.5em] ml-[2em]"
-          style={{ transform: 'rotate(-10.11deg)' }}
-        >
-          <ImageFrame url={'/mock/fat_pig.png'} blur />
-        </div>
+        )}
       </div>
 
       {/* FRONT overlay */}
@@ -104,8 +102,8 @@ export const DrawingLanding: React.FC = () => {
       {/* Foreground UI */}
       <div className="relative z-30 flex h-full w-full items-center justify-center">
         {/* Left Column */}
-        <div className="relative mt-[1.2em] ml-[1.1em] flex h-full w-[60%] max-w-[417px] flex-col items-end justify-start">
-          <div className="flex w-[100%] justify-start pl-[4em]">
+        <div className="relative mt-[1.5em] ml-[1.1em] flex h-full w-[60%] max-w-[417px] flex-col items-end justify-start">
+          <div className="flex w-[100%] justify-start pl-[3.7em]">
             {duration ? (
               <CountdownClock startTimeInSeconds={duration} />
             ) : (
@@ -118,24 +116,26 @@ export const DrawingLanding: React.FC = () => {
             alt="Countdown clock"
             width={91.14}
             height={91.14}
-            className="absolute top-[1.1em] left-[0.5em] z-0"
+            className="absolute top-[1.1em] left-[-0.2em] z-0"
           />
         </div>
 
         {/* Right Column */}
-        <div className="flex h-full w-[40%] max-w-[284px] flex-col justify-between">
+        <div className="flex h-full w-[40%] max-w-[284px] flex-col justify-between pr-[0.5em]">
           {/* Top: Round Image */}
           <div className="flex justify-end pt-[7px]">
-            <img
-              src="/assets/round-3.gif"
-              alt="Round"
-              width={140}
-              height={140}
-            />
+            {data && data.postType === 'draw' && (
+              <img
+                src={`/assets/round-${data.round}.gif`}
+                alt="Round"
+                width={140}
+                height={140}
+              />
+            )}
           </div>
 
           {/* Bottom UI */}
-          <div className="flex flex-col items-end gap-y-[0.9em] pr-[1.3em] pb-[1.5em]">
+          <div className="flex flex-col items-end gap-y-[0.9em] pr-[1.3em] pb-[1.4em]">
             {/* Start Button */}
             <Button
               text="START DRAWING"

@@ -32,7 +32,7 @@ export type BlocksToWebviewMessage =
   | {
       type: 'INIT_RESPONSE';
       payload: {
-        postType: number;
+        postType: 'draw' | 'guess';
         round: number;
       };
     }

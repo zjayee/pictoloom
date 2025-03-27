@@ -42,8 +42,8 @@ export function LandingPost(context: Devvit.Context) {
       sendMessageToWebview(context, {
         type: 'INIT_RESPONSE',
         payload: {
-          postType: 1,
-          round: 3,
+          postType: 'draw',
+          round: 2,
         },
       });
     }
