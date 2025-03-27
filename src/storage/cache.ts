@@ -1,5 +1,5 @@
-import type { RedisClient, ZMember } from "@devvit/public-api";
-import { Db } from "./db.js";
+import type { RedisClient, ZMember } from '@devvit/public-api';
+import { Db } from './db.js';
 
 export class Cache {
   readonly redis: RedisClient;
@@ -13,15 +13,26 @@ export class Cache {
   readonly keys = {
     numPhrases: (postId: string) => `numPhrases:${postId}`,
     referenceDrawing: (postId: string, roundNumber: string, phrase: string) =>
-      `referenceDrawing:${postId}:${roundNumber}`,
+      `referenceDrawing:${postId}:${roundNumber}:${phrase}`,
     phaseRoundAssignment: (postId: string, roundNumber: string) =>
       `phaseRound:${postId}:${roundNumber}`,
-    phraseUserAssignment: (postId: string, userId: string) =>
-      `phraseUser:${postId}:${userId}`,
+    phraseUserAssignment: (
+      postId: string,
+      roundNumber: string,
+      userId: string
+    ) => `phraseUser:${postId}:${roundNumber}:${userId}`,
+    referenceUserAssignment: (postId: string, roundNumber: string) =>
+      `referenceUser:${postId}:${roundNumber}`,
+    // Maps userid to drawings that used them as reference. Stores list of userids.
+    referenceDrawings: (postId: string, roundNumber: string) =>
+      `referenceDrawings:${postId}:${roundNumber}`,
     roundParticipantStatus: (
       postId: string,
       roundNumber: string // Status can be "played" or "no_phrases" or "assigned"
     ) => `roundParticipantStatus:${postId}:${roundNumber}`,
+    voteTracking: (postId: string) => `voteTracking:${postId}`,
+    // Maps "Draw" and "Guess" to comma seperated list of postIds
+    gameStatus: `gameStatus`,
   };
 
   async addUserPhraseAssignment(
@@ -32,15 +43,18 @@ export class Cache {
   ): Promise<boolean> {
     /* Sets up the user phrase assignment check */
     const assigned = await this.redis.hGet(
-      this.keys.phraseUserAssignment(postId, userId),
+      this.keys.phraseUserAssignment(postId, String(roundNumber), userId),
       phrase
     );
     if (assigned) {
       return false;
     }
-    await this.redis.hSet(this.keys.phraseUserAssignment(postId, userId), {
-      [phrase]: String(roundNumber),
-    });
+    await this.redis.hSet(
+      this.keys.phraseUserAssignment(postId, String(roundNumber), userId),
+      {
+        [phrase]: String(roundNumber),
+      }
+    );
     return true;
   }
 
@@ -51,6 +65,7 @@ export class Cache {
     // Set up phrase assignment counts
     const key = this.keys.phaseRoundAssignment(postId, String(roundNumber));
     for (const phrase of phrases) {
+      console.log('adding phrase to round assignment: ' + phrase);
       await this.redis.zAdd(key, { score: 0, member: phrase });
     }
   }
@@ -64,7 +79,7 @@ export class Cache {
 
     // Check if user has already been assigned a phrase
     const assignedPhrases = await this.redis.hGetAll(
-      this.keys.phraseUserAssignment(postId, userId)
+      this.keys.phraseUserAssignment(postId, String(roundNumber), userId)
     );
     if (assignedPhrases) {
       for (const phrase in assignedPhrases) {
@@ -84,6 +99,7 @@ export class Cache {
         i,
         i + 1
       );
+      i++;
 
       assigned = await this.addUserPhraseAssignment(
         postId,
@@ -104,7 +120,7 @@ export class Cache {
     await this.redis.hSet(
       this.keys.roundParticipantStatus(postId, String(roundNumber)),
       {
-        [userId]: "assigned",
+        [userId]: 'assigned',
       }
     );
 
@@ -126,27 +142,55 @@ export class Cache {
       this.keys.roundParticipantStatus(postId, String(roundNumber)),
       userId
     );
-    if (status === "played" || status === "no_phrases") {
+    if (status === 'played' || status === 'no_phrases') {
       return false;
-    } else if (status === "assigned") {
+    } else if (status === 'assigned') {
       return true;
     }
 
     // Check if user has submitted drawing for all phrases
     const numPhrases = await this.redis.get(this.keys.numPhrases(postId));
     const drawnPhrases = await this.redis.hLen(
-      this.keys.phraseUserAssignment(postId, userId)
+      this.keys.phraseUserAssignment(postId, String(roundNumber), userId)
     );
     if (drawnPhrases >= Number(numPhrases)) {
       await this.redis.hSet(
         this.keys.roundParticipantStatus(postId, String(roundNumber)),
         {
-          [userId]: "no_phrases",
+          [userId]: 'no_phrases',
         }
       );
       return false;
     }
     return true;
+  }
+
+  async getUserAssignedPhrase(
+    postId: string,
+    roundNumber: number,
+    userId: string
+  ): Promise<string | null> {
+    const assignedPhrases = await this.redis.hGetAll(
+      this.keys.phraseUserAssignment(postId, String(roundNumber), userId)
+    );
+    for (const phrase in assignedPhrases) {
+      if (assignedPhrases[phrase] === String(roundNumber)) {
+        return phrase;
+      }
+    }
+    return null;
+  }
+
+  async getUserRoundStatus(
+    postId: string,
+    roundNumber: number,
+    userId: string
+  ): Promise<string> {
+    const result = await this.redis.hGet(
+      this.keys.roundParticipantStatus(postId, String(roundNumber)),
+      userId
+    );
+    return result ?? 'none';
   }
 
   async setupDrawingReferences(postId: string, roundNumber: number) {
@@ -174,9 +218,10 @@ export class Cache {
   async getReferenceDrawings(
     postId: string,
     roundNumber: number,
+    userId: string,
     phrase: string,
     count: number
-  ) {
+  ): Promise<{ user: string; blobUrl: string }[]> {
     /* Returns the count reference drawings for the round */
     const referenceDrawingUserIds = await this.redis.zRange(
       this.keys.referenceDrawing(postId, String(roundNumber), phrase),
@@ -193,17 +238,178 @@ export class Cache {
         1
       );
 
-      const drawingObj = await this.db.getDrawing(
+      const drawingObj = await this.db.getDrawingObj(
         postId,
         roundNumber,
         phrase,
         drawing.member
       );
       if (drawingObj) {
-        drawings.push(drawingObj);
+        drawings.push({ user: drawing.member, blobUrl: drawingObj.drawing });
       }
     }
 
+    this.assignReferenceForUser(
+      postId,
+      roundNumber,
+      userId,
+      referenceDrawingUserIds.map((d) => d.member)
+    );
+
     return drawings;
+  }
+
+  async assignReferenceForUser(
+    postId: string,
+    roundNumber: number,
+    userId: string,
+    references: string[] // List of userIds
+  ) {
+    const key = this.keys.referenceUserAssignment(postId, String(roundNumber));
+
+    await this.redis.hSet(key, {
+      [userId]: JSON.stringify(references),
+    });
+  }
+
+  async getAssignedReferences(
+    postId: string,
+    roundNumber: number,
+    userId: string
+  ): Promise<string[]> {
+    const key = this.keys.referenceUserAssignment(postId, String(roundNumber));
+    const references = await this.redis.hGet(key, userId);
+    if (!references) {
+      return [];
+    }
+    return JSON.parse(references);
+  }
+
+  async setupRoundReferenceGallery(postId: string, roundNumber: number) {
+    const key = this.keys.referenceDrawings(postId, String(roundNumber));
+
+    const assignedRefKey = this.keys.referenceUserAssignment(
+      postId,
+      String(roundNumber)
+    );
+    const assignedReferences = await this.redis.hGetAll(assignedRefKey);
+    const referenceMap: Record<string, string[]> = {};
+
+    for (const [userId, references] of Object.entries(assignedReferences)) {
+      const referenceList: string[] = JSON.parse(references);
+      for (const referenceUserId of referenceList) {
+        if (!referenceMap[referenceUserId]) {
+          referenceMap[referenceUserId] = [];
+        }
+        referenceMap[referenceUserId].push(userId);
+      }
+    }
+
+    for (const [userId, references] of Object.entries(referenceMap)) {
+      await this.redis.hSet(key, {
+        [userId]: JSON.stringify(references),
+      });
+    }
+  }
+
+  async getRoundReferenceGalleryIds(
+    postId: string,
+    roundNumber: number,
+    userId: string
+  ): Promise<string[]> {
+    const key = this.keys.referenceDrawings(postId, String(roundNumber));
+    const referenceGallery = await this.redis.hGet(key, userId);
+    if (!referenceGallery) {
+      return [];
+    }
+    return JSON.parse(referenceGallery);
+  }
+
+  async addDrawingForVote(postId: string, userId: string, roundNumber: number) {
+    await this.redis.zAdd(this.keys.voteTracking(postId), {
+      score: 0,
+      member: roundNumber + ':' + userId,
+    });
+  }
+
+  async upvoteDrawing(postId: string, userId: string, roundNumber: number) {
+    await this.redis.zIncrBy(
+      this.keys.voteTracking(postId),
+      roundNumber + ':' + userId,
+      1
+    );
+  }
+
+  async downvoteDrawing(postId: string, userId: string, roundNumber: number) {
+    await this.redis.zIncrBy(
+      this.keys.voteTracking(postId),
+      roundNumber + ':' + userId,
+      -1
+    );
+  }
+
+  async getDrawingsForVote(postId: string, start: number, end: number) {
+    const drawingzMembers = await this.redis.zRange(
+      this.keys.voteTracking(postId),
+      start,
+      end
+    );
+
+    let drawings = [];
+    for (const drawing of drawingzMembers) {
+      const [roundNumber, userId] = drawing.member.split(':');
+      const drawingObj = await this.db.getDrawingObj(
+        postId,
+        Number(roundNumber),
+        '',
+        userId
+      );
+      if (drawingObj) {
+        drawings.push({
+          userId: userId,
+          drawing: drawingObj.drawing,
+          score: drawing.score,
+        });
+      }
+    }
+    return drawings;
+  }
+
+  async addGameStatus(postId: string, status: string) {
+    const statusKey = this.keys.gameStatus;
+    let postIds = await this.redis.hGet(statusKey, status);
+    if (!postIds) {
+      postIds = '';
+    }
+    postIds += postId + ',';
+    await this.redis.hSet(statusKey, {
+      [status]: postIds,
+    });
+  }
+
+  async addGamesToStatus(postIds: string[], status: string) {
+    const statusKey = this.keys.gameStatus;
+    let postIdsStr = await this.redis.hGet(statusKey, status);
+    if (!postIdsStr) {
+      postIdsStr = '';
+    }
+    postIdsStr += postIds.join(',') + ',';
+    await this.redis.hSet(statusKey, {
+      [status]: postIdsStr,
+    });
+  }
+
+  async getGamesByStatus(status: string) {
+    const statusKey = this.keys.gameStatus;
+    const postIds = await this.redis.hGet(statusKey, status);
+    if (!postIds) {
+      return [];
+    }
+    return postIds.split(',');
+  }
+
+  async clearGamesForStatus(status: string) {
+    const statusKey = this.keys.gameStatus;
+    await this.redis.hDel(statusKey, [status]);
   }
 }

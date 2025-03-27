@@ -1,8 +1,8 @@
-import { Devvit, AppUpgradeDefinition } from "@devvit/public-api";
-import { Service } from "../service/service.js";
+import { Devvit, AppUpgradeDefinition } from '@devvit/public-api';
+import { Service } from '../service/service.js';
 
 export const dailyPostJob = Devvit.addSchedulerJob({
-  name: "dailyPost",
+  name: 'dailyPost',
   onRun: async (event, context) => {
     if (event.data) {
       try {
@@ -10,43 +10,36 @@ export const dailyPostJob = Devvit.addSchedulerJob({
         const service = new Service(context);
         const post = await context.reddit.submitPost({
           subredditName: subreddit.name,
-          title: "Daily Pictoloom Game",
+          title: 'Daily Pictoloom Game',
           preview: (
             <vstack>
               <text>Loading...</text>
             </vstack>
           ),
         });
-        console.log("Posted to Reddit:", post.id);
+        console.log('Posted to Reddit:', post.id);
         await service.game.newGame(post.id);
       } catch (error) {
-        console.error("", error);
+        console.error('', error);
       }
     }
   },
 });
 
 export const dailyPostTrigger: AppUpgradeDefinition = {
-  event: "AppUpgrade",
+  event: 'AppUpgrade',
   onEvent: async (_, context) => {
     try {
-      // Clear existing jobs
-      const prevJobId = await context.redis.get("scheduledGameJobId");
-      if (prevJobId) {
-        await context.scheduler.cancelJob(prevJobId);
-        console.log("Cancelled existing post job with id:", prevJobId);
-      }
-
       // Schedule daily post job
       const jobId = await context.scheduler.runJob({
-        cron: "0 14 * * *",
-        name: "dailyPost",
+        cron: '0 14 * * *',
+        name: 'dailyPost',
         data: {},
       });
-      await context.redis.set("scheduledGameJobId", jobId);
-      console.log("Scheduled dailyPost job with id:", jobId);
+
+      console.log('Scheduled dailyPost job with id:', jobId);
     } catch (e) {
-      console.log("error was not able to schedule:", e);
+      console.log('error was not able to schedule:', e);
       throw e;
     }
   },

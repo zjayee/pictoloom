@@ -22,9 +22,9 @@ export class Db {
     phraseBank: (name: string) => `phraseBank:${name}`,
     round: (postId: string, roundNumber: string) =>
       `round:${postId}:${roundNumber}`,
-    drawing: (postId: string, roundNumber: string, phrase: string) =>
+    drawing: (postId: string, roundNumber: string) =>
       `drawing:${postId}:${roundNumber}`,
-    guess: (postId: string, phrase: string) => `guess:${postId}:${phrase}`,
+    guess: (postId: string) => `guess:${postId}`,
   };
 
   async saveGame(game: Game) {
@@ -123,9 +123,9 @@ export class Db {
     await this.redis.del(this.keys.phraseBank(name));
   }
 
-  async saveDrawing(drawing: Drawing, phrase: string) {
+  async saveDrawing(drawing: Drawing) {
     await this.redis.hSet(
-      this.keys.drawing(drawing.gameId, String(drawing.roundNumber), phrase),
+      this.keys.drawing(drawing.gameId, String(drawing.roundNumber)),
       {
         [drawing.userId]: drawing.drawing,
       }
@@ -138,7 +138,7 @@ export class Db {
     phrase: string
   ) {
     const drawings = await this.redis.hGetAll(
-      this.keys.drawing(postId, String(roundNumber), phrase)
+      this.keys.drawing(postId, String(roundNumber))
     );
 
     // extract keys from hash
@@ -146,26 +146,57 @@ export class Db {
     return userIds;
   }
 
-  async getDrawing(
+  async getDrawingObj(
     postId: string,
     roundNumber: number,
     phrase: string,
     userId: string
-  ) {
+  ): Promise<Drawing | null> {
     const drawing = await this.redis.hGet(
-      this.keys.drawing(postId, String(roundNumber), phrase),
+      this.keys.drawing(postId, String(roundNumber)),
       userId
     );
-    return drawing;
+    if (!drawing) {
+      return null;
+    }
+    const drawingObj: Drawing = {
+      gameId: postId,
+      userId: userId,
+      roundNumber: roundNumber,
+      drawing: drawing,
+      phrase: phrase,
+    };
+    return drawingObj;
   }
 
-  async saveGuess(guess: Guess, phrase: string) {
+  async getDrawingContent(
+    postId: string,
+    roundNumber: number,
+    userId: string
+  ): Promise<string | null> {
+    const drawing = await this.redis.hGet(
+      this.keys.drawing(postId, String(roundNumber)),
+      userId
+    );
+    return drawing ?? null;
+  }
+
+  async saveGuess(guess: Guess) {
     const info = {
       guess: guess.guess,
       score: String(guess.score),
     };
-    await this.redis.hSet(this.keys.guess(guess.gameId, phrase), {
+    await this.redis.hSet(this.keys.guess(guess.gameId), {
       [guess.userId]: JSON.stringify(info),
     });
+  }
+
+  async getDrawingsForGame(
+    postId: string,
+    start?: number,
+    end?: number
+  ): Promise<Drawing[]> {
+    /* Returns all drawings for game sorted by popularity. If start and end are set returns that range. */
+    return [];
   }
 }
