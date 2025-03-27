@@ -52,6 +52,12 @@ export class GuessService {
     }
 
     this.db.incrRoundParticipantNum(postId, currentRoundNum);
+    this.cache.setRoundParticipantStatus(
+      postId,
+      currentRoundNum,
+      userId,
+      'played'
+    );
 
     const guessObj: Guess = {
       gameId: postId,
@@ -86,6 +92,6 @@ export class GuessService {
     const distance = levenshtein.get(phrase, guess);
     const maxLength = Math.max(phrase.length, guess.length);
 
-    return 1 - (distance / maxLength) * 100; // Normalize to [0,100]
+    return Math.round((1 - distance / maxLength) * 10000); // Normalize to [0,100]
   }
 }
