@@ -127,14 +127,16 @@ export function LandingPost(context: Devvit.Context) {
     }
 
     if (message.type === 'GET_PAGINATED_DRAWINGS') {
-      // TODO
-      console.log('Start number', message.payload.start);
-      console.log('End number', message.payload.end);
+      const drawings = await service.gallery.getRankedDrawings(
+        postId,
+        message.payload.start,
+        message.payload.end
+      );
 
       sendMessageToWebview(context, {
         type: 'PAGINATED_DRAWINGS_DATA',
         payload: {
-          drawings: [{ blobUrl: '', user: '', upvotes: 10 }],
+          drawings: drawings,
         },
       });
     }

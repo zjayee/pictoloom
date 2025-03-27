@@ -412,9 +412,9 @@ export class Cache {
       );
       if (drawingObj) {
         drawings.push({
-          userId: userId,
-          drawing: drawingObj.drawing,
-          score: drawing.score,
+          blobUrl: drawingObj.drawing,
+          user: userId,
+          upvotes: drawing.score,
         });
       }
     }

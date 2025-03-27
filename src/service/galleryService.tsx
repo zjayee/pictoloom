@@ -42,4 +42,8 @@ export class GalleryService {
   async downvoteDrawing(postId: string, roundNumber: number, userId: string) {
     await this.cache.downvoteDrawing(postId, userId, roundNumber);
   }
+
+  async getRankedDrawings(postId: string, start: number, end: number) {
+    return await this.cache.getDrawingsForVote(postId, start, end);
+  }
 }
