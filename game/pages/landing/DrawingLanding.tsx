@@ -4,17 +4,29 @@ import { sendToDevvit } from '../../utils';
 import { useSetPage } from '../../hooks/usePage';
 import { Button } from '../../components/Button';
 import { useDevvitListener } from '../../hooks/useDevvitListener';
+import ImageFrame from '../../components/ImageFrame';
 
 export const DrawingLanding: React.FC = () => {
   const [duration, setDuration] = useState<number | null>(null);
   const [numDrawn, setNumDrawn] = useState(0);
+  const [data, setData] = useState<{
+    postType: 'draw' | 'guess';
+    round: number;
+  } | null>(null);
+  const [currDrawing, setCurrDrawing] = useState<{
+    user: string;
+    blobUrl: string;
+  } | null>(null);
   const countdownData = useDevvitListener('COUNTDOWN_DATA');
   const initData = useDevvitListener('INIT_RESPONSE');
+  const participantsData = useDevvitListener('PARTICIPANTS_DATA');
+  const referenceDrawingData = useDevvitListener('REFERENCE_DRAWINGS_DATA');
 
   useEffect(() => {
     sendToDevvit({ type: 'INIT' });
     sendToDevvit({ type: 'GET_COUNTDOWN_DURATION' });
     sendToDevvit({ type: 'GET_REFERENCE_DRAWINGS' });
+    sendToDevvit({ type: 'GET_PARTICIPANTS' });
   }, []);
 
   useEffect(() => {
@@ -23,9 +35,24 @@ export const DrawingLanding: React.FC = () => {
   }, [countdownData]);
 
   useEffect(() => {
+    if (!participantsData) return;
+    setNumDrawn(participantsData.participants);
+  }, [participantsData]);
+
+  useEffect(() => {
     if (!initData) return;
-    setNumDrawn(initData.participants);
+    setData(initData);
   }, [initData]);
+
+  useEffect(() => {
+    if (!referenceDrawingData) return;
+    if (
+      referenceDrawingData.drawings &&
+      referenceDrawingData.drawings.length > 0
+    ) {
+      setCurrDrawing(referenceDrawingData.drawings[0]);
+    }
+  }, [referenceDrawingData]);
 
   const setPage = useSetPage();
 
@@ -43,17 +70,27 @@ export const DrawingLanding: React.FC = () => {
       />
 
       {/* BACK overlay */}
-      <div className="absolute top-0 left-0 z-10 ml-[15px] flex h-full items-center">
+      <div className="absolute z-10 ml-[15px] flex h-full w-[718px] items-center">
         <img
           src="/assets/assets-back.png"
           alt="Assets Back"
           width={718}
           height={514}
         />
+        {currDrawing ? (
+          <div
+            className="absolute mt-[1.5em] ml-[2em]"
+            style={{ transform: 'rotate(-10.11deg)' }}
+          >
+            <ImageFrame url={currDrawing.blobUrl} blur />
+          </div>
+        ) : (
+          'Loading'
+        )}
       </div>
 
       {/* FRONT overlay */}
-      <div className="absolute top-0 left-0 z-20 ml-[15px] flex h-full items-center">
+      <div className="absolute z-20 ml-[15px] flex h-full w-[718px] items-center">
         <img
           src="/assets/assets-front.png"
           alt="Assets Front"
@@ -63,37 +100,42 @@ export const DrawingLanding: React.FC = () => {
       </div>
 
       {/* Foreground UI */}
-      <div className="relative z-30 flex h-full w-full">
+      <div className="relative z-30 flex h-full w-full items-center justify-center">
         {/* Left Column */}
-        <div className="relative mt-[1.875em] ml-[0.9em] flex w-[60%] max-w-[417px] items-start justify-end">
-          {duration ? (
-            <CountdownClock startTimeInSeconds={duration} />
-          ) : (
-            <CountdownClock startTimeInSeconds={30 * 60} />
-          )}
+        <div className="relative mt-[1.5em] ml-[1.1em] flex h-full w-[60%] max-w-[417px] flex-col items-end justify-start">
+          <div className="flex w-[100%] justify-start pl-[3.7em]">
+            {duration ? (
+              <CountdownClock startTimeInSeconds={duration} />
+            ) : (
+              <CountdownClock startTimeInSeconds={30 * 60} />
+            )}
+          </div>
+
           <img
             src="/assets/clock.svg"
             alt="Countdown clock"
             width={91.14}
             height={91.14}
-            className="absolute top-[0.8em] left-[0.5em] z-0"
+            className="absolute top-[1.1em] left-[-0.2em] z-0"
           />
         </div>
 
         {/* Right Column */}
-        <div className="flex h-full w-[40%] max-w-[284px] flex-col justify-between">
+        <div className="flex h-full w-[40%] max-w-[284px] flex-col justify-between pr-[0.5em]">
           {/* Top: Round Image */}
           <div className="flex justify-end pt-[7px]">
-            <img
-              src="/assets/round-3.gif"
-              alt="Round"
-              width={140}
-              height={140}
-            />
+            {data && data.postType === 'draw' && (
+              <img
+                src={`/assets/round-${data.round}.gif`}
+                alt="Round"
+                width={140}
+                height={140}
+              />
+            )}
           </div>
 
           {/* Bottom UI */}
-          <div className="flex flex-col items-end gap-y-[0.9em] pr-[.5em] pb-[2em]">
+          <div className="flex flex-col items-end gap-y-[0.9em] pr-[1.3em] pb-[1.4em]">
             {/* Start Button */}
             <Button
               text="START DRAWING"
