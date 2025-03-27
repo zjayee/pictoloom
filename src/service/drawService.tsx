@@ -100,6 +100,7 @@ export class DrawService {
         upvotes: upvotes,
         voteStatus: 'none',
         round: currentRoundNum,
+        userId: userId,
       };
     } else {
       const drawingVoteStatus = await this.cache.getDrawingVoteStatus(
@@ -113,6 +114,7 @@ export class DrawService {
         upvotes: upvotes,
         voteStatus: drawingVoteStatus,
         round: currentRoundNum,
+        userId: userId,
       };
     }
   }
