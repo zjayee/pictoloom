@@ -65,6 +65,7 @@ export class Cache {
     // Set up phrase assignment counts
     const key = this.keys.phraseRoundAssignment(postId, String(roundNumber));
     for (const phrase of phrases) {
+      console.log('Phrase:', phrase);
       await this.redis.zAdd(key, { score: 0, member: phrase });
     }
   }
@@ -222,6 +223,7 @@ export class Cache {
         roundNumber,
         phrase
       );
+      console.log(phrase, '| Drawing UserIds:', drawingUserIds);
 
       const key = this.keys.referenceDrawing(
         postId,
@@ -260,6 +262,13 @@ export class Cache {
     count: number
   ): Promise<{ user: string; blobUrl: string }[]> {
     /* Returns the count reference drawings for the round */
+    const userIdsall = await this.redis.zRange(
+      this.keys.referenceDrawing(postId, String(roundNumber), phrase),
+      0,
+      -1
+    );
+    console.log('phrase:', phrase);
+    console.log('UserIds:', userIdsall);
     const referenceDrawingUserIds = await this.redis.zRange(
       this.keys.referenceDrawing(postId, String(roundNumber), phrase),
       0,
@@ -277,7 +286,7 @@ export class Cache {
 
       const drawingObj = await this.db.getDrawingObj(
         postId,
-        roundNumber,
+        roundNumber - 1,
         phrase,
         drawing.member
       );
@@ -403,9 +412,9 @@ export class Cache {
       );
       if (drawingObj) {
         drawings.push({
-          userId: userId,
-          drawing: drawingObj.drawing,
-          score: drawing.score,
+          blobUrl: drawingObj.drawing,
+          user: userId,
+          upvotes: drawing.score,
         });
       }
     }

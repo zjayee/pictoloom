@@ -3,6 +3,7 @@ import { WebviewToBlocksMessage } from '../shared.js';
 import { sendMessageToWebview } from '../utils/sendMessageToWebview.js';
 import { Service } from '../service/service.js';
 import { placeholderBlob } from '../utils/mock.js';
+import { a } from 'motion/react-client';
 
 export function LandingPost(context: Devvit.Context) {
   const service = new Service(context);
@@ -46,6 +47,7 @@ export function LandingPost(context: Devvit.Context) {
     if (message.type === 'INIT') {
       const round = await service.game.getCurrentRound(postId);
       const gameStatus = await service.game.getGameStatus(postId);
+      const canDraw = await service.game.canParticipate(postId);
       if (!round) {
         throw new Error('Round not found');
       }
@@ -56,7 +58,7 @@ export function LandingPost(context: Devvit.Context) {
           postType: round.roundType,
           round: Number(round.roundNumber),
           gameStatus: gameStatus,
-          canDraw: true, // TODO
+          canDraw: canDraw,
         },
       });
     }
@@ -115,37 +117,44 @@ export function LandingPost(context: Devvit.Context) {
     }
 
     if (message.type === 'GET_SCORE') {
+      const score = await service.guess.getUserGuessScore(postId);
       sendMessageToWebview(context, {
         type: 'SCORE_DATA',
         payload: {
-          score: 200, // TODO
+          score: score,
         },
       });
     }
 
     if (message.type === 'GET_PAGINATED_DRAWINGS') {
-      // TODO
-      console.log('Start number', message.payload.start);
-      console.log('End number', message.payload.end);
+      const drawings = await service.gallery.getRankedDrawings(
+        postId,
+        message.payload.start,
+        message.payload.end
+      );
 
       sendMessageToWebview(context, {
         type: 'PAGINATED_DRAWINGS_DATA',
         payload: {
-          drawings: [{ blobUrl: '', user: '', upvotes: 10 }],
+          drawings: drawings,
         },
       });
     }
 
     if (message.type === 'UPVOTE') {
-      // TODO
-      console.log('UserId', message.payload.userId);
-      console.log('Round number', message.payload.round);
+      await service.gallery.upvoteDrawing(
+        postId,
+        message.payload.round,
+        message.payload.userId
+      );
     }
 
     if (message.type === 'DOWNVOTE') {
-      // TODO
-      console.log('UserId', message.payload.userId);
-      console.log('Round number', message.payload.round);
+      await service.gallery.downvoteDrawing(
+        postId,
+        message.payload.round,
+        message.payload.userId
+      );
     }
 
     if (message.type === 'GET_USER_GUESS') {

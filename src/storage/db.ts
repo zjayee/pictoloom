@@ -192,6 +192,14 @@ export class Db {
     });
   }
 
+  async getUserGuessScore(postId: string, userId: string): Promise<number> {
+    const guess = await this.redis.hGet(this.keys.guess(postId), userId);
+    if (!guess) {
+      return 0;
+    }
+    return JSON.parse(guess).score;
+  }
+
   async getDrawingsForGame(
     postId: string,
     start?: number,

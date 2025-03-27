@@ -18,11 +18,13 @@ export const appUpgradeSetup: AppUpgradeDefinition = {
     const service = new Service(context);
 
     // TODO: populate with real phrases
+    await service.phraseBank.clearPhraseBank('default');
     await service.phraseBank.upsertPhraseBank('default', [
-      'majjie',
-      'majjico',
-      'viva italia',
-      'lego jesus bless',
+      'dancing duck',
+      'fluffy dog',
+      'banana DJ',
+      'Robot falling in love',
+      'Screaming pig',
     ]);
   },
 };
