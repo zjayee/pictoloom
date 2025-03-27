@@ -2,6 +2,7 @@ import { Devvit } from '@devvit/public-api';
 import { WebviewToBlocksMessage } from '../shared.js';
 import { sendMessageToWebview } from '../utils/sendMessageToWebview.js';
 import { Service } from '../service/service.js';
+import { placeholderBlob } from '../utils/mock.js';
 
 export function LandingPost(context: Devvit.Context) {
   const service = new Service(context);
@@ -53,6 +54,7 @@ export function LandingPost(context: Devvit.Context) {
         payload: {
           postType: round.roundType,
           round: Number(round.roundNumber),
+          gameStatus: 'end', // TODO
         },
       });
     }
@@ -72,12 +74,35 @@ export function LandingPost(context: Devvit.Context) {
       await service.draw.submitDrawing(postId, message.payload.imageBlob);
     }
 
+    if (message.type === 'GUESS_SUBMITTED') {
+      console.log('🖼️ Received gyess');
+      // TODO
+    }
+
     if (message.type === 'GET_WORD') {
       const phrase = await service.game.selectPhraseForRound(postId);
       sendMessageToWebview(context, {
         type: 'WORD_DATA',
         payload: {
           word: phrase,
+        },
+      });
+    }
+
+    if (message.type === 'GET_USER_DRAWING') {
+      sendMessageToWebview(context, {
+        type: 'USER_DRAWING_DATA',
+        payload: {
+          blobUrl: placeholderBlob, // TODO: returns the drawing the user drew in the current round
+        },
+      });
+    }
+
+    if (message.type === 'GET_REFERENCE_PARTICIPANTS') {
+      sendMessageToWebview(context, {
+        type: 'REFERENCE_PARTICIPANTS_DATA',
+        payload: {
+          referenceParticipants: 12, // TODO: returns the number of ppl that used user's drawing as reference
         },
       });
     }

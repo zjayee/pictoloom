@@ -4,6 +4,7 @@ import './CanvasPage.css';
 import { Button } from '../../components/Button';
 import { useDevvitListener } from '../../hooks/useDevvitListener';
 import { CountdownClock } from '../../components/CountdownClock';
+import { useSetPage } from '../../hooks/usePage';
 
 const COLORS = [
   '#000000',
@@ -21,6 +22,8 @@ export const CanvasPage: React.FC = () => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [duration, setDuration] = useState<number | null>(null);
   const countdownData = useDevvitListener('COUNTDOWN_DATA');
+
+  const setPage = useSetPage();
 
   // Drawing logic
   useEffect(() => {
@@ -107,6 +110,7 @@ export const CanvasPage: React.FC = () => {
       };
       reader.readAsDataURL(blob);
     });
+    setPage('end');
   };
 
   return (

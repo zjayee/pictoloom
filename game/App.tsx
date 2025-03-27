@@ -6,6 +6,7 @@ import { useDevvitListener } from './hooks/useDevvitListener';
 import { ChainDrawingPreview } from './pages/chain-drawing-preview/ChainDrawingPreview';
 import { CanvasPage } from './pages/canvas/CanvasPage';
 import { DrawingLanding } from './pages/landing/DrawingLanding';
+import { FinishedDrawingPage } from './pages/finished-drawing-page/FinishedDrawingPage';
 
 const getPage = (page: Page) => {
   switch (page) {
@@ -15,6 +16,8 @@ const getPage = (page: Page) => {
       return <ChainDrawingPreview />;
     case 'canvas':
       return <CanvasPage />;
+    case 'end':
+      return <FinishedDrawingPage />;
     default:
       throw new Error(`Unknown page: ${page satisfies never}`);
   }
