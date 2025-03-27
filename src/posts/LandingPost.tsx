@@ -4,19 +4,6 @@ import { WebviewToBlocksMessage } from '../shared.js';
 import { sendMessageToWebview } from '../utils/sendMessageToWebview.js';
 import { Service } from '../service/service.js';
 
-function getPlaceholderTimeInSeconds() {
-  return 3 * 60 * 60;
-}
-
-function getReferenceDrawings() {
-  return [
-    {
-      user: 'Greedy-Ad-6376',
-      blobUrl: placeholderBlob,
-    },
-  ];
-}
-
 export function LandingPost(context: Devvit.Context) {
   const service = new Service(context);
   const postId = context.postId;
