@@ -21,7 +21,6 @@ export const FinishedDrawingPage: React.FC = () => {
 
   useEffect(() => {
     sendToDevvit({ type: 'GET_COUNTDOWN_DURATION' });
-    sendToDevvit({ type: 'GET_REFERENCE_PARTICIPANTS' });
     sendToDevvit({ type: 'GET_USER_DRAWING' });
     sendToDevvit({ type: 'INIT' });
   }, []);
@@ -39,6 +38,10 @@ export const FinishedDrawingPage: React.FC = () => {
   useEffect(() => {
     if (!initData) return;
     setData(initData);
+    sendToDevvit({
+      type: 'GET_REFERENCE_PARTICIPANTS',
+      payload: { round: initData.round },
+    });
   }, [initData]);
 
   useEffect(() => {
