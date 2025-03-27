@@ -1,4 +1,4 @@
-export type Page = 'reference' | 'canvas' | 'landing' | 'end';
+export type Page = 'reference' | 'canvas' | 'landing' | 'end' | 'guess';
 
 export type WebviewToBlocksMessage =
   | { type: 'GET_COUNTDOWN_DURATION' }
