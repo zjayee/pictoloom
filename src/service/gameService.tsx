@@ -84,13 +84,9 @@ export class GameService {
     await this.cache.setupRoundReferenceGallery(postId, round.roundNumber);
 
     // Setup round
-    if (roundType === 'guess') {
-      await this.db.setGameStatus(postId, 'guess');
-    } else {
-      // Set up drawing references
-      if (round.roundNumber > 1) {
-        await this.cache.setupDrawingReferences(postId, round.roundNumber - 1);
-      }
+    // Set up drawing references
+    if (round.roundNumber > 1) {
+      await this.cache.setupDrawingReferences(postId, round.roundNumber - 1);
     }
 
     // Save round to Redis
