@@ -12,7 +12,8 @@ type Drawing = {
   blobUrl: string;
   user: string;
   upvotes: number;
-  voteStatus: VoteStatus; // 'none' | 'upvoted' | 'downvoted'
+  voteStatus: VoteStatus;
+  round: number;
 };
 
 export const ExplorePage: React.FC = () => {
@@ -21,7 +22,6 @@ export const ExplorePage: React.FC = () => {
   const limit = 12;
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
-
   const paginatedData = useDevvitListener('PAGINATED_DRAWINGS_DATA');
 
   useEffect(() => {
@@ -32,11 +32,9 @@ export const ExplorePage: React.FC = () => {
           voteStatus: 'none',
         })
       );
-
       if (newDrawings.length < limit) {
         setHasMore(false);
       }
-
       setDrawings((prev) => [...prev, ...newDrawings]);
       setStartIndex((prev) => prev + newDrawings.length);
       setLoading(false);
@@ -65,7 +63,6 @@ export const ExplorePage: React.FC = () => {
       },
       { threshold: 1.0 }
     );
-
     if (observerRef.current) {
       observer.observe(observerRef.current);
     }
@@ -76,83 +73,9 @@ export const ExplorePage: React.FC = () => {
     };
   }, [fetchDrawings]);
 
-  const currentRound = 1;
-  const userId = 'currentUserId';
-
-  const handleUpvote = (index: number) => {
-    setDrawings((prev) => {
-      const newDrawings = [...prev];
-      const drawing = newDrawings[index];
-
-      if (drawing.voteStatus === 'upvoted') {
-        newDrawings[index] = {
-          ...drawing,
-          voteStatus: 'none',
-          upvotes: drawing.upvotes - 1,
-        };
-      } else {
-        let newUpvotes = drawing.upvotes;
-        if (drawing.voteStatus === 'downvoted') {
-          newUpvotes = drawing.upvotes + 1;
-        }
-        if (drawing.voteStatus === 'none') {
-          newUpvotes = drawing.upvotes + 1;
-        }
-        newDrawings[index] = {
-          ...drawing,
-          voteStatus: 'upvoted',
-          upvotes: newUpvotes,
-        };
-        sendToDevvit({
-          type: 'UPVOTE',
-          payload: {
-            userId,
-            round: currentRound,
-          },
-        });
-      }
-      return newDrawings;
-    });
-  };
-
-  const handleDownvote = (index: number) => {
-    setDrawings((prev) => {
-      const newDrawings = [...prev];
-      const drawing = newDrawings[index];
-
-      if (drawing.voteStatus === 'downvoted') {
-        newDrawings[index] = {
-          ...drawing,
-          voteStatus: 'none',
-        };
-      } else {
-        let newUpvotes = drawing.upvotes;
-        if (drawing.voteStatus === 'upvoted') {
-          newUpvotes = drawing.upvotes - 1;
-        }
-        newDrawings[index] = {
-          ...drawing,
-          voteStatus: 'downvoted',
-          upvotes: newUpvotes,
-        };
-        // Send downvote message
-        sendToDevvit({
-          type: 'DOWNVOTE',
-          payload: {
-            userId,
-            round: currentRound,
-          },
-        });
-      }
-      return newDrawings;
-    });
-  };
-
   return (
     <div className="flex h-screen w-full flex-col text-white">
       <h1 className="p-4 text-2xl font-bold">EXPLORE</h1>
-
-      {/* Scrollable posts container */}
       <div className="flex w-full flex-col overflow-y-auto pb-4">
         <div className="flex w-full flex-col items-center justify-center gap-y-[3em]">
           {drawings.map((drawing, index) => (
@@ -165,15 +88,25 @@ export const ExplorePage: React.FC = () => {
                 <UpvoteDownvoteButtons
                   voteStatus={drawing.voteStatus}
                   upvotes={drawing.upvotes}
-                  onUpvote={() => handleUpvote(index)}
-                  onDownvote={() => handleDownvote(index)}
+                  onVoteChange={(newStatus, voteDelta) => {
+                    setDrawings((prev) => {
+                      const newDrawings = [...prev];
+                      newDrawings[index] = {
+                        ...newDrawings[index],
+                        voteStatus: newStatus,
+                        upvotes: newDrawings[index].upvotes + voteDelta,
+                      };
+                      return newDrawings;
+                    });
+                  }}
+                  userId={drawing.user}
+                  currentRound={drawing.round}
                 />
                 <div className="mt-2 font-bold">{drawing.user}</div>
               </div>
             </div>
           ))}
         </div>
-
         {loading && (
           <div className="mt-4 flex items-center justify-center">
             Loading...
