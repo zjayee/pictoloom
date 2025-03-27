@@ -92,6 +92,6 @@ export class GuessService {
     const distance = levenshtein.get(phrase, guess);
     const maxLength = Math.max(phrase.length, guess.length);
 
-    return Math.round((1 - distance / maxLength) * 10000); // Normalize to [0,100]
+    return Math.round((1 - distance / maxLength) * 1000); // Normalize to [0,1000]
   }
 }
