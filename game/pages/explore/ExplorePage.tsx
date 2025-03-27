@@ -75,7 +75,9 @@ export const ExplorePage: React.FC = () => {
 
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center text-white">
-      <h1 className="p-4 text-2xl font-bold">EXPLORE</h1>
+      <h1 className="p-4 text-2xl font-bold">
+        Here's what other users drew...
+      </h1>
       <div className="flex w-full flex-col overflow-y-auto pb-4">
         <div className="flex w-full flex-col items-center justify-center gap-y-[3em]">
           {drawings.map((drawing, index) => (
