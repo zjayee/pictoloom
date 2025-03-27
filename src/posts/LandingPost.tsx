@@ -114,6 +114,40 @@ export function LandingPost(context: Devvit.Context) {
         },
       });
     }
+
+    if (message.type === 'GET_SCORE') {
+      sendMessageToWebview(context, {
+        type: 'SCORE_DATA',
+        payload: {
+          score: 200, // TODO
+        },
+      });
+    }
+
+    if (message.type === 'GET_PAGINATED_DRAWINGS') {
+      // TODO
+      console.log('Start number', message.payload.start);
+      console.log('End number', message.payload.end);
+
+      sendMessageToWebview(context, {
+        type: 'PAGINATED_DRAWINGS_DATA',
+        payload: {
+          drawings: [{ blobUrl: '', user: '', upvotes: 10 }],
+        },
+      });
+    }
+
+    if (message.type === 'UPVOTE') {
+      // TODO
+      console.log('UserId', message.payload.userId);
+      console.log('Round number', message.payload.round);
+    }
+
+    if (message.type === 'DOWNVOTE') {
+      // TODO
+      console.log('UserId', message.payload.userId);
+      console.log('Round number', message.payload.round);
+    }
   };
 
   return (
