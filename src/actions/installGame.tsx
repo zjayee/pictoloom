@@ -1,20 +1,28 @@
-import type { AppUpgradeDefinition } from "@devvit/public-api";
-import { Devvit } from "@devvit/public-api";
+import type { AppUpgradeDefinition } from '@devvit/public-api';
+import { Devvit } from '@devvit/public-api';
 
-import { Service } from "../service/service.js";
+import { Service } from '../service/service.js';
 
 export const appUpgradeSetup: AppUpgradeDefinition = {
-  event: "AppUpgrade",
+  event: 'AppUpgrade',
   onEvent: async (_, context) => {
+    // Clear existing jobs
+    context.scheduler.listJobs().then((jobs) => {
+      for (const job of jobs) {
+        console.log('Cancelling job:', job.id);
+        context.scheduler.cancelJob(job.id);
+      }
+    });
+
     // Set up phrase bank
     const service = new Service(context);
 
     // TODO: populate with real phrases
-    await service.phraseBank.upsertPhraseBank("default", [
-      "majjie",
-      "majjico",
-      "viva italia",
-      "lego jesus bless",
+    await service.phraseBank.upsertPhraseBank('default', [
+      'majjie',
+      'majjico',
+      'viva italia',
+      'lego jesus bless',
     ]);
   },
 };

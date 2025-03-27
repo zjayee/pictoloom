@@ -1,5 +1,5 @@
-import type { RedisClient, ZMember } from "@devvit/public-api";
-import { Db } from "./db.js";
+import type { RedisClient, ZMember } from '@devvit/public-api';
+import { Db } from './db.js';
 
 export class Cache {
   readonly redis: RedisClient;
@@ -118,7 +118,7 @@ export class Cache {
     await this.redis.hSet(
       this.keys.roundParticipantStatus(postId, String(roundNumber)),
       {
-        [userId]: "assigned",
+        [userId]: 'assigned',
       }
     );
 
@@ -140,9 +140,9 @@ export class Cache {
       this.keys.roundParticipantStatus(postId, String(roundNumber)),
       userId
     );
-    if (status === "played" || status === "no_phrases") {
+    if (status === 'played' || status === 'no_phrases') {
       return false;
-    } else if (status === "assigned") {
+    } else if (status === 'assigned') {
       return true;
     }
 
@@ -155,7 +155,7 @@ export class Cache {
       await this.redis.hSet(
         this.keys.roundParticipantStatus(postId, String(roundNumber)),
         {
-          [userId]: "no_phrases",
+          [userId]: 'no_phrases',
         }
       );
       return false;
@@ -188,7 +188,7 @@ export class Cache {
       this.keys.roundParticipantStatus(postId, String(roundNumber)),
       userId
     );
-    return result ?? "none";
+    return result ?? 'none';
   }
 
   async setupDrawingReferences(postId: string, roundNumber: number) {
@@ -218,7 +218,7 @@ export class Cache {
     roundNumber: number,
     phrase: string,
     count: number
-  ): Promise<{ userId: string; drawing: string }[]> {
+  ): Promise<{ user: string; blobUrl: string }[]> {
     /* Returns the count reference drawings for the round */
     const referenceDrawingUserIds = await this.redis.zRange(
       this.keys.referenceDrawing(postId, String(roundNumber), phrase),
@@ -242,7 +242,7 @@ export class Cache {
         drawing.member
       );
       if (drawingObj) {
-        drawings.push({ userId: drawing.member, drawing: drawingObj.drawing });
+        drawings.push({ user: drawing.member, blobUrl: drawingObj.drawing });
       }
     }
 
@@ -318,14 +318,14 @@ export class Cache {
   async addDrawingForVote(postId: string, userId: string, roundNumber: number) {
     await this.redis.zAdd(this.keys.voteTracking(postId), {
       score: 0,
-      member: roundNumber + ":" + userId,
+      member: roundNumber + ':' + userId,
     });
   }
 
   async upvoteDrawing(postId: string, userId: string, roundNumber: number) {
     await this.redis.zIncrBy(
       this.keys.voteTracking(postId),
-      roundNumber + ":" + userId,
+      roundNumber + ':' + userId,
       1
     );
   }
@@ -333,7 +333,7 @@ export class Cache {
   async downvoteDrawing(postId: string, userId: string, roundNumber: number) {
     await this.redis.zIncrBy(
       this.keys.voteTracking(postId),
-      roundNumber + ":" + userId,
+      roundNumber + ':' + userId,
       -1
     );
   }
@@ -347,11 +347,11 @@ export class Cache {
 
     let drawings = [];
     for (const drawing of drawingzMembers) {
-      const [roundNumber, userId] = drawing.member.split(":");
+      const [roundNumber, userId] = drawing.member.split(':');
       const drawingObj = await this.db.getDrawingObj(
         postId,
         Number(roundNumber),
-        "",
+        '',
         userId
       );
       if (drawingObj) {
@@ -369,9 +369,9 @@ export class Cache {
     const statusKey = this.keys.gameStatus;
     let postIds = await this.redis.hGet(statusKey, status);
     if (!postIds) {
-      postIds = "";
+      postIds = '';
     }
-    postIds += postId + ",";
+    postIds += postId + ',';
     await this.redis.hSet(statusKey, {
       [status]: postIds,
     });
@@ -381,9 +381,9 @@ export class Cache {
     const statusKey = this.keys.gameStatus;
     let postIdsStr = await this.redis.hGet(statusKey, status);
     if (!postIdsStr) {
-      postIdsStr = "";
+      postIdsStr = '';
     }
-    postIdsStr += postIds.join(",") + ",";
+    postIdsStr += postIds.join(',') + ',';
     await this.redis.hSet(statusKey, {
       [status]: postIdsStr,
     });
@@ -395,7 +395,7 @@ export class Cache {
     if (!postIds) {
       return [];
     }
-    return postIds.split(",");
+    return postIds.split(',');
   }
 
   async clearGamesForStatus(status: string) {
