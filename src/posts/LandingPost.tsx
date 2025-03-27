@@ -76,8 +76,8 @@ export function LandingPost(context: Devvit.Context) {
     }
 
     if (message.type === 'GUESS_SUBMITTED') {
-      console.log('🖼️ Received guess');
-      // await service.guess.submitGuess(postId, message.payload.guess);
+      console.log('🐷 Received guess:', message.payload.guess);
+      // TODO
     }
 
     if (message.type === 'GET_WORD') {
