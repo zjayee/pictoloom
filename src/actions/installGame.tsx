@@ -20,11 +20,11 @@ export const appUpgradeSetup: AppUpgradeDefinition = {
     // TODO: populate with real phrases
     await service.phraseBank.clearPhraseBank('default');
     await service.phraseBank.upsertPhraseBank('default', [
+      'Screaming pig',
       'dancing duck',
       'fluffy dog',
-      'banana DJ',
       'Robot falling in love',
-      'Screaming pig',
+      'banana DJ',
     ]);
   },
 };
