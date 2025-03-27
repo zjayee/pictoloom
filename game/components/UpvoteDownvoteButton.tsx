@@ -56,7 +56,7 @@ export const UpvoteDownvoteButtons: React.FC<UpvoteDownvoteButtonsProps> = ({
 
   return (
     <div
-      className="flex h-[2em] items-center justify-center gap-x-[0.3em] rounded-full px-[0.5em] text-white transition-colors select-none"
+      className="z-10 flex h-[2em] items-center justify-center gap-x-[0.3em] rounded-full px-[0.5em] text-white transition-colors select-none"
       style={{ background: 'rgba(0, 0, 0, 0.25)' }}
     >
       {/* Up Arrow */}
