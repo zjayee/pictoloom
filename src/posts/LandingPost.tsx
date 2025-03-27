@@ -46,6 +46,7 @@ export function LandingPost(context: Devvit.Context) {
     if (message.type === 'INIT') {
       const round = await service.game.getCurrentRound(postId);
       const gameStatus = await service.game.getGameStatus(postId);
+      const canDraw = await service.game.canParticipate(postId);
       if (!round) {
         throw new Error('Round not found');
       }
@@ -56,7 +57,7 @@ export function LandingPost(context: Devvit.Context) {
           postType: round.roundType,
           round: Number(round.roundNumber),
           gameStatus: gameStatus,
-          canDraw: true, // TODO
+          canDraw: canDraw,
         },
       });
     }
