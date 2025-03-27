@@ -35,7 +35,6 @@ export const DrawingLanding: React.FC = () => {
   }, [countdownData]);
 
   useEffect(() => {
-    console.log('participants data');
     if (!participantsData) return;
     setNumDrawn(participantsData.participants);
   }, [participantsData]);
@@ -43,8 +42,6 @@ export const DrawingLanding: React.FC = () => {
   useEffect(() => {
     if (!initData) return;
     setData(initData);
-
-    console.log('init', initData);
 
     if (!initData.canDraw && initData.postType == 'draw') {
       setPage('end');

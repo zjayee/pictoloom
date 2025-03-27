@@ -149,28 +149,33 @@ export const ExplorePage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-4 p-[1em] text-white">
-      <h1 className="text-2xl font-bold">Explore</h1>
+    <div className="flex h-screen w-full flex-col text-white">
+      <h1 className="p-4 text-2xl font-bold">EXPLORE</h1>
 
-      <div className="grid w-full grid-cols-1 gap-4 px-4 md:grid-cols-2 lg:grid-cols-3">
-        {drawings.map((drawing, index) => (
-          <div key={index} className="flex flex-col items-center">
-            <ImageFrame url={drawing.blobUrl} />
-            <div className="mt-2 font-bold">{drawing.user}</div>
+      {/* Scrollable posts container */}
+      <div className="flex-1 overflow-y-auto px-4 pb-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {drawings.map((drawing, index) => (
+            <div key={index} className="flex flex-col items-center">
+              <ImageFrame url={drawing.blobUrl} />
+              <div className="mt-2 font-bold">{drawing.user}</div>
 
-            <UpvoteDownvoteButtons
-              voteStatus={drawing.voteStatus}
-              upvotes={drawing.upvotes}
-              onUpvote={() => handleUpvote(index)}
-              onDownvote={() => handleDownvote(index)}
-            />
-          </div>
-        ))}
+              <UpvoteDownvoteButtons
+                voteStatus={drawing.voteStatus}
+                upvotes={drawing.upvotes}
+                onUpvote={() => handleUpvote(index)}
+                onDownvote={() => handleDownvote(index)}
+              />
+            </div>
+          ))}
+        </div>
+
+        {loading && <div className="mt-4">Loading...</div>}
+        {hasMore && !loading && (
+          <div ref={observerRef} className="h-4 w-full bg-transparent" />
+        )}
+        {!hasMore && <div className="mt-4">No more drawings.</div>}
       </div>
-
-      {loading && <div className="mt-4">Loading...</div>}
-      {hasMore && !loading && <div ref={observerRef} className="h-4" />}
-      {!hasMore && <div className="mt-4">No more drawings.</div>}
     </div>
   );
 };
