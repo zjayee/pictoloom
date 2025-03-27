@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { sendToDevvit } from '../../utils';
-import { useCountdown } from '../../hooks/useCountdown';
 import './CanvasPage.css';
 import { Button } from '../../components/Button';
+import { useDevvitListener } from '../../hooks/useDevvitListener';
+import { CountdownClock } from '../../components/CountdownClock';
 
 const COLORS = [
   '#000000',
@@ -18,7 +19,8 @@ export const CanvasPage: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [selectedColor, setSelectedColor] = useState(COLORS[0]);
   const [isDrawing, setIsDrawing] = useState(false);
-  const [formattedTime, startCountdown] = useCountdown();
+  const [duration, setDuration] = useState<number | null>(null);
+  const countdownData = useDevvitListener('COUNTDOWN_DATA');
 
   // Drawing logic
   useEffect(() => {
@@ -80,23 +82,14 @@ export const CanvasPage: React.FC = () => {
     };
   }, [isDrawing, selectedColor]);
 
-  // Countdown message listener
   useEffect(() => {
-    const handleMessage = (ev: MessageEvent) => {
-      if (ev.data.type !== 'devvit-message') return;
-      const { message } = ev.data.data;
-      if (message.type === 'COUNTDOWN_DATA') {
-        startCountdown(message.data.duration);
-      }
-    };
-
-    window.addEventListener('message', handleMessage);
     sendToDevvit({ type: 'GET_COUNTDOWN_DURATION' });
+  }, []);
 
-    return () => {
-      window.removeEventListener('message', handleMessage);
-    };
-  }, [startCountdown]);
+  useEffect(() => {
+    if (!countdownData) return;
+    setDuration(countdownData.duration);
+  }, [countdownData]);
 
   const submitDrawing = () => {
     const canvas = canvasRef.current;
@@ -118,7 +111,13 @@ export const CanvasPage: React.FC = () => {
 
   return (
     <div className="canvas-page__container">
-      <div className="canvas-page__timer">{formattedTime}</div>
+      <div className="canvas-page__timer">
+        {duration ? (
+          <CountdownClock startTimeInSeconds={duration} fontSize="3rem" />
+        ) : (
+          <CountdownClock startTimeInSeconds={30 * 60} fontSize="3rem" />
+        )}
+      </div>
 
       <div className="canvas-page__color-picker">
         {COLORS.map((color) => (
@@ -145,7 +144,7 @@ export const CanvasPage: React.FC = () => {
           text="DONE"
           iconSrc="../public/icons/star.svg"
           onClick={submitDrawing}
-          width="13em"
+          width="10em"
         />
       </div>
     </div>

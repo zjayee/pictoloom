@@ -5,6 +5,7 @@ import { useSetPage } from '../../hooks/usePage';
 import './ChainDrawingPreview.css';
 import { useDevvitListener } from '../../hooks/useDevvitListener';
 import { CountdownClock } from '../../components/CountdownClock';
+import ImageFrame from '../../components/ImageFrame';
 
 type DrawingData = {
   user: string;
@@ -64,16 +65,7 @@ export const ChainDrawingPreview: React.FC = () => {
         {currDrawing?.user} drew this based off a mystery word!
       </div>
 
-      <div className="chain-preview__gradient-block">
-        <div className="chain-preview__image-container">
-          <img
-            src={currDrawing?.blobUrl ?? ''}
-            alt="Drawing Placeholder"
-            width={294}
-            height={252}
-          />
-        </div>
-      </div>
+      {currDrawing ? <ImageFrame url={currDrawing.blobUrl} /> : 'Loading...'}
 
       <Button
         text="DRAW IT!"

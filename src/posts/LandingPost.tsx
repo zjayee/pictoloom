@@ -43,6 +43,15 @@ export function LandingPost(context: Devvit.Context) {
         type: 'INIT_RESPONSE',
         payload: {
           postType: 1,
+          round: 3,
+        },
+      });
+    }
+
+    if (message.type === 'GET_PARTICIPANTS') {
+      sendMessageToWebview(context, {
+        type: 'PARTICIPANTS_DATA',
+        payload: {
           participants: 398,
         },
       });

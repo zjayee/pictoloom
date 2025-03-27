@@ -8,13 +8,23 @@ import { useDevvitListener } from '../../hooks/useDevvitListener';
 export const DrawingLanding: React.FC = () => {
   const [duration, setDuration] = useState<number | null>(null);
   const [numDrawn, setNumDrawn] = useState(0);
+  const [data, setData] = useState<{ postType: number; round: number } | null>(
+    null
+  );
+  const [currDrawing, setCurrDrawing] = useState<{
+    user: string;
+    blobUrl: string;
+  } | null>(null);
   const countdownData = useDevvitListener('COUNTDOWN_DATA');
   const initData = useDevvitListener('INIT_RESPONSE');
+  const participantsData = useDevvitListener('PARTICIPANTS_DATA');
+  const referenceDrawingData = useDevvitListener('REFERENCE_DRAWINGS_DATA');
 
   useEffect(() => {
     sendToDevvit({ type: 'INIT' });
     sendToDevvit({ type: 'GET_COUNTDOWN_DURATION' });
     sendToDevvit({ type: 'GET_REFERENCE_DRAWINGS' });
+    sendToDevvit({ type: 'GET_PARTICIPANTS' });
   }, []);
 
   useEffect(() => {
@@ -23,9 +33,24 @@ export const DrawingLanding: React.FC = () => {
   }, [countdownData]);
 
   useEffect(() => {
+    if (!participantsData) return;
+    setNumDrawn(participantsData.participants);
+  }, [participantsData]);
+
+  useEffect(() => {
     if (!initData) return;
-    setNumDrawn(initData.participants);
+    setData(initData);
   }, [initData]);
+
+  useEffect(() => {
+    if (!referenceDrawingData) return;
+    if (
+      referenceDrawingData.drawings &&
+      referenceDrawingData.drawings.length > 0
+    ) {
+      setCurrDrawing(referenceDrawingData.drawings[0]);
+    }
+  }, [referenceDrawingData]);
 
   const setPage = useSetPage();
 

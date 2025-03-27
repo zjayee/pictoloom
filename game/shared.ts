@@ -4,13 +4,14 @@ export type WebviewToBlocksMessage =
   | { type: 'GET_COUNTDOWN_DURATION' }
   | { type: 'GET_REFERENCE_DRAWINGS' }
   | { type: 'INIT' }
-  | { type: 'GET_MOUNT_FN' } // ✅ NEW
+  | { type: 'GET_MOUNT_FN' }
   | {
       type: 'DRAWING_SUBMITTED';
       payload: {
         imageBlob: string;
       };
-    };
+    }
+  | { type: 'GET_PARTICIPANTS' };
 
 export type BlocksToWebviewMessage =
   | {
@@ -32,6 +33,12 @@ export type BlocksToWebviewMessage =
       type: 'INIT_RESPONSE';
       payload: {
         postType: number;
+        round: number;
+      };
+    }
+  | {
+      type: 'PARTICIPANTS_DATA';
+      payload: {
         participants: number;
       };
     };
