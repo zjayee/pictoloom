@@ -56,6 +56,7 @@ export type BlocksToWebviewMessage =
         postType: 'draw' | 'guess';
         round: number;
         gameStatus: 'draw' | 'guess' | 'end';
+        canDraw: boolean;
       };
     }
   | {

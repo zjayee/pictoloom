@@ -56,6 +56,7 @@ export function LandingPost(context: Devvit.Context) {
           postType: round.roundType,
           round: Number(round.roundNumber),
           gameStatus: gameStatus,
+          canDraw: true, // TODO
         },
       });
     }

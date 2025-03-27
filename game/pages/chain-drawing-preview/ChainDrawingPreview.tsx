@@ -104,12 +104,18 @@ export const ChainDrawingPreview: React.FC = () => {
         'Loading...'
       )}
 
-      <Button
-        text="DRAW IT!"
-        iconSrc="/icons/pencil.svg"
-        onClick={() => setPage('canvas')}
-        width="13em"
-      />
+      {data && (
+        <Button
+          text={data.postType === 'draw' ? 'DRAW IT!' : 'GUESS!'}
+          iconSrc={
+            data.postType === 'draw'
+              ? '/icons/pencil.svg'
+              : '/icons/message.svg'
+          }
+          onClick={() => setPage('canvas')}
+          width="13em"
+        />
+      )}
     </div>
   );
 };
