@@ -2,12 +2,12 @@ import type {
   RedditAPIClient,
   RedisClient,
   Scheduler,
-} from "@devvit/public-api";
+} from '@devvit/public-api';
 
-import { Cache } from "../storage/cache.js";
-import { Db } from "../storage/db.js";
-import { Guess } from "../types.js";
-import levenshtein from "fast-levenshtein";
+import { Cache } from '../storage/cache.js';
+import { Db } from '../storage/db.js';
+import { Guess } from '../types.js';
+import levenshtein from 'fast-levenshtein';
 
 // Contains logic for guessing rounds.
 export class GuessService {
@@ -35,11 +35,11 @@ export class GuessService {
   async submitGuess(postId: string, guess: string) {
     const userId = await this.reddit?.getCurrentUsername();
     if (!userId) {
-      throw new Error("User not found");
+      throw new Error('User not found');
     }
     const currentRoundNum = await this.db.getGameCurrentRound(postId);
     if (currentRoundNum === 0) {
-      throw new Error("Invalid round number");
+      throw new Error('Invalid round number');
     }
 
     const phrase = await this.cache.getUserAssignedPhrase(
@@ -48,7 +48,7 @@ export class GuessService {
       userId
     );
     if (!phrase) {
-      throw new Error("Phrase not found");
+      throw new Error('Phrase not found');
     }
 
     this.db.incrRoundParticipantNum(postId, currentRoundNum);
@@ -63,6 +63,14 @@ export class GuessService {
     };
 
     await this.db.saveGuess(guessObj);
+  }
+
+  async getUserGuessScore(postId: string) {
+    const userId = await this.reddit?.getCurrentUsername();
+    if (!userId) {
+      throw new Error('User not found');
+    }
+    return await this.db.getUserGuessScore(postId, userId);
   }
 
   private generateScore(phrase: string, guess: string): number {

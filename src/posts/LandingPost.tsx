@@ -116,10 +116,11 @@ export function LandingPost(context: Devvit.Context) {
     }
 
     if (message.type === 'GET_SCORE') {
+      const score = await service.guess.getUserGuessScore(postId);
       sendMessageToWebview(context, {
         type: 'SCORE_DATA',
         payload: {
-          score: 200, // TODO
+          score: score,
         },
       });
     }
