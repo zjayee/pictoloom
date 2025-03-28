@@ -14,14 +14,17 @@ Our friends have always enjoyed playing telephone pictionary games together. It 
    - A new game is created every day at **7 AM PST**.
    - Each game consists of multiple phrases, players are evenly assigned random phrases.
 2. **Drawing Rounds (Three 5-Hour Rounds)**
-   For the first drawing round
+
+   For the first drawing round:
 
    - Players receive a phrase from the game's phrases
    - They must draw an image that represents the given phrase
-     For all following rounds
+
+   For all following rounds:
+
    - Players are given a reference drawing from a player in the previous round
    - They must recreate the meaning of the reference drawing in their own style
-
+     <br /><br />
    - Each round lasts **5 hours**
    - Players are given an unplayed phrase for each round to keep the phrases a secret.
 
