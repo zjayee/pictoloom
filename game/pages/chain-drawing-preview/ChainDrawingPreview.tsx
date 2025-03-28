@@ -16,13 +16,29 @@ type DrawingData = {
   voteStatus: 'none' | 'upvoted' | 'downvoted';
 };
 
-const mockDrawing: DrawingData = {
-  blobUrl: '',
-  user: 'Hello',
-  upvotes: 12,
-  round: 2,
-  voteStatus: 'none',
-};
+const mockDrawings: DrawingData[] = [
+  {
+    blobUrl: 'https://via.placeholder.com/300x250.png?text=Drawing+1',
+    user: 'ArtistOne',
+    upvotes: 10,
+    round: 2,
+    voteStatus: 'none',
+  },
+  {
+    blobUrl: 'https://via.placeholder.com/300x250.png?text=Drawing+2',
+    user: 'ArtistTwo',
+    upvotes: 20,
+    round: 2,
+    voteStatus: 'upvoted',
+  },
+  {
+    blobUrl: 'https://via.placeholder.com/300x250.png?text=Drawing+3',
+    user: 'ArtistThree',
+    upvotes: 5,
+    round: 2,
+    voteStatus: 'downvoted',
+  },
+];
 
 const mockData: { postType: 'draw' | 'guess'; round: number } = {
   postType: 'draw',
@@ -31,13 +47,17 @@ const mockData: { postType: 'draw' | 'guess'; round: number } = {
 
 export const ChainDrawingPreview: React.FC = () => {
   const [drawingData, setDrawingData] = useState<DrawingData[] | null>(null);
+  const [currDrawing, setCurrDrawing] = useState<DrawingData | null>(
+    drawingData ? drawingData[0] : null
+  );
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [duration, setDuration] = useState<number | null>(null);
-  const [currDrawing, setCurrDrawing] = useState<DrawingData | null>(null);
   const [mysteryWord, setMysteryWord] = useState('');
   const [data, setData] = useState<{
     postType: 'draw' | 'guess';
     round: number;
   } | null>(null);
+
   const countdownData = useDevvitListener('COUNTDOWN_DATA');
   const referenceDrawingData = useDevvitListener('REFERENCE_DRAWINGS_DATA');
   const initData = useDevvitListener('INIT_RESPONSE');
@@ -64,6 +84,7 @@ export const ChainDrawingPreview: React.FC = () => {
       referenceDrawingData.drawings &&
       referenceDrawingData.drawings.length > 0
     ) {
+      setCurrentIndex(0);
       setCurrDrawing(referenceDrawingData.drawings[0]);
     }
   }, [referenceDrawingData]);
@@ -77,6 +98,24 @@ export const ChainDrawingPreview: React.FC = () => {
     if (!mysteryWordData) return;
     setMysteryWord(mysteryWordData.word);
   }, [mysteryWordData]);
+
+  // Carousel navigation functions.
+  const handlePrev = () => {
+    if (drawingData && drawingData.length > 0) {
+      const newIndex =
+        (currentIndex - 1 + drawingData.length) % drawingData.length;
+      setCurrentIndex(newIndex);
+      setCurrDrawing(drawingData[newIndex]);
+    }
+  };
+
+  const handleNext = () => {
+    if (drawingData && drawingData.length > 0) {
+      const newIndex = (currentIndex + 1) % drawingData.length;
+      setCurrentIndex(newIndex);
+      setCurrDrawing(drawingData[newIndex]);
+    }
+  };
 
   return (
     <div className="chain-preview__container relative">
@@ -101,9 +140,57 @@ export const ChainDrawingPreview: React.FC = () => {
             {currDrawing?.user} drew this based off a mystery word!
           </div>
 
-          {currDrawing && (
+          {currDrawing ? (
             <div className="mb-[0.5em] flex w-[308px] flex-col gap-y-[0.5em]">
-              <ImageFrame url={currDrawing.blobUrl} />
+              <div className="relative flex items-center justify-center">
+                {/* Left carousel button */}
+                <button
+                  onClick={handlePrev}
+                  className="absolute left-[-2.5em] z-10 flex aspect-square w-[2em] transform cursor-pointer items-center justify-center rounded-full text-white"
+                  style={{ background: 'rgba(0, 0, 0, 0.3)' }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="white"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    className="icon icon-tabler icons-tabler-outline icon-tabler-chevron-left"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M15 6l-6 6l6 6" />
+                  </svg>
+                </button>
+
+                <ImageFrame url={currDrawing.blobUrl} />
+
+                {/* Right carousel button */}
+                <button
+                  onClick={handleNext}
+                  className="absolute right-[-2.5em] z-10 flex aspect-square w-[2em] transform cursor-pointer items-center justify-center rounded-full text-white"
+                  style={{ background: 'rgba(0, 0, 0, 0.3)' }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    className="icon icon-tabler icons-tabler-outline icon-tabler-chevron-right"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M9 6l6 6l-6 6" />
+                  </svg>
+                </button>
+              </div>
               <div className="flex">
                 <UpvoteDownvoteButtons
                   voteStatus={currDrawing.voteStatus}
@@ -122,6 +209,8 @@ export const ChainDrawingPreview: React.FC = () => {
                 />
               </div>
             </div>
+          ) : (
+            'Loading...'
           )}
         </>
       ) : mysteryWord ? (
@@ -153,3 +242,5 @@ export const ChainDrawingPreview: React.FC = () => {
     </div>
   );
 };
+
+export default ChainDrawingPreview;

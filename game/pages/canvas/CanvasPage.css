@@ -30,10 +30,35 @@
   border-radius: 50%;
   border: 2px solid white;
   cursor: pointer;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .canvas-page__color--active {
   border: 2px solid #80eed3;
+  color: #80eed3;
+}
+
+/* Eraser button styles */
+.canvas-page__eraser {
+  padding: 0.5em 1em;
+  background-color: #555;
+  border: 1px solid white;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.2s ease;
+}
+
+.canvas-page__eraser:hover {
+  background-color: #444;
+}
+
+.canvas-page__eraser--active {
+  background-color: #80eed3;
 }
 
 #drawing-canvas {

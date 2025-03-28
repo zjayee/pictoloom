@@ -90,26 +90,26 @@ export const FinishedDrawingPage: React.FC = () => {
             alt="Countdown clock"
             width={91.14}
             height={91.14}
-            className="absolute top-[1.1em] left-[-0.4em] z-0"
+            className="absolute top-[0em] left-[-0.4em] z-0"
           />
           <img
             src="/assets/sparkle.svg"
             alt="Sparkle"
             width={30}
             height={30}
-            className="absolute right-0 bottom-[2.5em] z-0"
+            className="absolute top-[2.4em] right-[-0.5em] z-0"
           />
           <img
             src="/assets/sparkle.svg"
             alt="Sparkle"
             width={20}
             height={20}
-            className="absolute right-[1.75em] bottom-[0.8em] z-0"
+            className="absolute top-[1em] right-[1.5em] z-0"
           />
         </div>
 
         {/* Bottom Row */}
-        <div className="mb-[2.5em] ml-[1em] flex w-full items-center justify-center gap-x-[2em]">
+        <div className="items-top ml-[1em] flex w-full justify-center gap-x-[2em]">
           <div className="relative">
             {data && data.postType === 'draw' && (
               <img
@@ -117,7 +117,7 @@ export const FinishedDrawingPage: React.FC = () => {
                 alt="Round"
                 width={140}
                 height={140}
-                className="absolute right-[-3em] bottom-[-3em] z-10"
+                className="absolute top-[-3em] left-[-3em] z-10"
               />
             )}
             {userDrawing && data && (
@@ -144,7 +144,10 @@ export const FinishedDrawingPage: React.FC = () => {
             )}
           </div>
 
-          <div className="flex w-[250px] flex-col items-center justify-center">
+          <div
+            className="flex h-[266px] w-[250px] flex-col items-center justify-center rounded-[15px] px-[0.5em] pt-[1em]"
+            style={{ border: '2px solid rgba(255, 255, 255, 0.25)' }}
+          >
             <div className="mr-[0.5em] flex gap-x-[0.5em]">
               <div>
                 <img
@@ -156,9 +159,15 @@ export const FinishedDrawingPage: React.FC = () => {
               </div>
               <span className="mt-[0.3em] text-[1.3rem]">{numDrawn} USERS</span>
             </div>
-            <div className="mt-[0.1em] text-center text-[1.1rem]">
+            <div className="text-center text-[1rem]">
               used your drawing as a reference!
             </div>
+            <img
+              src="/assets/okay_hand.png"
+              width={165}
+              alt="Megaphone"
+              className="pb-[0.5em]"
+            />
           </div>
         </div>
       </div>
