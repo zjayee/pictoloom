@@ -46,6 +46,7 @@ export function LandingPost(context: Devvit.Context) {
       const round = await service.game.getCurrentRound(postId);
       const gameStatus = await service.game.getGameStatus(postId);
       const canDraw = await service.game.canParticipate(postId);
+      console.log('can draw:', canDraw);
       if (!round) {
         throw new Error('Round not found');
       }

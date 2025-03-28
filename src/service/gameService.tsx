@@ -43,7 +43,7 @@ export class GameService {
 
   // Set up a new game
   async newGame(postId: string) {
-    const phrases = await this.choosePhrases(3);
+    const phrases = await this.choosePhrases(4);
     await this.cache.setNumberPhrasesForGame(postId, phrases.length);
 
     console.log('chose phrases: ' + phrases);
