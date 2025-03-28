@@ -21,7 +21,6 @@ export const appUpgradeSetup: AppUpgradeDefinition = {
     await service.phraseBank.clearPhraseBank('default');
     await service.phraseBank.upsertPhraseBank('default', [
       'banana DJ',
-      'Screaming pig',
       'dancing duck',
       'fluffy dog',
       'Robot falling in love',
