@@ -139,18 +139,19 @@ export class GameService {
   }
 
   async selectPhraseForRound(postId: string) {
-    const currentRoundNum = await this.db.getGameCurrentRound(postId);
-    const userId = await this.reddit?.getCurrentUsername();
-    if (!userId) {
-      throw new Error('User not found');
-    }
-    const phrase = await this.cache.assignPhraseForRound(
-      postId,
-      currentRoundNum,
-      userId
-    );
-    console.log(currentRoundNum, '| assigned phrase:', phrase);
-    return phrase;
+    return 'Robot falling in love';
+    // const currentRoundNum = await this.db.getGameCurrentRound(postId);
+    // const userId = await this.reddit?.getCurrentUsername();
+    // if (!userId) {
+    //   throw new Error('User not found');
+    // }
+    // const phrase = await this.cache.assignPhraseForRound(
+    //   postId,
+    //   currentRoundNum,
+    //   userId
+    // );
+    // console.log(currentRoundNum, '| assigned phrase:', phrase);
+    // return phrase;
   }
 
   async selectReferences(
