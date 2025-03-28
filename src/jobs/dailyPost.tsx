@@ -1,5 +1,6 @@
 import { Devvit, AppUpgradeDefinition } from '@devvit/public-api';
 import { Service } from '../service/service.js';
+import { Cache } from '../storage/cache.js';
 
 export const dailyPostJob = Devvit.addSchedulerJob({
   name: 'dailyPost',
@@ -7,6 +8,7 @@ export const dailyPostJob = Devvit.addSchedulerJob({
     if (event.data) {
       try {
         const subreddit = await context.reddit.getCurrentSubreddit();
+        const cache = new Cache(context.redis);
         const service = new Service(context);
         const post = await context.reddit.submitPost({
           subredditName: subreddit.name,
@@ -18,6 +20,7 @@ export const dailyPostJob = Devvit.addSchedulerJob({
           ),
         });
         console.log('Posted to Reddit:', post.id);
+        await cache.addGamesToStatus([post.id], 'draw');
         await service.game.newGame(post.id);
       } catch (error) {
         console.error('', error);
