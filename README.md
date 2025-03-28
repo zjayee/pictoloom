@@ -6,21 +6,24 @@ Welcome to **Pictoloom**, a hilarious game of misinterpretation where players ta
 
 ### Game Flow
 
-1. **Round 1: Starting Phrase**
+1. **Round 1: Starting Phrases**
 
    - Each player begins with a randomly selected phrase.
    - Players can either choose from pre-set sample phrases or create their own.
+   - Each game consists of multiple phrases, with each player being assigned a different phrase.
 
 2. **Round 2+: Drawing Phase**
 
    - Players receive a phrase (from the previous round's interpretation).
    - They must draw an image that represents the given phrase.
+   - Each round, players are shown a reference for an unplayed phrase to ensure all phrases progress evenly.
 
 3. **Subsequent Rounds: Guessing & Drawing**
 
    - Players receive a drawing from the previous round.
    - They must guess the phrase based on the drawing.
    - This new phrase then becomes the prompt for the next player’s drawing.
+   - Each round, players also get a reference for another unplayed phrase, keeping multiple phrases in circulation.
 
 4. **Final Round: Guess the Original Phrase**
 
@@ -36,7 +39,6 @@ Welcome to **Pictoloom**, a hilarious game of misinterpretation where players ta
 - **Hilarious Progressions**: See how phrases change over multiple rounds.
 - **Creative Drawings**: Express your artistic skills (or lack thereof!).
 - **Community Engagement**: Vote on the funniest or best drawings in the gallery.
-- **Custom Phrases**: Start with either default phrases or create your own.
 
 ## 🎭 Tips for Fun Gameplay
 
