@@ -2,6 +2,10 @@
 
 Welcome to **Pictoloom**, a hilarious game of misinterpretation where players take turns drawing and guessing phrases! As the game progresses, the original phrase mutates based on each player's drawing and interpretation, leading to surprising and funny outcomes.
 
+## Inspiration
+
+Our friends have always enjoyed playing telephone pictionary games together. It was always good memories creating chains of hilarious drawings with our own personal touches that sometimes became totally inaccurate. We saw this hackathon as the perfect opportunity to recreate this chill fun vibe with the reddit community, a place known to be creative and funny.
+
 ## 📜 How to Play
 
 ### Game Flow
