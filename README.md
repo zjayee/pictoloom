@@ -12,50 +12,27 @@ Our friends have always enjoyed playing telephone pictionary games together. It 
 
 1. **Daily Game Creation**
    - A new game is created every day at **7 AM PST**.
-   - Each game consists of multiple phrases, with each player being assigned a different phrase.
+   - Each game consists of multiple phrases, players are evenly assigned random phrases.
 2. **Drawing Rounds (Three 5-Hour Rounds)**
+   For the first drawing round
 
-   - Players receive a phrase (from the previous round's interpretation).
-   - They must draw an image that represents the given phrase.
-   - Each round lasts **5 hours**, ensuring steady progression.
-   - Players are shown a reference for an unplayed phrase to ensure all phrases progress evenly.
+   - Players receive a phrase from the game's phrases
+   - They must draw an image that represents the given phrase
+     For all following rounds
+   - Players are given a reference drawing from a player in the previous round
+   - They must recreate the meaning of the reference drawing in their own style
+
+   - Each round lasts **5 hours**
+   - Players are given an unplayed phrase for each round to keep the phrases a secret.
 
 3. **Final Round: 24-Hour Guessing Round**
 
-   - Players are shown the final phrase derived from their original phrase.
-   - They must try to guess the initial phrase.
+   - Players are shown drawings from the final drawing round as reference.
+   - They try to guess the initial phrase and are given a score for how similar it is to the original.
    - The final guessing phase lasts **24 hours**.
 
 4. **Gallery & Upvotes**
 
-   - After the game, all drawings are showcased in a gallery.
-   - Players can view and upvote their favorite drawings.
-
-5. **Round 1: Starting Phrases**
-
-   - Each player begins with a randomly selected phrase.
-   - Players can either choose from pre-set sample phrases or create their own.
-   - Each game consists of multiple phrases, with each player being assigned a different phrase.
-
-6. **Round 2+: Drawing Phase**
-
-   - Players receive a phrase (from the previous round's interpretation).
-   - They must draw an image that represents the given phrase.
-   - Each round, players are shown a reference for an unplayed phrase to ensure all phrases progress evenly.
-
-7. **Subsequent Rounds: Guessing & Drawing**
-
-   - Players receive a drawing from the previous round.
-   - They must guess the phrase based on the drawing.
-   - This new phrase then becomes the prompt for the next player’s drawing.
-   - Each round, players also get a reference for another unplayed phrase, keeping multiple phrases in circulation.
-
-8. **Final Round: Guess the Original Phrase**
-
-   - Players are shown the final phrase derived from their original phrase.
-   - They must try to guess the initial phrase.
-
-9. **Gallery & Upvotes**
    - After the game, all drawings are showcased in a gallery.
    - Players can view and upvote their favorite drawings.
 
