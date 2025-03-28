@@ -165,6 +165,7 @@ export const DrawingLanding: React.FC = () => {
               text="HOW TO PLAY"
               iconSrc="/icons/book.svg"
               width="15.6em"
+              onClick={() => setPage('tutorial')}
             />
 
             {/* Users drawn */}

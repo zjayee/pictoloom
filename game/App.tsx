@@ -11,6 +11,7 @@ import { GuessPage } from './pages/guess/GuessPage';
 import { ScorePage } from './pages/score-page/ScorePage';
 import ExplorePage from './pages/explore/ExplorePage';
 import { LoadingPage } from './pages/loading/LoadingPage';
+import TutorialPage from './pages/tutorial/TutorialPage';
 
 const getPage = (page: Page) => {
   switch (page) {
@@ -30,6 +31,8 @@ const getPage = (page: Page) => {
       return <ScorePage />;
     case 'explore':
       return <ExplorePage />;
+    case 'tutorial':
+      return <TutorialPage />;
     default:
       throw new Error(`Unknown page: ${page satisfies never}`);
   }

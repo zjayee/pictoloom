@@ -6,7 +6,8 @@ export type Page =
   | 'guess'
   | 'explore'
   | 'score'
-  | 'loading';
+  | 'loading'
+  | 'tutorial';
 
 export type WebviewToBlocksMessage =
   | { type: 'GET_COUNTDOWN_DURATION' }
