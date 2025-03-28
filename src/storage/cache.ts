@@ -47,7 +47,7 @@ export class Cache {
     /* Sets up the user phrase assignment check */
     for (let i = 0; i <= roundNumber; i++) {
       const assigned = await this.redis.hGet(
-        this.keys.phraseUserAssignment(postId, String(roundNumber), userId),
+        this.keys.phraseUserAssignment(postId, String(i), userId),
         phrase
       );
       if (assigned) {
@@ -103,7 +103,7 @@ export class Cache {
       phrase = await this.redis.zRange(
         this.keys.phraseRoundAssignment(postId, String(roundNumber)),
         i,
-        i + 1
+        i
       );
       i++;
       assigned = await this.addUserPhraseAssignment(
@@ -112,6 +112,7 @@ export class Cache {
         userId,
         phrase[0].member
       );
+      console.log('Assigned:', assigned, '| Phrase:', phrase);
     } while (!assigned);
 
     // Increment reference count for phrase
@@ -169,17 +170,20 @@ export class Cache {
 
     // Check if user has submitted drawing for all phrases
     const numPhrases = await this.redis.get(this.keys.numPhrases(postId));
-    const drawnPhrases = await this.redis.hLen(
-      this.keys.phraseUserAssignment(postId, String(roundNumber), userId)
-    );
-    if (drawnPhrases >= Number(numPhrases)) {
-      await this.redis.hSet(
-        this.keys.roundParticipantStatus(postId, String(roundNumber)),
-        {
-          [userId]: 'no_phrases',
-        }
+    let drawnPhrases = 0;
+    for (let i = 0; i < roundNumber; i++) {
+      drawnPhrases += await this.redis.hLen(
+        this.keys.phraseUserAssignment(postId, String(i), userId)
       );
-      return false;
+      if (drawnPhrases >= Number(numPhrases)) {
+        await this.redis.hSet(
+          this.keys.roundParticipantStatus(postId, String(roundNumber)),
+          {
+            [userId]: 'no_phrases',
+          }
+        );
+        return false;
+      }
     }
     return true;
   }
@@ -240,7 +244,7 @@ export class Cache {
     for (const phrase of phrases) {
       const drawingUserIds = await this.getUserIdsForPhraseRound(
         postId,
-        roundNumber,
+        roundNumber - 1,
         phrase
       );
       console.log(phrase, '| Drawing UserIds:', drawingUserIds);
@@ -282,12 +286,6 @@ export class Cache {
     count: number
   ): Promise<{ user: string; blobUrl: string }[]> {
     /* Returns the count reference drawings for the round */
-    const userIdsall = await this.redis.zRange(
-      this.keys.referenceDrawing(postId, String(roundNumber), phrase),
-      0,
-      -1
-    );
-
     const referenceDrawingUserIds = await this.redis.zRange(
       this.keys.referenceDrawing(postId, String(roundNumber), phrase),
       0,
@@ -411,7 +409,7 @@ export class Cache {
     await this.redis.zIncrBy(
       this.keys.voteTracking(postId),
       roundNumber + ':' + drawingUserId,
-      numVotes
+      numVotes * -1
     );
 
     await this.redis.hSet(
@@ -432,7 +430,7 @@ export class Cache {
     await this.redis.zIncrBy(
       this.keys.voteTracking(postId),
       roundNumber + ':' + drawingUserId,
-      -1 * numVotes
+      numVotes
     );
 
     await this.redis.hSet(
@@ -476,7 +474,7 @@ export class Cache {
         drawings.push({
           blobUrl: drawingObj.drawing,
           user: userId,
-          upvotes: drawing.score,
+          upvotes: drawing.score * -1,
           round: Number(roundNumber),
         });
       }
@@ -493,7 +491,7 @@ export class Cache {
       this.keys.voteTracking(postId),
       roundNumber + ':' + drawingUserId
     );
-    return upvotes ?? 0;
+    return upvotes ? upvotes * -1 : 0;
   }
 
   async addGameStatus(postId: string, status: string) {
