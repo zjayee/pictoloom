@@ -117,7 +117,7 @@ export const FinishedDrawingPage: React.FC = () => {
                 alt="Round"
                 width={140}
                 height={140}
-                className="absolute right-[-3em] bottom-[-3em] z-10"
+                className="absolute right-[-3em] bottom-[-1.3em] z-10"
               />
             )}
             {userDrawing && data && (
