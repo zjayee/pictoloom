@@ -1,5 +1,6 @@
 import { Devvit } from '@devvit/public-api';
 
+// Add secrets for supabase config
 Devvit.addSettings([
   {
     // Name of the setting which is used to retrieve the setting value
