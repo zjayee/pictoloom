@@ -24,16 +24,16 @@ export class Db {
     });
   }
 
-  async incrementRound(gameId: number) {
+  async incrementRound(gameId: string) {
     // Increment current_round in game table
     await this.supabase.rpc('increment_game_round', { game_id: gameId });
   }
 
-  async setGameStatus(gameId: number, status: GameStatus) {
+  async setGameStatus(gameId: string, status: GameStatus) {
     await this.supabase.from('game').update({ status }).eq('id', gameId);
   }
 
-  async getGameStatus(gameId: number): Promise<GameStatus> {
+  async getGameStatus(gameId: string): Promise<GameStatus> {
     const { data, error } = await this.supabase
       .from('game')
       .select('status')
@@ -43,7 +43,7 @@ export class Db {
     return data.status as GameStatus;
   }
 
-  async getGame(gameId: number): Promise<Game | null> {
+  async getGame(gameId: string): Promise<Game | null> {
     const { data, error } = await this.supabase
       .from('game')
       .select('*')
@@ -58,7 +58,7 @@ export class Db {
     };
   }
 
-  async getPhrasesForGame(gameId: number): Promise<string[]> {
+  async getPhrasesForGame(gameId: string): Promise<string[]> {
     const { data, error } = await this.supabase
       .from('game')
       .select('phrases')
@@ -67,7 +67,7 @@ export class Db {
     return data && data.phrases ? data.phrases : [];
   }
 
-  async getGameCurrentRound(gameId: number): Promise<number> {
+  async getGameCurrentRound(gameId: string): Promise<number> {
     const { data, error } = await this.supabase
       .from('game')
       .select('current_round')
@@ -76,7 +76,7 @@ export class Db {
     return data && data.current_round ? Number(data.current_round) : 0;
   }
 
-  async saveRound(gameId: number, round: Round) {
+  async saveRound(gameId: string, round: Round) {
     await this.supabase.from('round').upsert({
       round_type: round.roundType,
       round_number: round.roundNumber,
@@ -87,7 +87,7 @@ export class Db {
     });
   }
 
-  async getRound(gameId: number, roundNumber: number): Promise<Round | null> {
+  async getRound(gameId: string, roundNumber: number): Promise<Round | null> {
     const { data, error } = await this.supabase
       .from('round')
       .select('*')
@@ -104,7 +104,7 @@ export class Db {
     };
   }
 
-  async incrRoundParticipantNum(gameId: number, roundNumber: number) {
+  async incrRoundParticipantNum(gameId: string, roundNumber: number) {
     // Increment participant_num in round table
     await this.supabase.rpc('increment_round_participant_num', {
       game_id: gameId,
