@@ -1,5 +1,3 @@
-import type { RedisClient } from '@devvit/public-api';
-
 import type {
   Game,
   GameStatus,
@@ -8,214 +6,232 @@ import type {
   Drawing,
   Guess,
 } from '../types.js';
-import { g } from 'motion/react-client';
-import { J } from 'vitest/dist/chunks/reporters.QZ837uWx.js';
 
-// File contains logic for saving and retrieving data from Redis.
+// File contains logic for saving and retrieving data from Supabase tables.
 export class Db {
-  readonly redis: RedisClient;
+  readonly supabase: any;
 
-  constructor(redis: RedisClient) {
-    this.redis = redis;
+  constructor(context: { supabase: any }) {
+    this.supabase = context.supabase;
   }
-
-  readonly keys = {
-    game: (gameId: string) => `game:${gameId}`,
-    phraseBank: (name: string) => `phraseBank:${name}`,
-    round: (postId: string, roundNumber: string) =>
-      `round:${postId}:${roundNumber}`,
-    drawing: (postId: string, roundNumber: string) =>
-      `drawing:${postId}:${roundNumber}`,
-    guess: (postId: string) => `guess:${postId}`,
-  };
 
   async saveGame(game: Game) {
-    await this.redis.hSet(this.keys.game(game.id), {
+    await this.supabase.from('game').upsert({
       id: game.id,
-      phrases: JSON.stringify(game.phrases),
+      phrases: game.phrases,
       status: game.status,
-      currentRound: String(game.currentRound),
+      current_round: game.currentRound,
     });
   }
 
-  async incrementRound(gameId: string) {
-    await this.redis.hIncrBy(this.keys.game(gameId), 'currentRound', 1);
+  async incrementRound(gameId: number) {
+    // Increment current_round in game table
+    await this.supabase.rpc('increment_game_round', { game_id: gameId });
   }
 
-  async setGameStatus(gameId: string, status: GameStatus) {
-    await this.redis.hSet(this.keys.game(gameId), { status });
+  async setGameStatus(gameId: number, status: GameStatus) {
+    await this.supabase.from('game').update({ status }).eq('id', gameId);
   }
 
-  async getGameStatus(gameId: string): Promise<GameStatus> {
-    const status = await this.redis.hGet(this.keys.game(gameId), 'status');
-    return status ? (status as GameStatus) : 'end';
+  async getGameStatus(gameId: number): Promise<GameStatus> {
+    const { data, error } = await this.supabase
+      .from('game')
+      .select('status')
+      .eq('id', gameId)
+      .single();
+    if (error || !data) return 'end';
+    return data.status as GameStatus;
   }
 
-  async getGame(gameId: string): Promise<Game | null> {
-    const game = await this.redis.hGetAll(this.keys.game(gameId));
-    if (!game) {
-      return null;
-    }
+  async getGame(gameId: number): Promise<Game | null> {
+    const { data, error } = await this.supabase
+      .from('game')
+      .select('*')
+      .eq('id', gameId)
+      .single();
+    if (error || !data) return null;
     return {
-      id: game.id,
-      phrases: JSON.parse(game.phrases),
-      status: game.status as GameStatus,
-      currentRound: Number(game.currentRound),
+      id: String(data.id),
+      phrases: data.phrases,
+      status: data.status as GameStatus,
+      currentRound: Number(data.current_round),
     };
   }
 
-  async getPhrasesForGame(gameId: string): Promise<string[]> {
-    const game = await this.redis.hGet(this.keys.game(gameId), 'phrases');
-    return game ? JSON.parse(game) : [];
+  async getPhrasesForGame(gameId: number): Promise<string[]> {
+    const { data, error } = await this.supabase
+      .from('game')
+      .select('phrases')
+      .eq('id', gameId)
+      .single();
+    return data && data.phrases ? data.phrases : [];
   }
 
-  async getGameCurrentRound(gameId: string): Promise<number> {
-    const currentRound = await this.redis.hGet(
-      this.keys.game(gameId),
-      'currentRound'
-    );
-    return currentRound ? Number(currentRound) : 0;
+  async getGameCurrentRound(gameId: number): Promise<number> {
+    const { data, error } = await this.supabase
+      .from('game')
+      .select('current_round')
+      .eq('id', gameId)
+      .single();
+    return data && data.current_round ? Number(data.current_round) : 0;
   }
 
-  async saveRound(postId: string, round: Round) {
-    await this.redis.hSet(this.keys.round(postId, String(round.roundNumber)), {
-      roundType: round.roundType,
-      roundNumber: String(round.roundNumber),
-      startTime: round.startTime,
-      endTime: round.endTime,
-      participantNum: String(round.participantNum),
+  async saveRound(gameId: number, round: Round) {
+    await this.supabase.from('round').upsert({
+      round_type: round.roundType,
+      round_number: round.roundNumber,
+      start_time: round.startTime,
+      end_time: round.endTime,
+      participant_num: round.participantNum,
+      game_id: gameId,
     });
   }
 
-  async getRound(postId: string, roundNumber: number): Promise<Round | null> {
-    const round = await this.redis.hGetAll(
-      this.keys.round(postId, String(roundNumber))
-    );
-    if (!round) {
-      return null;
-    }
+  async getRound(gameId: number, roundNumber: number): Promise<Round | null> {
+    const { data, error } = await this.supabase
+      .from('round')
+      .select('*')
+      .eq('game_id', gameId)
+      .eq('round_number', roundNumber)
+      .single();
+    if (error || !data) return null;
     return {
-      roundType: round.roundType as RoundType,
-      roundNumber: Number(round.roundNumber),
-      startTime: round.startTime,
-      endTime: round.endTime,
-      participantNum: Number(round.participantNum),
+      roundType: data.round_type as RoundType,
+      roundNumber: Number(data.round_number),
+      startTime: data.start_time,
+      endTime: data.end_time,
+      participantNum: Number(data.participant_num),
     };
   }
 
-  async incrRoundParticipantNum(postId: string, roundNumber: number) {
-    await this.redis.hIncrBy(
-      this.keys.round(postId, String(roundNumber)),
-      'participantNum',
-      1
-    );
+  async incrRoundParticipantNum(gameId: number, roundNumber: number) {
+    // Increment participant_num in round table
+    await this.supabase.rpc('increment_round_participant_num', {
+      game_id: gameId,
+      round_number: roundNumber,
+    });
   }
 
   async getPhraseBank(name: string): Promise<string[]> {
-    const phraseBankJson = await this.redis.get(this.keys.phraseBank(name));
-    return phraseBankJson ? JSON.parse(phraseBankJson) : [];
+    const { data, error } = await this.supabase
+      .from('phrase_bank')
+      .select('phrases')
+      .eq('name', name)
+      .single();
+    return data && data.phrases ? data.phrases : [];
   }
 
   async upsertPhraseBank(name: string, phrases: string[]) {
-    // Save phrases to Redis
-    const key = this.keys.phraseBank(name);
-    const existingJson = await this.redis.get(key);
-    const existingWords = existingJson ? JSON.parse(existingJson) : [];
-
-    const unique = new Set([...existingWords, ...phrases]);
-    await this.redis.set(key, JSON.stringify(Array.from(unique)));
-  }
-
-  async clearPhraseBank(name: string) {
-    await this.redis.del(this.keys.phraseBank(name));
-  }
-
-  async saveDrawing(drawing: Drawing) {
-    await this.redis.hSet(
-      this.keys.drawing(drawing.gameId, String(drawing.roundNumber)),
-      {
-        [drawing.userId]: drawing.drawing,
-      }
-    );
-  }
-
-  async getSubmittedUserIdsForRound(postId: string, roundNumber: number) {
-    const drawings = await this.redis.hGetAll(
-      this.keys.drawing(postId, String(roundNumber))
-    );
-
-    // extract keys from hash
-    const userIds = Object.keys(drawings);
-    return userIds;
-  }
-
-  async getDrawingObj(
-    postId: string,
-    roundNumber: number,
-    phrase: string,
-    userId: string
-  ): Promise<Drawing | null> {
-    const drawing = await this.redis.hGet(
-      this.keys.drawing(postId, String(roundNumber)),
-      userId
-    );
-    if (!drawing) {
-      return null;
-    }
-    const drawingObj: Drawing = {
-      gameId: postId,
-      userId: userId,
-      roundNumber: roundNumber,
-      drawing: drawing,
-      phrase: phrase,
-    };
-    return drawingObj;
-  }
-
-  async getDrawingContent(
-    postId: string,
-    roundNumber: number,
-    userId: string
-  ): Promise<string | null> {
-    const drawing = await this.redis.hGet(
-      this.keys.drawing(postId, String(roundNumber)),
-      userId
-    );
-    return drawing ?? null;
-  }
-
-  async saveGuess(guess: Guess) {
-    const info = {
-      guess: guess.guess,
-      score: String(guess.score),
-    };
-    await this.redis.hSet(this.keys.guess(guess.gameId), {
-      [guess.userId]: JSON.stringify(info),
+    // Merge with existing
+    const { data } = await this.supabase
+      .from('phrase_bank')
+      .select('phrases')
+      .eq('name', name)
+      .single();
+    const existingWords = data && data.phrases ? data.phrases : [];
+    const unique = Array.from(new Set([...existingWords, ...phrases]));
+    await this.supabase.from('phrase_bank').upsert({
+      name,
+      phrases: unique,
+      updated_at: new Date().toISOString(),
     });
   }
 
-  async getUserGuessScore(postId: string, userId: string): Promise<number> {
-    const guess = await this.redis.hGet(this.keys.guess(postId), userId);
-    if (!guess) {
-      return 0;
-    }
-    return JSON.parse(guess).score;
+  async clearPhraseBank(name: string) {
+    await this.supabase.from('phrase_bank').delete().eq('name', name);
   }
 
-  async getUserGuess(postId: string, userId: string): Promise<string | null> {
-    const guess = await this.redis.hGet(this.keys.guess(postId), userId);
-    if (!guess) {
-      return null;
-    }
-    return JSON.parse(guess).guess;
+  async saveDrawing(drawing: Drawing) {
+    await this.supabase.from('drawing').upsert({
+      phrase: drawing.phrase,
+      game_id: drawing.gameId,
+      user_id: drawing.userId,
+      round_id: drawing.roundId,
+      data: drawing.drawing,
+    });
+  }
+
+  async getSubmittedUserIdsForRound(roundId: number) {
+    const { data, error } = await this.supabase
+      .from('drawing')
+      .select('user_id')
+      .eq('round_id', roundId);
+    if (error || !data) return [];
+    return data.map((row: any) => row.user_id);
+  }
+
+  async getDrawingObj(
+    roundId: number,
+    userId: string
+  ): Promise<Drawing | null> {
+    const { data, error } = await this.supabase
+      .from('drawing')
+      .select('*')
+      .eq('round_id', roundId)
+      .eq('user_id', userId)
+      .single();
+    if (error || !data) return null;
+    return data;
+  }
+
+  async getDrawingContent(
+    roundId: number,
+    userId: string
+  ): Promise<string | null> {
+    const { data, error } = await this.supabase
+      .from('drawing')
+      .select('data')
+      .eq('round_id', roundId)
+      .eq('user_id', userId)
+      .single();
+    if (error || !data) return null;
+    return data.data ?? null;
+  }
+
+  async saveGuess(guess: Guess) {
+    await this.supabase.from('guess').upsert({
+      game_id: guess.gameId,
+      round_id: guess.roundId,
+      user_id: guess.userId,
+      phrase: guess.phrase,
+      guess: guess.guess,
+      score: guess.score,
+    });
+  }
+
+  async getUserGuessScore(roundId: number, userId: string): Promise<number> {
+    const { data, error } = await this.supabase
+      .from('guess')
+      .select('score')
+      .eq('round_id', roundId)
+      .eq('user_id', userId)
+      .single();
+    if (error || !data) return 0;
+    return Number(data.score);
+  }
+
+  async getUserGuess(roundId: number, userId: string): Promise<string | null> {
+    const { data, error } = await this.supabase
+      .from('guess')
+      .select('guess')
+      .eq('round_id', roundId)
+      .eq('user_id', userId)
+      .single();
+    if (error || !data) return null;
+    return data.guess ?? null;
   }
 
   async getDrawingsForGame(
-    postId: string,
+    gameId: number,
     start?: number,
     end?: number
   ): Promise<Drawing[]> {
-    /* Returns all drawings for game sorted by popularity. If start and end are set returns that range. */
-    return [];
+    let query = this.supabase.from('drawing').select('*').eq('game_id', gameId);
+    if (start !== undefined && end !== undefined) {
+      query = query.range(start, end);
+    }
+    const { data, error } = await query;
+    if (error || !data) return [];
+    return data;
   }
 }
