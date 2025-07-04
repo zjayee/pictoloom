@@ -17,6 +17,7 @@ export type Drawing = {
   gameId: string;
   phrase: string;
   roundNumber: number;
+  roundId: number;
   userId: string;
   drawing: string;
 };
@@ -25,6 +26,7 @@ export type Guess = {
   gameId: string;
   phrase: string;
   roundNumber: number;
+  roundId: number;
   userId: string;
   guess: string;
   score: number;
